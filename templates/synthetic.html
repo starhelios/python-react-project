@@ -1,0 +1,19 @@
+{% extends "layout_no_navbar.html" %}
+
+{% block body %}
+<div class="container">
+
+    <div id="main"></div>
+
+</div>
+
+<link rel="stylesheet" href="/static/annotorious.css" />
+<script src="/static/annotorious.min.js"></script>
+<script type="text/javascript" src="/static/mouse.js"></script>
+<script type="text/javascript" src="/static/mousetrap.min.js"></script>
+<script>
+  window.__USERNAME__ = '{{ username }}';
+</script>
+<script type="text/javascript" src="/static/build/synthetic.js"></script>
+
+{% endblock %}

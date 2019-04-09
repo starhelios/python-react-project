@@ -1,0 +1,30 @@
+#latexEdit {
+  display: block;
+  width: 100%;
+  height: 150px;
+  background-color: #333;
+  color: #fff;
+  font-family: monospace;
+  font-size: 20px;
+}
+
+.latex-render {
+  height: 80px;
+}
+
+.latex-render-parent {
+  padding-top: 10px;
+  .zoom {
+    margin-left: 30px;
+    a {
+      margin-right: 10px;
+      color: green;
+    }
+  }
+  .zoom-in, .zoom-out {
+    font-size: 20px;
+  }
+  .zoom-in-big, .zoom-out-big {
+    font-size: 30px;
+  }
+}

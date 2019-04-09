@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <div>
+            <h1>Example</h1>
+            <br />
+            <img align="middle" src="/static/debug/debug.jpg" />
+            <br />
+            <br />
+            <pre id="text"></pre>
+        </div>
+    </div>
+
+    <script>
+        $('#text').load("/static/debug/debug.log");
+    </script>
+
+{% endblock %}

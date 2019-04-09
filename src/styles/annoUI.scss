@@ -1,0 +1,30 @@
+@import "base";
+
+#page-annotations {
+
+  padding-top: 0;
+  @media only screen and (min-width: 768px) {
+    padding-top: 100px;
+  }
+  @media only screen and (min-width: 992px) {
+    padding-top: 40px;
+  }
+  @media only screen and (min-width: 1200px) {
+    padding-top: 0;
+  }
+
+  @media only screen and (min-width: 992px) {
+    .heading {
+      padding-top: 20px;
+    }
+  }
+
+  .react-tooltip {
+    a > i {
+      font-size: 16px;
+      margin-left: 10px;
+      vertical-align: middle;
+      color: #F0AD4E;
+    }
+  }
+}

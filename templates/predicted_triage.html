@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container-full">
+        <div id="main"></div>
+    </div>
+
+    <style>
+        pre {
+            display: block;
+            font-family: monospace;
+            white-space: pre;
+            border: 0;
+        }
+    </style>
+    <script type="text/javascript" src="/static/mousetrap.min.js"></script>
+    <script src="/static/build/predicted_triage.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+{% endblock %}
+

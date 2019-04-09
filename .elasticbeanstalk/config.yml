@@ -1,0 +1,17 @@
+branch-defaults:
+  master:
+    environment: zenpix-docker
+deploy:
+  artifact: zenpix.zip
+global:
+  application_name: zenpix
+  branch: null
+  default_ec2_keyname: null
+  default_region: us-east-1
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  repository: null
+  sc: git
+  workspace_type: Application

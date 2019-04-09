@@ -1,0 +1,54 @@
+{
+  "IMAGE_PROPERTIES": {
+    "is_good": "Is done.",
+    "is_text_only": "Is text dominant.",
+    "contains_geometry": "Contains geometry problem or a graph",
+    "contains_graph": "Contains graph",
+    "contains_chart": "Contains chart",
+    "contains_diagram": "Contains diagram",
+    "contains_table": "Contains table",
+    "fully_boxed": "Not missing boxes",
+    "contains_equation": "Contains equation",
+    "contains_foreign_alphabet": "Contains foreign alphabet"
+  },
+
+  "EQUATION_PROPERTIES": {
+    "is_printed": "Printed (not handwritten)",
+    "is_inverted": "Inverted (white on black)"
+  },
+
+  "DATA_PROPERTIES": {
+    "is_good": "Is done.",
+    "is_text_only": "Is text only.",
+    "is_verified": "Is verified.",
+    "is_normalized": "Is normalized.",
+    "saved": "Previously saved by annotator",
+    "contains_geometry": "Contains geometry problem or a graph",
+    "contains_graph": "Contains graph",
+    "contains_chart": "Contains chart",
+    "contains_diagram": "Contains diagram",
+    "contains_table": "Contains table",
+    "contains_header": "Contains header",
+    "fully_boxed": "Fully boxed (all characters have boxes)",
+    "contains_equation": "Contains equation",
+    "is_printed": "Printed (not handwritten)",
+    "is_inverted": "Inverted (white on black)",
+    "char_size_null": "char_size is null",
+    "contains_foreign_alphabet": "Contains foreign alphabet"
+  },
+
+  "PREDICTED_PROPERTIES": {
+    "is_printed": "Printed (not handwritten)",
+    "is_not_math": "No equation",
+    "is_blank": "Is blank",
+    "is_inverted": "Inverted (white on black)",
+    "contains_geometry": "Contains geometry problem or a graph",
+    "contains_graph": "Contains graph",
+    "contains_chart": "Contains chart",
+    "contains_diagram": "Contains diagram",
+    "contains_table": "Contains table",
+    "contains_foreign_alphabet": "Contains foreign alphabet"
+  },
+
+  "ANNOTATION_LOG_BASE_URL": "https://s3.amazonaws.com/mpxdata/logs/"
+}
