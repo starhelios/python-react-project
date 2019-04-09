@@ -1,0 +1,62 @@
+{
+  "name": "eval",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./run.py --port 8001",
+    "build": "webpack --production",
+    "build:watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "babel-polyfill": "^6.13.0",
+    "firebase": "~2.4.1",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.15.0",
+    "moment": "^2.14.1",
+    "normalizr": "^3.1.0",
+    "react": "^0.14.3",
+    "react-bootstrap": "^0.30.3",
+    "react-dom": "^0.14.3",
+    "react-keydown": "^1.6.2",
+    "mathpix-markdown": "./mathpix-markdown",
+    "react-router": "^2.8.1",
+    "react-simple-dropdown": "^1.1.4",
+    "react-toggle-button": "^2.1.0",
+    "react-tooltip": "^3.2.6"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.4.0",
+    "babel-core": "^6.2.1",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-runtime": "^6.12.0",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-react": "^6.1.18",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-runtime": "^6.11.6",
+    "css-loader": "^0.24.0",
+    "json-loader": "^0.5.4",
+    "node-sass": "^3.8.0",
+    "postcss-import": "^8.1.2",
+    "postcss-loader": "^0.10.1",
+    "sass-loader": "^4.0.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.0"
+  }
+}

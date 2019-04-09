@@ -1,0 +1,104 @@
+{
+  "ui-id": "lines_anno",
+  "schema": {
+    "fields": [
+      { "type": "multi-choice", "label": "Image properties", "id": "image_properties", "colspan": 6 },
+      { "type": "multi-choice", "label": "Main information properties", "id": "info_properties", "colspan": 6 },
+      { "type": "link", "label": "Source Image Link", "id": "image.url", "target": "_blank", "style": { "color": "#337ab7" }, "colspan": 6 },
+      { "type": "info", "label": "Previous annotator", "id": "username", "style": { "fontSize": 16 }, "colspan": 6 },
+      { "type": "info", "label": "Group", "id": "group_id", "colspan": 6 },
+      { "type": "info", "label": "Latex confidence", "id": "latexConfidence", "style": { "fontSize": 16 }, "colspan": 6 },
+      { "type": "checkbox", "label": "Is done", "id": "is_good", "style": { }, "colspan": 6, "help": "The annotation is complete." },
+      { "type": "text-edit", "label": "Text", "id": "text", "style": { "marginTop": "20px" }, "clear": "left", "colspan": 6 },
+      { "type": "text-render", "label": "Text preview", "id": "text", "style": { "marginTop": "20px" }, "colspan": 6 },
+      {
+        "type": "image",
+        "id": "image",
+        "label": "Image",
+        "fields": [
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Title",
+            "id": "title",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#3cb44b"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Section title",
+            "id": "section_title",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#800000"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Text line",
+            "id": "text_line",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#e6194B"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Math line",
+            "id": "math_line",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#4363d8"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Math block",
+            "id": "math_block",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#000075"
+          }
+        ]
+      }
+    ]
+  },
+
+  "options": {
+    "image_type": {
+      "options": [
+        { "value": "math", "label": "Math" },
+        { "value": "text", "label": "Text" },
+        { "value": "landscape", "label": "Landscape" },
+        { "value": "portrait", "label": "portrait" }
+      ],
+      "default": "math"
+    },
+    "image_properties": {
+      "options": [
+      ],
+      "default": []
+    },
+    "info_properties": {
+      "options": [
+      ],
+      "default": []
+    }
+  },
+
+  "data": {
+    "image_name": "First equation",
+    "image_type": "math",
+    "is_good": true,
+    "image_properties": ["is_text_only", "contains_equation"],
+    "info_properties": ["is_printed"],
+    "image": { "url": "http://static4.businessinsider.com/image/587fbec3ee14b6c7148b892e-1495" },
+    "username": "George",
+    "latex": "x^{2} + x",
+    "chars": [{ "x": 0.1, "y": 0.2, "w": 0.1, "h": 0.2, "text": "x" }],
+    "equations": [{ "x": 0.01, "y": 0.3, "height": 0.25, "width": 0.95 }]
+  }
+}
+

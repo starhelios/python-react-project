@@ -1,0 +1,33 @@
+.screen-lock-container {
+  position: relative;
+
+  .screen-lock {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: RGBA(255, 255, 255, 0.5);
+    z-index: 1000;
+
+    img {
+      display: block;
+      position: absolute;
+      left: 50%;
+      //top: 50%;
+      top: 250px;
+      -webkit-transform: translate(-50%, -50%);
+      -moz-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      -o-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .message {
+      position: absolute;
+      top: 45%;
+      width: 100%;
+      text-align: center;
+    }
+  }
+}

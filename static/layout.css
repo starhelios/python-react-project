@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+@import url("https://fonts.googleapis.com/css?family=Lato");
+
+body{
+  font-family: 'Lato';
+}
+
+.navbar-fixed-top {
+  background-color: #102E59;
+  color: #f4f4f4;
+}
+
+.navbar-nav {
+  float: right;
+}
+
+.navbar-brand, a.navbar-brand:hover {
+  font-family: 'Oswald';
+  font-weight: 800;
+  font-size: 36px;
+  color: #fff;
+  margin-top: -5px;
+}
+
+.navbar-brand, .navbar-nav>li>a, .navbar-collapse, a.dropdown-toggle,
+.navbar-nav .open .dropdown-menu>li>a {
+  background-color: #102e59;
+  color: #f4f4f4;
+  text-shadow: none;
+}
+
+.navbar-nav>li>a:hover, .navbar-nav>li>a:active, .navbar-nav>li>a:focus,
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover,
+.navbar-nav .open .dropdown-menu>li>a:focus, .navbar-nav .open .dropdown-menu>li>a:hover {
+  background-color: #091C33;
+  color: #f4f4f4;
+}
+
+.navbar-toggle, .navbar-toggle>span {
+  border: 1px solid #f4f4f4;
+}

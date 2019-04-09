@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <div class="container-full">
+        <div id="main"></div>
+    </div>
+
+    <style>
+        pre {
+            display: block;
+            font-family: monospace;
+            white-space: pre;
+            border: 0;
+        }
+        
+    </style>
+    <script type="text/javascript" src="/static/mousetrap.min.js"></script>
+    <script src="/static/build/normalized_data.js"></script>
+
+{% endblock %}
+

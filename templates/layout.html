@@ -1,0 +1,119 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Mathpix Evaluation</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/static/img/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/img/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/img/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/img/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/img/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/img/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/img/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/img/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/static/img/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/img/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/img/favicon/manifest.json">
+
+
+    <style>
+        body {
+            padding-top: 50px;
+        }
+
+        .starter-template {
+            padding: 40px 15px;
+            text-align: center;
+        }
+
+        .modal-dialog {
+            width: 900px;
+            height: 900px;
+        }
+
+        img.instr {
+          width: 300px;
+          height: auto;
+          display: block;
+        }
+
+				.axis path,
+				.axis line {
+					fill: none;
+					stroke: #000;
+				}
+
+				.grid path,
+				.grid line {
+					fill: none;
+					stroke: rgba(0, 0, 0, 0.25);
+				}
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/layout.css">
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+            messageStyle: "none",
+            TeX: {
+                Macros: {
+                   longdiv: ["{\\overline{\\smash{)}#1}}", 1],
+                   oint: String.raw`{\mathop{\vcenter{\mathchoice{\huge\unicode{x222E}\,}{\unicode{x222E}}{\unicode{x222E}}{\unicode{x222E}}}\,}\nolimits}`,
+                   oiint: String.raw`{\mathop{\vcenter{\mathchoice{\huge\unicode{x222F}\,}{\unicode{x222F}}{\unicode{x222F}}{\unicode{x222F}}}\,}\nolimits}`,
+                   oiiint: String.raw`{\mathop{\vcenter{\mathchoice{\huge\unicode{x2230}\,}{\unicode{x2230}}{\unicode{x2230}}{\unicode{x2230}}}\,}\nolimits}`,
+                   ointclockwise: String.raw`{\mathop{\vcenter{\mathchoice{\huge\unicode{x2232}\,}{\unicode{x2232}}{\unicode{x2232}}{\unicode{x2232}}}\,}\nolimits}`,
+                   ointctrclockwise: String.raw`{\mathop{\vcenter{\mathchoice{\huge\unicode{x2233}\,}{\unicode{x2233}}{\unicode{x2233}}{\unicode{x2233}}}\,}\nolimits}`
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">zenpix</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav text-right">
+                <li id="queues" class="inactive"><a href="/queues">Queues</a></li>
+                <li id="user-data" class="inactive"><a href="/user-data">Live data</a></li>
+                <li id="data" class="inactive"><a href="/data">Training data</a></li>
+                <li id="data" class="inactive"><a href="/synthetic">Synthetic</a></li>
+                <!-- <li id="normalized-data" class="inactive"><a href="/normalized-data">Normalized data</a></li> -->
+                <!-- <li id="user-data" class="inactive"><a href="/predicted-triage">Predicted triage</a></li> -->
+                <!-- <li id="user-data" class="inactive"><a href="/predicted-data">Predicted OCR</a></li> -->
+                <li id="usage" class="inactive"><a href="/usage">Usage</a></li>
+                <!-- <li id="graph" class="inactive"><a href="/instructions">Instructions</a></li> -->
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+{% block body %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container-full">
+        <div class="starter-template">
+            <h1>User Data</h1>
+        </div>
+
+        <div id="main"></div>
+        
+    </div>
+
+    <style>
+        pre {
+            display: block;
+            font-family: monospace;
+            white-space: pre;
+            border: 0;
+        }
+    </style>
+    <script type="text/javascript" src="/static/mousetrap.min.js"></script>
+    <script src="/static/build/user_data.js"></script>
+
+{% endblock %}
+

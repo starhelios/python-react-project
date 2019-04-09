@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="starter-template">
+            <h1>Admin</h1>
+        </div>
+
+        <div id="main"></div>
+        
+    </div>
+
+    <script>
+        var RESULT_LIST = {{ result_list|tojson }};
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+    <script src="/static/build/result_list.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.js"></script>
+
+{% endblock %}
+

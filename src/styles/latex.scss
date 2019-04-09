@@ -1,0 +1,169 @@
+#page-work-latex {
+
+  padding-bottom: 100px;
+
+  img.annotatable {
+    width: 850px;
+  }
+  .anno-board {
+    margin-top: 20px;
+    user-select: none;
+  }
+
+  .anno-img {
+    margin-top: 20px;
+    user-select: none;
+    img {
+      max-width: 100%;
+      min-width: 600px;
+    }
+  }
+
+  .actions{
+    button {
+      margin-left: 10px;
+    }
+    .shortcut-keys-guide {
+      margin-top: 10px;
+    }
+  }
+
+  &>.alert {
+    margin-top: 20px;
+    margin-bottom: 0;
+  }
+
+  label {
+    font-weight: normal;
+  }
+
+  .property {
+    label {
+      padding-left: 10px;
+      user-select: none;
+    }
+  }
+
+  #source-image-link {
+    margin: 20px 0;
+  }
+
+  #previous-annotator {
+    font-size: 16px;
+  }
+
+  .spinner {
+    padding: 28px 0;
+    text-align: center;
+  }
+
+  .error {
+    padding: 28px 0;
+    text-align: center;
+    font-size: 18px;
+    color: #f00;
+  }
+
+  .save-error {
+    padding: 10px 0;
+    text-align: center;
+    font-size: 16px;
+    color: #f00;
+  }
+
+  .latex-edit-link, .box-edit-link {
+    margin-top: 10px;
+    a {
+      font-size: 16px;
+    }
+  }
+
+  .latex-editor {
+    margin-top: 30px;
+
+    .latex-edit {
+      textarea {
+        margin-top: 10px;
+        width: 100%;
+        height: 80px;
+        background-color: #333;
+        color: #fff;
+        font-family: monospace;
+        font-size: 16px;
+      }
+    }
+
+    .latex-render {
+      margin-top: 10px;
+      height: 80px;
+      border: 1px dashed #333;
+    }
+  }
+
+  .item-comments {
+    margin-top: 50px;
+
+    .spinner {
+      padding: 15px 0;
+    }
+    .error {
+      padding: 15px 0;
+    }
+
+    .list-group {
+      width: 100%;
+    }
+
+    .comment {
+      background-color: #f8f8f8;
+
+      .comment-header {
+        padding-bottom: 10px;
+      }
+
+      .comment-message.unread {
+        font-weight: bold;
+      }
+    }
+
+    .delete-spinner {
+      margin-left: 30px;
+    }
+
+    .new-comment {
+      .select-recipient {
+        margin-bottom: 10px;
+        label {
+          display: inline-block;
+          margin-right: 10px;
+        }
+        select {
+          display: inline-block;
+          width: 200px;
+        }
+      }
+
+      .message {
+        margin-bottom: 10px;
+      }
+    }
+
+  }
+
+  .anno-log {
+    margin-top: 70px;
+
+    .spinner {
+      padding: 15px 0;
+    }
+    .error {
+      padding: 15px 0;
+    }
+    .annotation-log {
+      width: 100%;
+      height: 200px;
+      line-height: 1.8em;
+      color: #666;
+    }
+  }
+}
