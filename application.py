@@ -617,9 +617,8 @@ def queue_equation():
     if update_log is True:
         request_url = proxy_address + "/queue-image"
         r = requests.post(request_url, json=json_body, headers=DB_API_HEADERS)
-        flask_response = Response(response=r.content,
-                                  status=r.status_code)
-	return flask_response
+        flask_response = Response(response=r.content, status=r.status_code)
+        return flask_response
     return json.dumps({'success': True})
 
 @application.route('/api/queue-image-list', methods=['POST'])
@@ -651,7 +650,7 @@ def index():
     username = session['profile']['username']
     application.logger.info("Index request with username: %s" % username)
     if session_id is None and queue_id is None:
-	return render_template('home.html')
+        return render_template('home.html')
     return redirect("/data")
 
 @application.route('/annotate/<dataset>')
