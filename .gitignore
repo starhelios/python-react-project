@@ -7,7 +7,7 @@ static/comb_data
 static/box_images
 static/*.png
 proj.vim
-*.vim 
+*.vim
 *.swp
 comb_data/
 *.jpg
@@ -32,6 +32,7 @@ static/data.csv
 static/graph.js
 templates/mycounts.html
 tmp
+venv
 
 # Elastic Beanstalk Files
 !.elasticbeanstalk/*
