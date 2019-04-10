@@ -18,6 +18,24 @@
         "fields": [
           {
             "type": "bbox",
+            "geometry": "box",
+            "label": "Question area",
+            "id": "question",
+            "has_text": false,
+            "marker_width": "2",
+            "color": "#ef07e0"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Answer area",
+            "id": "answer",
+            "has_text": false,
+            "marker_width": "2",
+            "color": "#ed8404"
+          },
+          {
+            "type": "bbox",
             "geometry": "polygon",
             "label": "Question area polygon",
             "id": "question_polygon",
