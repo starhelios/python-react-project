@@ -193,12 +193,7 @@ class AnnotationUI extends Component {
   }
 
   onNext() {
-    var queue;
-    if (dataset == "limi") {
-       queue = this.uiController.queue || 'tmp_fix-limi-polygons';
-    } else {
-       queue = this.uiController.queue || 'main';
-    }
+    const queue = this.uiController.queue || 'main';
     this.uiController.loadData((err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
       if (!err) {
