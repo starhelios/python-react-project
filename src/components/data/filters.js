@@ -51,7 +51,9 @@ export default class DataFilters extends Component {
             <select className="form-control" value={group} onChange={onGroupChange}>
             <option value="">All Groups</option>
             {
-              this.props.groups.map((_group, index) => (
+              this.props.groups.sort(function (a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+              }).map((_group, index) => (
                 <option value={_group} key={index}>{_group}</option>
               ))
             }
