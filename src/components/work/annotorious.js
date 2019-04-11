@@ -1,7 +1,8 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import { cloneDeep } from 'lodash';
 
 let guidelinesActive = false;
+const WRAP_INCREASE = 85;
 
 export default class Annotorious extends Component {
 
@@ -14,10 +15,10 @@ export default class Annotorious extends Component {
 
   update() {
     if (this.props.geometry == "polygon") {
-      anno.addPlugin('PolygonSelector', {activate: true});
+      anno.addPlugin('PolygonSelector', { activate: true });
     } else {
-      anno.$_modules$[0].$_plugins$=[];
-      anno.addPlugin('PolygonSelector', {activate: false});
+      anno.$_modules$[0].$_plugins$ = [];
+      anno.addPlugin('PolygonSelector', { activate: false });
     }
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList));
@@ -26,6 +27,7 @@ export default class Annotorious extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+   
     this.update();
     if (this.props.imageURL != this.imageURL) {
       console.log('Adding handlers.');
@@ -56,12 +58,16 @@ export default class Annotorious extends Component {
   }
 
   render() {
+    const wrapperHeight = this.props.imageHeight + WRAP_INCREASE;
+
     if (this.props.imageURL) {
       return (
         <div className="text-center anno-board">
-          <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
-               width={this.props.imageWidth} height={this.props.imageHeight}
-               onLoad={this.update}/>
+          <div className="wrapper-annotatable" style={{height: wrapperHeight}}>
+            <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
+              width={this.props.imageWidth} height={this.props.imageHeight}
+              onLoad={this.update} />
+          </div>
         </div>
       );
     } else {
@@ -107,11 +113,14 @@ function hideWidget() {
 function addGuidelines() {
   $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-horizontal-guideline"></div>');
   $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-vertical-guideline"></div>');
-  $('.annotorious-annotationlayer').css('cursor', 'crosshair');
+
+  const leftCoord = $('.annotorious-annotationlayer img').width();
+
+  $('#page-annotations .annotorious-annotationlayer').css('cursor', 'crosshair');
 
   $('.anno-guideline').css('background-color', '#888')
     .css('position', 'absolute');
-  $('#anno-horizontal-guideline').css('left', '0').css('right', '0').css('height', '1px').css('display', 'none');
+  $('#anno-horizontal-guideline').css('left', '0').css('right', '0').css('height', '1px').css('width', leftCoord + 'px').css('display', 'none');
   $('#anno-vertical-guideline').css('top', '0').css('bottom', '0').css('width', '1px').css('display', 'none');
 
   guidelinesActive = false;

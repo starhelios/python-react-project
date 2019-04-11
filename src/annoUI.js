@@ -103,6 +103,7 @@ class AnnotationUI extends Component {
 
   @keydown('ctrl+m', 'ctrl+k', 'ctrl+y', 'ctrl+u')
   onKeyDown(event) {
+    event.preventDefault();
     if (event.ctrlKey && event.key === 'y') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
