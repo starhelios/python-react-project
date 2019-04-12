@@ -16,7 +16,7 @@ require('./styles/annoUI.scss');
 
 import UIs from './uis';
 const dataset = window.__DATASET__;
-const dataset_to_ui = {'mathpix': 'math_anno', 'limi': 'sheet_anno', 'lines': 'lines_anno'};
+const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'lines': 'lines_anno' };
 const UIID = dataset_to_ui[dataset];
 const UIController = UIs[UIID] || UIs['default'];
 
@@ -88,13 +88,13 @@ class AnnotationUI extends Component {
   bindShortcutKeys() {
     const that = this;
 
-    Mousetrap.bind(['ctrl+m'], function() {
+    Mousetrap.bind(['ctrl+m'], function () {
       that.onNext();
       return false;
     });
 
-    Mousetrap.bind(['ctrl+k'], function() {
-      that.uiController.markDone(function() {
+    Mousetrap.bind(['ctrl+k'], function () {
+      that.uiController.markDone(function () {
         that.onSave();
       });
       return false;
@@ -107,14 +107,14 @@ class AnnotationUI extends Component {
     if (event.ctrlKey && event.key === 'y') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        this.setState({char_size: parseFloat(char_size * 0.9)});
+        this.setState({ char_size: parseFloat(char_size * 0.9) });
       }
     }
 
     if (event.ctrlKey && event.key === 'u') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        this.setState({char_size: parseFloat(char_size * 1.1)});
+        this.setState({ char_size: parseFloat(char_size * 1.1) });
       }
     }
 
@@ -132,7 +132,7 @@ class AnnotationUI extends Component {
 
     if (event.ctrlKey && event.key === 'k') {
       event.preventDefault();
-      that.uiController.markDone(function() {
+      that.uiController.markDone(function () {
         that.onSave();
       });
     }
@@ -198,7 +198,7 @@ class AnnotationUI extends Component {
     this.uiController.loadData((err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
       if (!err) {
-        browserHistory.push('/annotate/' + dataset  +  '?queue=' + queue + "&sessionID=" + this.uiController.sessionId);
+        browserHistory.push('/annotate/' + dataset + '?queue=' + queue + "&sessionID=" + this.uiController.sessionId);
         this.setState({ [this.textRenderId]: this.state[this.textEditId] });
       }
     }, queue);
@@ -210,7 +210,7 @@ class AnnotationUI extends Component {
     }, () => {
       if (ttl) {
         setTimeout(() => {
-          this.setState({alert: null});
+          this.setState({ alert: null });
         }, ttl);
       }
     });
@@ -278,26 +278,23 @@ class AnnotationUI extends Component {
       const char_size_predicted_approx = char_size_predicted ? char_size_predicted.toFixed(2) : char_size_predicted;
       if (field.type === 'text-render') {
         const text = this.state[this.textRenderId] || "";
-        const textList = text.split("\n") || [];
-        { textList.forEach((text, idx) =>
-            fields.push(
-              <TextRenderBox textRenderId={this.textRenderId}
-                             key={"row-" + String(idx)}
-                             textRenderField={field}
-                             text={text}
-                             secondLabel={`( char_size: ${char_size_approx}, char_size_predicted: ${char_size_predicted_approx} )`}
-                             fontSize={fontSize} />
-            )
-          )
-        }
+        fields.push(
+          <div className="latex-wrapper" key={fieldNo}>
+            <TextRenderBox textRenderId={this.textRenderId}
+              textRenderField={field}
+              text={text}
+              secondLabel={`( char_size: ${char_size_approx}, char_size_predicted: ${char_size_predicted_approx} )`}
+              fontSize={fontSize} />
+          </div>
+        );
       }
       if (field.type === 'text-edit') {
         element = <div className="latex-edit-parent col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
           <label htmlFor={this.textEditId}>{field.label} </label>
           <textarea className="latex-edit" ref={this.textEditId} id={this.textEditId} value={this.state[this.textEditId]}
-                    disabled={field.disabled} title={field.help}
-                    onChange={this.onTextFieldChange}
-                    placeholder="Enter Latex here" />
+            disabled={field.disabled} title={field.help}
+            onChange={this.onTextFieldChange}
+            placeholder="Enter Latex here" />
         </div>;
       }
       element && fields.push(
@@ -319,8 +316,8 @@ class AnnotationUI extends Component {
       if (field.help) {
         tooltip = (
           <span className="react-tooltip">
-            <a data-tip={field.help}><i className="glyphicon glyphicon-question-sign"/></a>
-            <ReactTooltip type='warning' effect='solid'/>
+            <a data-tip={field.help}><i className="glyphicon glyphicon-question-sign" /></a>
+            <ReactTooltip type='warning' effect='solid' />
           </span>
         );
       }
@@ -328,16 +325,16 @@ class AnnotationUI extends Component {
         element = <div>
           <label htmlFor={field.id}>{field.label} {tooltip}</label>
           <input type="text" className="form-control" ref={field.id} id={field.id} value={this.state[field.id]}
-                 disabled={field.disabled} title={field.help}
-                 onChange={this.onTextFieldChange.bind(this, field)} />
+            disabled={field.disabled} title={field.help}
+            onChange={this.onTextFieldChange.bind(this, field)} />
         </div>;
       }
       if (field.type === 'dropdown') {
         element = <div>
           <label htmlFor={field.id}>{field.label} {tooltip}</label>
           <select className="form-control" ref={field.id} id={field.id} value={this.state[field.id] || this.options[field.id].default || ''}
-                  disabled={field.disabled} title={field.help}
-                  onChange={this.onDropdownFieldChange.bind(this, field)}>
+            disabled={field.disabled} title={field.help}
+            onChange={this.onDropdownFieldChange.bind(this, field)}>
             <option value="">-- Please select --</option>
             {
               this.options[field.id].options.map((option, i) =>
@@ -351,11 +348,11 @@ class AnnotationUI extends Component {
         element = <div className="checkbox">
           <label htmlFor={field.id} style={field.style}>
             <input type="checkbox" ref={field.id} id={field.id} checked={this.state[field.id]}
-                   disabled={field.disabled} title={field.help}
-                   onChange={this.onCheckboxFieldChange.bind(this, field)} />
-              {field.label}
-              {tooltip}
-            </label>
+              disabled={field.disabled} title={field.help}
+              onChange={this.onCheckboxFieldChange.bind(this, field)} />
+            {field.label}
+            {tooltip}
+          </label>
         </div>;
       }
       if (field.type === 'multi-choice') {
@@ -366,15 +363,15 @@ class AnnotationUI extends Component {
               <div className="checkbox" key={i}>
                 <label htmlFor={`${field.id}_${option.value}`} style={option.style}>
                   <input type="checkbox" name={field.id} ref={`${field.id}_${option.value}`} id={`${field.id}_${option.value}`}
-                         checked={Array.isArray(this.state[field.id]) && this.state[field.id].indexOf(option.value) > -1}
-                         disabled={option.disabled}
-                         onChange={this.onMultiChoiceFieldChange.bind(this, field, option)}/>
+                    checked={Array.isArray(this.state[field.id]) && this.state[field.id].indexOf(option.value) > -1}
+                    disabled={option.disabled}
+                    onChange={this.onMultiChoiceFieldChange.bind(this, field, option)} />
                   {option.label}
                   {
                     option.help ?
                       <span className="react-tooltip">
-                        <a data-tip={option.help}><i className="glyphicon glyphicon-question-sign"/></a>
-                        <ReactTooltip type='warning' effect='solid'/>
+                        <a data-tip={option.help}><i className="glyphicon glyphicon-question-sign" /></a>
+                        <ReactTooltip type='warning' effect='solid' />
                       </span>
                       :
                       null
@@ -387,19 +384,19 @@ class AnnotationUI extends Component {
       }
       if (field.type === 'link' && _get(this.state, field.id)) {
         element = <a href={_get(this.state, field.id)} id={field.id.replace('.', '_')} target={field.target}
-                     style={field.style}>
+          style={field.style}>
           {field.label}
         </a>;
       }
       if (field.type === 'info' && _get(this.state, field.id)) {
         element = <div id={field.id.replace('.', '_')}
-                       style={field.style}>
+          style={field.style}>
           {field.label}: <strong>{_get(this.state, field.id)}</strong>
         </div>;
       }
       element && fields.push(
         <div className={'dynamic-field col-sm-' + (field.colspan ? field.colspan : '12')}
-             style={{ clear: field.clear }} key={fieldNo}>
+          style={{ clear: field.clear }} key={fieldNo}>
           {element}
         </div>
       );
@@ -436,14 +433,14 @@ class AnnotationUI extends Component {
     );
   }
 
-	// componentDidUpdate(prevProps, prevState) {
-	// 	Object.entries(this.props).forEach(([key, val]) =>
-	// 		prevProps[key] !== val && console.log(`Prop '${key}' changed`)
-	// 	);
-	// 	Object.entries(this.state).forEach(([key, val]) =>
-	// 		prevState[key] !== val && console.log(`State '${key}' changed`)
-	// 	);
-	// }
+  // componentDidUpdate(prevProps, prevState) {
+  // 	Object.entries(this.props).forEach(([key, val]) =>
+  // 		prevProps[key] !== val && console.log(`Prop '${key}' changed`)
+  // 	);
+  // 	Object.entries(this.state).forEach(([key, val]) =>
+  // 		prevState[key] !== val && console.log(`State '${key}' changed`)
+  // 	);
+  // }
 
   render() {
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
@@ -472,7 +469,7 @@ class AnnotationUI extends Component {
       const maxHeight = 500;
       const maxWidth = 1500;
       const imageHeight = this.state.image_height;
-      const imageWidth =  this.state.image_width;
+      const imageWidth = this.state.image_width;
       const xScale = maxWidth / imageWidth;
       const yScale = maxHeight / imageHeight;
       effScale = Math.min(xScale, yScale);
@@ -507,27 +504,27 @@ class AnnotationUI extends Component {
       propList.unshift('is_printed');
     }
     const propListStr = propList.map((elem) => elem.split("_").join(" ")).join(", ");
-    var boxGeometry = _get(this.schema, ['bboxes',this.state.boxType, 'geometry']);
+    var boxGeometry = _get(this.schema, ['bboxes', this.state.boxType, 'geometry']);
 
     var bboxSelectors = <div className="bounding-box-type-selectors">
-          {
-            Object.keys(this.schema.bboxes).map(boxType =>
-              <button type="button" className={'btn' + (boxType === this.state.boxType ? ' active' : '')}
-                      style={{
-                        borderColor: this.schema.bboxes[boxType].color,
-                        color: boxType === this.state.boxType ? '#fff' : this.schema.bboxes[boxType].color,
-                        backgroundColor: boxType === this.state.boxType ? this.schema.bboxes[boxType].color : 'transparent'
-                      }}
-                      onClick={this.setBoxType.bind(this, boxType)} key={boxType}>
-                {this.schema.bboxes[boxType].label}
-              </button>
-            )
-          }
-        </div>;
+      {
+        Object.keys(this.schema.bboxes).map(boxType =>
+          <button type="button" className={'btn' + (boxType === this.state.boxType ? ' active' : '')}
+            style={{
+              borderColor: this.schema.bboxes[boxType].color,
+              color: boxType === this.state.boxType ? '#fff' : this.schema.bboxes[boxType].color,
+              backgroundColor: boxType === this.state.boxType ? this.schema.bboxes[boxType].color : 'transparent'
+            }}
+            onClick={this.setBoxType.bind(this, boxType)} key={boxType}>
+            {this.schema.bboxes[boxType].label}
+          </button>
+        )
+      }
+    </div>;
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
         <div className={'screen-lock' + (this.state.loadDataApiStatus === consts.API_LOADING ? '' : ' hidden')}>
-          <img src="/static/img/spinner-md.gif"/>
+          <img src="/static/img/spinner-md.gif" />
         </div>
 
         {
@@ -540,20 +537,20 @@ class AnnotationUI extends Component {
         }
 
         {
-          dataset != "mathpix" ?  bboxSelectors : null
+          dataset != "mathpix" ? bboxSelectors : null
         }
 
         {
           dataset == "mathpix" ?
-            <div style={{textAlign: 'center'}}><h3>{ propListStr }</h3></div>
-          :
+            <div style={{ textAlign: 'center' }}><h3>{propListStr}</h3></div>
+            :
             null
         }
 
         {
           dataset == "mathpix" ?
             this.renderLatexUI(effScale)
-          :
+            :
             null
         }
 
@@ -561,19 +558,19 @@ class AnnotationUI extends Component {
           this.state.loadDataApiStatus === consts.API_LOADED_SUCCESS ?
             <div>
               <Annotorious ref="annotorious"
-                           imageURL={this.state[this.schema.imageId].url} annoList={this.state.annoList}
-                           imageWidth={resizedImageWidth} imageHeight={resizedImageHeight}
-                           resetHash={this.state.annoResetHash} updateHash={this.state.annoUpdateHash}
-                           onAnnoCreated={this.onAnnoCreated}
-                           geometry={boxGeometry}
-                           onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
-                           textAllowed={_get(this.schema, ['bboxes',this.state.boxType, 'has_text'])} />
+                imageURL={this.state[this.schema.imageId].url} annoList={this.state.annoList}
+                imageWidth={resizedImageWidth} imageHeight={resizedImageHeight}
+                resetHash={this.state.annoResetHash} updateHash={this.state.annoUpdateHash}
+                onAnnoCreated={this.onAnnoCreated}
+                geometry={boxGeometry}
+                onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
+                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])} />
             </div>
-          : null
+            : null
         }
 
         {
-          dataset == "mathpix" ?  bboxSelectors : null
+          dataset == "mathpix" ? bboxSelectors : null
         }
 
 
@@ -585,7 +582,7 @@ class AnnotationUI extends Component {
               {
                 this.state.verified_by && this.state.is_verified ?
                   <h4>Verified by: {String(this.state.verified_by)}</h4>
-                :
+                  :
                   null
               }
             </div>
@@ -594,7 +591,7 @@ class AnnotationUI extends Component {
               <div className="col-xs-4 col-md-12">
                 <button type="button" className="btn btn-danger" onClick={this.onClear}>Clear</button>
                 <button type="button" className="btn btn-success" onClick={this.onSave}
-                        disabled={this.state.saveDataApiStatus === consts.API_LOADING}>
+                  disabled={this.state.saveDataApiStatus === consts.API_LOADING}>
                   {
                     this.state.saveDataApiStatus === consts.API_LOADING ?
                       <img src="/static/img/spinner-sm.gif" height="20px" />
@@ -622,22 +619,22 @@ class AnnotationUI extends Component {
           </div>
 
           <div className="col-xs-12 col-md-9 col-md-pull-3">
-          {
-            this.renderUI()
-          }
+            {
+              this.renderUI()
+            }
           </div>
         </div>
 
         {
           this.state.metadata && this.state.metadata.session_id_src ?
             <div><a target="_blank" href={"/annotate/mathpix?sessionID=" + this.state.metadata.session_id_src}>Source image link</a></div>
-          :
+            :
             null
         }
         {
           this.state.metadata && Object.keys(this.state.metadata).length > 0 ?
-            <pre style={{textAlign: 'left'}}> { JSON.stringify(this.state.metadata, null, 2) } </pre>
-          :
+            <pre style={{ textAlign: 'left' }}> {JSON.stringify(this.state.metadata, null, 2)} </pre>
+            :
             null
         }
         <br />
