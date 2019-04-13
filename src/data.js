@@ -144,7 +144,11 @@ class DataRow extends Component {
               <MathpixMarkdown text={text} isDisableFancy={true}/>
            </MathpixLoader>
         </td>
-        <td className="prop-col" style={{textAlign: "left"}}><pre>{propsStr}</pre></td>
+        <td className="prop-col" style={{textAlign: "left"}}>
+          <div className="code-wrap">
+            <pre>{propsStr}</pre>
+          </div>
+        </td>
         <td style={{color: annoColor}}>{annotator}</td>
         <td>{datetime && moment.utc(datetime).format('MMM D, YYYY')}</td>
         <td className="action-col">
