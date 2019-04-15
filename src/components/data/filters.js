@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import consts from '../../libs/consts';
 import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
 require('react-simple-dropdown/styles/Dropdown.css');
+
+import consts from '../../libs/consts';
 import PropertyFilterCheckbox from './property_filter_checkbox';
 
 export default class DataFilters extends Component {
