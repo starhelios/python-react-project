@@ -279,7 +279,7 @@ class AnnotationUI extends Component {
       if (field.type === 'text-render') {
         const text = this.state[this.textRenderId] || "";
         fields.push(
-          <div className="latex-wrapper" key={fieldNo}>
+          <div className="all-width-wrapper" key={fieldNo}>
             <TextRenderBox textRenderId={this.textRenderId}
               textRenderField={field}
               text={text}
@@ -556,7 +556,7 @@ class AnnotationUI extends Component {
 
         {
           this.state.loadDataApiStatus === consts.API_LOADED_SUCCESS ?
-            <div>
+            <div className="all-width-wrapper">
               <Annotorious ref="annotorious"
                 imageURL={this.state[this.schema.imageId].url} annoList={this.state.annoList}
                 imageWidth={resizedImageWidth} imageHeight={resizedImageHeight}
