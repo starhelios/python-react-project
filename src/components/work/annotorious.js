@@ -23,11 +23,10 @@ export default class Annotorious extends Component {
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList));
     hideWidget();
-    addGuidelines();
   }
 
   componentDidUpdate(prevProps, prevState) {
-   
+
     this.update();
     if (this.props.imageURL != this.imageURL) {
       console.log('Adding handlers.');
@@ -108,8 +107,5 @@ function drawAnnotations(annoList = []) {
 
 function hideWidget() {
   $('.annotorious-hint').empty();
-}
-
-function addGuidelines() {
   $('#page-annotations .annotorious-annotationlayer').css('cursor', 'crosshair');
 }
