@@ -111,8 +111,8 @@ function hideWidget() {
 }
 
 function addGuidelines() {
-  $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-horizontal-guideline"></div>');
-  $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-vertical-guideline"></div>');
+  // $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-horizontal-guideline"></div>');
+  // $('.annotorious-annotationlayer').append('<div class="anno-guideline" id="anno-vertical-guideline"></div>');
 
   const leftCoord = $('.annotorious-annotationlayer img').width();
 
@@ -120,8 +120,8 @@ function addGuidelines() {
 
   $('.anno-guideline').css('background-color', '#888')
     .css('position', 'absolute');
-  $('#anno-horizontal-guideline').css('left', '0').css('right', '0').css('height', '1px').css('width', leftCoord + 'px').css('display', 'none');
-  $('#anno-vertical-guideline').css('top', '0').css('bottom', '0').css('width', '1px').css('display', 'none');
+  // $('#anno-horizontal-guideline').css('left', '0').css('right', '0').css('height', '1px').css('width', leftCoord + 'px').css('display', 'none');
+  // $('#anno-vertical-guideline').css('top', '0').css('bottom', '0').css('width', '1px').css('display', 'none');
 
   guidelinesActive = false;
 
