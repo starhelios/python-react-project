@@ -111,6 +111,5 @@ function hideWidget() {
 }
 
 function addGuidelines() {
-  $('.annotorious-annotationlayer img').width();
   $('#page-annotations .annotorious-annotationlayer').css('cursor', 'crosshair');
 }
