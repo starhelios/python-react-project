@@ -16,7 +16,7 @@ export default class DataFilters extends Component {
 
   render() {
 
-    const { annotator, onAnnotatorChange,
+    const { dataset, annotator, onDatasetChange, onAnnotatorChange,
       group, onGroupChange, groups,
       property, onPropertyChange,
       fromDate, onFromDateChange,
@@ -38,6 +38,16 @@ export default class DataFilters extends Component {
     return (
       <div className="main-body">
         <div className="flex-row-1">
+          <div className="group-1">
+            <select className="form-control" value={dataset} onChange={onDatasetChange}>
+            <option value="">All Datasets</option>
+            {
+              this.props.datasets.map((_dataset, index) => (
+                <option value={_dataset} key={index}>{_dataset}</option>
+              ))
+            }
+            </select>
+          </div>
           <div className="group-1">
             <select className="form-control" value={annotator} onChange={onAnnotatorChange}>
             <option value="">All Annotators</option>
@@ -135,12 +145,15 @@ export default class DataFilters extends Component {
 }
 
 DataFilters.propTypes = {
+  dataset: PropTypes.string.isRequired,
+  datasets: PropTypes.array.isRequired,
   annotators: PropTypes.array.isRequired,
   groups: PropTypes.array.isRequired,
   annotator: PropTypes.string.isRequired,
   group: PropTypes.string.isRequired,
   queue: PropTypes.string.isRequired,
   queueUrl: PropTypes.string.isRequired,
+  onDatasetChange: PropTypes.func.isRequired,
   onAnnotatorChange: PropTypes.func.isRequired,
   onGroupChange: PropTypes.func.isRequired,
   property: PropTypes.object.isRequired,
