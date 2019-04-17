@@ -165,6 +165,7 @@ def updateGroup():
     return json.dumps({"success": True})
 
 def get_query_params(data_request_params):
+    dataset = data_request_params.get('dataset')
     annotator = data_request_params.get('annotator')
     property = data_request_params.get('property')
     fromDate = data_request_params.get('fromDate')
@@ -180,6 +181,9 @@ def get_query_params(data_request_params):
     perPage = data_request_params.get('perPage')
     query_condition = "FROM TrainingEquations WHERE true=true "
     filters = ()
+    if dataset is not None and dataset:
+        query_condition += " AND dataset = %s"
+        filters += (dataset,)
     if annotator is not None and annotator:
         query_condition += " AND username = %s"
         filters += (annotator,)
@@ -310,6 +314,22 @@ def api_get_groups():
     result = {
         'data': {
             'groups': group_list
+        }
+    }
+    return json.dumps(result)
+
+@application.route('/api/datasets', methods=['GET'])
+@requires_auth
+def api_get_datasets():
+    db = get_db()
+    cur = db.cursor(cursor_factory=DictCursor)
+    cur.execute("SELECT DISTINCT dataset as dataset FROM TrainingEquations")
+    row_list = cur.fetchall()
+    dataset_list = [row['dataset'] for row in row_list]
+    dataset_list = [g for g in dataset_list if g is not None and len(g.strip()) > 0]
+    result = {
+        'data': {
+            'datasets': dataset_list
         }
     }
     return json.dumps(result)
