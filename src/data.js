@@ -12,6 +12,8 @@ import DataBody from './components/data/dataBody';
 // import styles
 require('./styles/data.scss');
 
+const LOAD_DATASETS_API_URL = '/api/datasets';
+const LOAD_DATASETS_API_METHOD = 'get';
 const LOAD_GROUPS_API_URL = '/api/groups';
 const LOAD_GROUPS_API_METHOD = 'get';
 const LOAD_USERS_API_URL = '/api/users';
@@ -31,10 +33,12 @@ class Data extends Component {
     this.state = {
       loadUsersApiStatus: consts.API_NOT_LOADED,
       loadUsersApiError: '',
+      loadDatasetsApiStatus: consts.API_NOT_LOADED,
       loadGroupsApiStatus: consts.API_NOT_LOADED,
       loadGroupsApiError: '',
       annotators: [],
       groups: [],
+      datasets: [],
       creatingQueue: false,
       loadDataApiStatus: consts.API_NOT_LOADED,
       loadDataApiError: '',
@@ -43,6 +47,7 @@ class Data extends Component {
       queueUrl: '',
       data: [],
       total: 0,
+      filterDataset: '',
       filterAnnotator: '',
       filterProperty: {},
       filterFromDate: '',
@@ -57,8 +62,10 @@ class Data extends Component {
     };
 
     this.loadUsers = this.loadUsers.bind(this);
+    this.loadDatasets = this.loadDatasets.bind(this);
     this.loadGroups = this.loadGroups.bind(this);
     this.loadData = this.loadData.bind(this);
+    this.onDatasetChange = this.onDatasetChange.bind(this);
     this.onAnnotatorChange = this.onAnnotatorChange.bind(this);
     this.onGroupChange = this.onGroupChange.bind(this);
     this.onPropertyChange = this.onPropertyChange.bind(this);
@@ -80,6 +87,7 @@ class Data extends Component {
   }
 
   componentWillMount() {
+    this.loadDatasets();
     this.loadUsers();
     this.loadGroups();
     this.setStateByLocationQuery(this.props.location.query, function () {
@@ -121,6 +129,7 @@ class Data extends Component {
     }
 
     this.setState({
+      filterDataset: query.dataset || '',
       filterAnnotator: query.annotator || '',
       filterProperty: propFilters,
       filterFromDate: query.fromDate || '',
@@ -163,6 +172,41 @@ class Data extends Component {
             this.setState({
               loadUsersApiStatus: consts.API_LOADED_ERROR,
               loadUsersApiError: 'Sorry, Failed to fetch users. Please try again.'
+            });
+          }
+        }
+      );
+    });
+  }
+
+  loadDatasets() {
+    this.setState({ loadDatasetsApiStatus: consts.API_LOADING }, () => {
+      callApi(LOAD_DATASETS_API_URL, LOAD_DATASETS_API_METHOD).then(
+        response => {
+          console.log('Load Datasets API success', response);
+          if (response.data && Array.isArray(response.data.datasets)) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_SUCCESS,
+              datasets: response.data.datasets.sort()
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Failed to fetch groups. Please try again.'
+            });
+          }
+        },
+        error => {
+          console.log('Load Groups API fail', error);
+          if (error.error && error.error.message) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Unable to fetch groups. ' + error.error.message
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Sorry, Failed to fetch groups. Please try again.'
             });
           }
         }
@@ -268,6 +312,10 @@ class Data extends Component {
     this.setState({ filterAnnotator: event.currentTarget.value });
   }
 
+  onDatasetChange(event) {
+    this.setState({ filterDataset: event.currentTarget.value });
+  }
+
   onGroupChange(event) {
     this.setState({ filterGroup: event.currentTarget.value });
   }
@@ -306,6 +354,9 @@ class Data extends Component {
     let queryParams = [];
 
     if (filter_search) {
+      if (this.state.filterDataset.length) {
+        queryParams.push('dataset=' + encodeURIComponent(this.state.filterDataset));
+      }
       if (this.state.filterAnnotator.length) {
         queryParams.push('annotator=' + encodeURIComponent(this.state.filterAnnotator));
       }
@@ -432,7 +483,6 @@ class Data extends Component {
   }
 
   render() {
-
     if (this.state.loadDataApiStatus === consts.API_LOADED_ERROR) {
       return (
         <div id="page-data">
@@ -453,6 +503,9 @@ class Data extends Component {
     return (
       <div id="page-data">
         <DataFilters
+          datasets={this.state.datasets}
+          dataset={this.state.filterDataset}
+          onDatasetChange={this.onDatasetChange}
           annotators={this.state.annotators} annotator={this.state.filterAnnotator}
           onAnnotatorChange={this.onAnnotatorChange} groups={this.state.groups}
           group={this.state.filterGroup} onGroupChange={this.onGroupChange}
