@@ -101,7 +101,6 @@ Annotorious.propTypes = {
  */
 
 function drawAnnotations(annoList = []) {
-  console.log('drawAnnotations');
   annoList.forEach(box => {
     anno.addAnnotation(Object.assign({}, box, {
       src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
