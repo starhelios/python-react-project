@@ -149,6 +149,15 @@ annotorious.events.EventType = {
   /**
    * The annotation was clicked.  Pass the annotation object.
    */
-  ANNOTATION_CLICKED: 'onAnnotationClicked'
-  
+  ANNOTATION_CLICKED: 'onAnnotationClicked',
+
+  /**
+   * An char size plus
+   */
+  CHAR_SIZE_PLUS: 'onCharSizePlus',
+
+  /**
+   * An char size minus
+   */
+  CHAR_SIZE_MINUS: 'onCharSizeMinus'
 };

@@ -40,6 +40,8 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
     };
     this.uiController = new UIController(this);
+    this.onCharSizePlus = this.onCharSizeChange.bind(this, 'CharSizePlus');
+    this.onCharSizeMinus = this.onCharSizeChange.bind(this, 'CharSizeMinus');
     this.onAnnoCreated = this.onAnnoChange.bind(this, 'Created');
     this.onAnnoUpdated = this.onAnnoChange.bind(this, 'Updated');
     this.onAnnoRemoved = this.onAnnoChange.bind(this, 'Removed');
@@ -139,6 +141,21 @@ class AnnotationUI extends Component {
 
   }
 
+  onCharSizeChange(eventType, annotation) {
+    let char_size = this.state.char_size;
+
+    if (eventType === 'CharSizePlus') {
+      char_size = char_size * 1.1;
+      console.log('CharSizePlus', char_size);
+    }
+    if (eventType === 'CharSizeMinus') {
+      char_size = char_size * 0.9;
+      console.log('CharSizeMinus', char_size);
+    }
+
+    this.setState({char_size});
+  }
+
   onAnnoChange(eventType, annotation) {
     annotation.text = annotation.text.trim();
     if (eventType === 'Created' && this.state.boxType) {
@@ -151,6 +168,7 @@ class AnnotationUI extends Component {
         annotation.text = '';
       }
     }
+
     let annoList = cloneDeep(anno.getAnnotations());
     // recompute charSize
     let char_size = this.state.char_size;
@@ -564,7 +582,10 @@ class AnnotationUI extends Component {
                 onAnnoCreated={this.onAnnoCreated}
                 geometry={boxGeometry}
                 onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
-                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])} />
+                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
+                onCharSizePlus={this.onCharSizePlus}
+                onCharSizeMinus={this.onCharSizeMinus}
+              />
             </div>
             : null
         }

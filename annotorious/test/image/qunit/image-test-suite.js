@@ -19,6 +19,16 @@ function deleteAnnotation(pos) {
   jQuery('.annotorious-popup-button-delete').simulate('click');
 }
 
+function plusAnnotation(pos) {
+  jQuery('.annotorious-item').simulate('mousemove', { clientX: pos.x, clientY: pos.y });
+  jQuery('.annotorious-popup-button-plus').simulate('click');
+}
+
+function minusAnnotation(pos) {
+  jQuery('.annotorious-item').simulate('mousemove', { clientX: pos.x, clientY: pos.y });
+  jQuery('.annotorious-popup-button-minus').simulate('click');
+}
+
 jQuery(function() {
   jQuery('#run').click(function() {
 
