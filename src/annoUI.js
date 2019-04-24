@@ -40,8 +40,8 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
     };
     this.uiController = new UIController(this);
-    this.onCharSizePlus = this.onCharSizeChange.bind(this, 'CharSizePlus');
-    this.onCharSizeMinus = this.onCharSizeChange.bind(this, 'CharSizeMinus');
+    this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
+    this.onCharSizeMinus = this.onAnnoChange.bind(this, 'CharSizeMinus');
     this.onAnnoCreated = this.onAnnoChange.bind(this, 'Created');
     this.onAnnoUpdated = this.onAnnoChange.bind(this, 'Updated');
     this.onAnnoRemoved = this.onAnnoChange.bind(this, 'Removed');
@@ -157,7 +157,7 @@ class AnnotationUI extends Component {
   }
 
   onAnnoChange(eventType, annotation) {
-    annotation.text = annotation.text.trim();
+    annotation.text = annotation.text && annotation.text.trim();
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
       annotation.shapes[0].style = {
@@ -167,6 +167,18 @@ class AnnotationUI extends Component {
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
+    }
+
+    let eventTypeFinal = eventType
+
+    if (eventType === 'CharSizePlus') {
+      annotation.charSize = annotation.charSize * 1.1;
+      eventTypeFinal = 'Updated';
+    }
+
+    if (eventType === 'CharSizeMinus') {
+      annotation.charSize = annotation.charSize * 0.9;
+      eventTypeFinal = 'Updated';
     }
 
     let annoList = cloneDeep(anno.getAnnotations());
@@ -182,7 +194,7 @@ class AnnotationUI extends Component {
     this.setState({
       annoList,
       unsaved: true
-    }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventType, annotation); });
+    }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventTypeFinal, annotation); });
 
   }
 

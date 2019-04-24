@@ -177,15 +177,6 @@
   /*float:right;*/
 }
 
-.annotorious-popup-zoom {
-  position: absolute;
-  left: calc(100% + 6px);
-  bottom: 4px;
-  font-size: 40px;
-  font-weight: 700;
-  color: #000;
-}
-
 .annotorious-popup-field {
   border-top:1px solid #ccc;
   margin:6px 0px 0px 0px;

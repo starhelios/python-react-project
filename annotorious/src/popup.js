@@ -86,7 +86,7 @@ annotorious.Popup = function(annotator) {
   goog.events.listen(btnPlus, goog.events.EventType.CLICK, function(event) {
       // goog.style.setOpacity(self.element, 0);
       // goog.style.setStyle(self.element, 'pointer-events', 'none');
-      annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_PLUS);
+      annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_PLUS, self._currentAnnotation);
   });
   goog.events.listen(btnMinus, goog.events.EventType.MOUSEOVER, function(event) {
     goog.dom.classes.add(btnMinus, 'annotorious-popup-button-active');
@@ -99,7 +99,7 @@ annotorious.Popup = function(annotator) {
   goog.events.listen(btnMinus, goog.events.EventType.CLICK, function(event) {
     // goog.style.setOpacity(self.element, 0);
     // goog.style.setStyle(self.element, 'pointer-events', 'none');
-    annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_MINUS);
+    annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_MINUS, self._currentAnnotation);
   });
 
   if (annotorious.events.ui.hasMouse) {  
@@ -212,7 +212,6 @@ annotorious.Popup.prototype.show = function(annotation, xy) {
  * @param {annotorious.shape.geom.Point} xy the viewport coordinate
  */
 annotorious.Popup.prototype.setPosition = function(xy) {
-  console.log('setPosition', xy, this.element, new goog.math.Coordinate(xy.x, xy.y))
   goog.style.setPosition(this.element, new goog.math.Coordinate(xy.x, xy.y));
 }
 
