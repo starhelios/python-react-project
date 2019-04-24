@@ -31,10 +31,14 @@ export default class Annotorious extends Component {
     if (this.props.imageURL != this.imageURL) {
       console.log('Adding handlers.');
       this.imageURL = this.props.imageURL;
+      anno.removeHandler('onCharSizePlus');
+      anno.removeHandler('onCharSizeMinus');
       anno.removeHandler('onAnnotationCreated');
       anno.removeHandler('onAnnotationUpdated');
       anno.removeHandler('onAnnotationRemoved');
       anno.removeHandler('onSelectionCompleted');
+      anno.addHandler('onCharSizePlus', this.props.onCharSizePlus);
+      anno.addHandler('onCharSizeMinus', this.props.onCharSizeMinus);
       anno.addHandler('onAnnotationCreated', this.props.onAnnoCreated);
       anno.addHandler('onAnnotationUpdated', this.props.onAnnoUpdated);
       anno.addHandler('onAnnotationRemoved', this.props.onAnnoRemoved);

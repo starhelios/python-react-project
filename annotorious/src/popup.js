@@ -20,7 +20,7 @@ annotorious.Popup = function(annotator) {
   this._currentAnnotation;
 
   /** @private **/
-  this._text = goog.dom.query('.annotorious-popup-text', this.element)[0];
+  // this._text = goog.dom.query('.annotorious-popup-text', this.element)[0];
 
   /** @private **/
   this._buttons = goog.dom.query('.annotorious-popup-buttons', this.element)[0];
@@ -39,6 +39,8 @@ annotorious.Popup = function(annotator) {
 
   var btnEdit = goog.dom.query('.annotorious-popup-button-edit', this._buttons)[0];
   var btnDelete = goog.dom.query('.annotorious-popup-button-delete', this._buttons)[0];
+  var btnPlus = goog.dom.query('.annotorious-popup-button-plus', this._buttons)[0];
+  var btnMinus = goog.dom.query('.annotorious-popup-button-minus', this._buttons)[0];
 
   var self = this;  
   goog.events.listen(btnEdit, goog.events.EventType.MOUSEOVER, function(event) {
@@ -71,6 +73,33 @@ annotorious.Popup = function(annotator) {
       annotator.removeAnnotation(self._currentAnnotation);
       annotator.fireEvent(annotorious.events.EventType.ANNOTATION_REMOVED, self._currentAnnotation);
     }
+  });
+
+  goog.events.listen(btnPlus, goog.events.EventType.MOUSEOVER, function(event) {
+    goog.dom.classes.add(btnPlus, 'annotorious-popup-button-active');
+  });
+
+  goog.events.listen(btnPlus, goog.events.EventType.MOUSEOUT, function() {
+    goog.dom.classes.remove(btnPlus, 'annotorious-popup-button-active');
+  });
+
+  goog.events.listen(btnPlus, goog.events.EventType.CLICK, function(event) {
+      // goog.style.setOpacity(self.element, 0);
+      // goog.style.setStyle(self.element, 'pointer-events', 'none');
+      annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_PLUS);
+  });
+  goog.events.listen(btnMinus, goog.events.EventType.MOUSEOVER, function(event) {
+    goog.dom.classes.add(btnMinus, 'annotorious-popup-button-active');
+  });
+
+  goog.events.listen(btnMinus, goog.events.EventType.MOUSEOUT, function() {
+    goog.dom.classes.remove(btnMinus, 'annotorious-popup-button-active');
+  });
+
+  goog.events.listen(btnMinus, goog.events.EventType.CLICK, function(event) {
+    // goog.style.setOpacity(self.element, 0);
+    // goog.style.setStyle(self.element, 'pointer-events', 'none');
+    annotator.fireEvent(annotorious.events.EventType.CHAR_SIZE_MINUS);
   });
 
   if (annotorious.events.ui.hasMouse) {  
@@ -183,6 +212,7 @@ annotorious.Popup.prototype.show = function(annotation, xy) {
  * @param {annotorious.shape.geom.Point} xy the viewport coordinate
  */
 annotorious.Popup.prototype.setPosition = function(xy) {
+  console.log('setPosition', xy, this.element, new goog.math.Coordinate(xy.x, xy.y))
   goog.style.setPosition(this.element, new goog.math.Coordinate(xy.x, xy.y));
 }
 
@@ -192,10 +222,10 @@ annotorious.Popup.prototype.setPosition = function(xy) {
  */
 annotorious.Popup.prototype.setAnnotation = function(annotation) {
   this._currentAnnotation = annotation;
-  if (annotation.text)
-    this._text.innerHTML = annotation.text.replace(/\n/g, '<br/>');
-  else
-    this._text.innerHTML = '<span class="annotorious-popup-empty">No comment</span>';
+  // if (annotation.text)
+  //   this._text.innerHTML = annotation.text.replace(/\n/g, '<br/>');
+  // else
+  //   this._text.innerHTML = '<span class="annotorious-popup-empty">No comment</span>';
 
   if (('editable' in annotation) && annotation.editable == false)
     goog.style.showElement(this._buttons, false);

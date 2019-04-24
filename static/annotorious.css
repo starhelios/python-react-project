@@ -61,7 +61,8 @@
   border:1px solid #ccc;
   padding:9px 8px;
   word-wrap:break-word;
-  width:180px;
+  /*width:180px;*/
+  width: auto;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -90,8 +91,8 @@
 }
 
 .annotorious-popup-buttons {
-  float:right;
-  margin:0px 0px 1px 10px;
+  /*float:right;*/
+  margin:0px 0px 0px 0px;
   height:16px;
   
   -moz-transition-property: opacity;
@@ -153,7 +154,36 @@
   height:16px;
   text-indent:100px;
   overflow:hidden;
-  float:right;
+  /*float:right;*/
+}
+
+
+.annotorious-popup-button-plus {
+  background:url(plus.png);
+  width:16px;
+  height:16px;
+  text-indent:100px;
+  overflow:hidden;
+  margin-left: 12px;
+  /*float:right;*/
+}
+
+.annotorious-popup-button-minus {
+  background:url(minus.png);
+  width:16px;
+  height:16px;
+  text-indent:100px;
+  overflow:hidden;
+  /*float:right;*/
+}
+
+.annotorious-popup-zoom {
+  position: absolute;
+  left: calc(100% + 6px);
+  bottom: 4px;
+  font-size: 40px;
+  font-weight: 700;
+  color: #000;
 }
 
 .annotorious-popup-field {
