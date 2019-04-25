@@ -249,7 +249,7 @@ annotorious.mediatypes.image.Viewer.prototype._draw = function(shape, highlight,
 
   if (selector) {
     selector.drawShape(this._g2d, shape, highlight);
-    this._g2d.font = "bold " + charSize + "px Arial";
+    this._g2d.font = "bold " + charSize * 1.4641 + "px Arial";
     this._g2d.fillText("2x", bbox.x + bbox.width + 5, bbox.y + bbox.height);
   }
   else
