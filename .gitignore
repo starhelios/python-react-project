@@ -33,6 +33,7 @@ static/graph.js
 templates/mycounts.html
 tmp
 venv
+annotorious
 
 # Elastic Beanstalk Files
 !.elasticbeanstalk/*
