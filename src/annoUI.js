@@ -40,6 +40,8 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
     };
     this.uiController = new UIController(this);
+    this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
+    this.onCharSizeMinus = this.onAnnoChange.bind(this, 'CharSizeMinus');
     this.onAnnoCreated = this.onAnnoChange.bind(this, 'Created');
     this.onAnnoUpdated = this.onAnnoChange.bind(this, 'Updated');
     this.onAnnoRemoved = this.onAnnoChange.bind(this, 'Removed');
@@ -139,8 +141,23 @@ class AnnotationUI extends Component {
 
   }
 
+  onCharSizeChange(eventType, annotation) {
+    let char_size = this.state.char_size;
+
+    if (eventType === 'CharSizePlus') {
+      char_size = char_size * 1.1;
+      console.log('CharSizePlus', char_size);
+    }
+    if (eventType === 'CharSizeMinus') {
+      char_size = char_size * 0.9;
+      console.log('CharSizeMinus', char_size);
+    }
+
+    this.setState({char_size});
+  }
+
   onAnnoChange(eventType, annotation) {
-    annotation.text = annotation.text.trim();
+    annotation.text = annotation.text && annotation.text.trim();
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
       annotation.shapes[0].style = {
@@ -151,6 +168,19 @@ class AnnotationUI extends Component {
         annotation.text = '';
       }
     }
+
+    let eventTypeFinal = eventType
+
+    if (eventType === 'CharSizePlus') {
+      annotation.charSize = annotation.charSize * 1.1;
+      eventTypeFinal = 'Updated';
+    }
+
+    if (eventType === 'CharSizeMinus') {
+      annotation.charSize = annotation.charSize * 0.9;
+      eventTypeFinal = 'Updated';
+    }
+
     let annoList = cloneDeep(anno.getAnnotations());
     // recompute charSize
     let char_size = this.state.char_size;
@@ -164,7 +194,7 @@ class AnnotationUI extends Component {
     this.setState({
       annoList,
       unsaved: true
-    }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventType, annotation); });
+    }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventTypeFinal, annotation); });
 
   }
 
@@ -564,7 +594,10 @@ class AnnotationUI extends Component {
                 onAnnoCreated={this.onAnnoCreated}
                 geometry={boxGeometry}
                 onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
-                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])} />
+                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
+                onCharSizePlus={this.onCharSizePlus}
+                onCharSizeMinus={this.onCharSizeMinus}
+              />
             </div>
             : null
         }
