@@ -20,6 +20,7 @@ export default class Annotorious extends Component {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
     }
+    this.props.annoList.forEach((box) => { box.charSizeTmp = box.charSize * this.props.effScale });
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList));
     hideWidget();
@@ -80,6 +81,7 @@ export default class Annotorious extends Component {
 }
 
 Annotorious.propTypes = {
+  effScale: PropTypes.number.isRequired,
   imageWidth: PropTypes.number.isRequired,
   imageHeight: PropTypes.number.isRequired,
   imageURL: PropTypes.string.isRequired,
