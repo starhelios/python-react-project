@@ -588,6 +588,7 @@ class AnnotationUI extends Component {
           this.state.loadDataApiStatus === consts.API_LOADED_SUCCESS ?
             <div className="all-width-wrapper">
               <Annotorious ref="annotorious"
+                effScale={effScale}
                 imageURL={this.state[this.schema.imageId].url} annoList={this.state.annoList}
                 imageWidth={resizedImageWidth} imageHeight={resizedImageHeight}
                 resetHash={this.state.annoResetHash} updateHash={this.state.annoUpdateHash}
