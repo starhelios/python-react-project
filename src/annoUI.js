@@ -510,7 +510,7 @@ class AnnotationUI extends Component {
       resizedImageWidth = effScale * this.state.image_width;
       resizedImageHeight = effScale * this.state.image_height;
     }
-
+    console.log('effScale: ' + String(effScale));
     const deparsed = {};
     this.options.info_properties.options.forEach(option => {
       if (this.state.info_properties) {
