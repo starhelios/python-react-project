@@ -1,6 +1,3 @@
-[submodule "annotorious"]
-	path = annotorious
-	url = git@github.com:Mathpix/annotorious.git
 [submodule "mathpix-markdown"]
 	path = mathpix-markdown
 	url = git@github.com:Mathpix/mathpix-markdown.git
