@@ -22,7 +22,7 @@ export default class Annotorious extends Component {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
     }
-    this.props.annoList.forEach((box) => { box.charSizeTmp = box.charSize * this.props.effScale });
+    this.props.annoList.forEach((box) => { box.charSizeTmp = 1.17 * box.charSize * this.props.effScale });
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList), this.activePopup);
     hideWidget();
