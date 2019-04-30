@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, forEach, differenceWith, isEqual, size } from 'lodash';
 
 let guidelinesActive = false;
 const WRAP_INCREASE = 85;
@@ -8,8 +8,10 @@ export default class Annotorious extends Component {
 
   constructor(...args) {
     super(...args);
+    this.activePopup = null;
     this.onAnnoSelectionCompleted = this.onAnnoSelectionCompleted.bind(this);
     this.update = this.update.bind(this);
+    this.onPopupShown = this.onPopupShown.bind(this);
     this.imageURL = '';
   }
 
@@ -22,12 +24,11 @@ export default class Annotorious extends Component {
     }
     this.props.annoList.forEach((box) => { box.charSizeTmp = box.charSize * this.props.effScale });
     anno.reset();
-    drawAnnotations(cloneDeep(this.props.annoList));
+    drawAnnotations(cloneDeep(this.props.annoList), this.activePopup);
     hideWidget();
   }
 
   componentDidUpdate(prevProps, prevState) {
-
     this.update();
     if (this.props.imageURL != this.imageURL) {
       console.log('Adding handlers.');
@@ -38,13 +39,33 @@ export default class Annotorious extends Component {
       anno.removeHandler('onAnnotationUpdated');
       anno.removeHandler('onAnnotationRemoved');
       anno.removeHandler('onSelectionCompleted');
+      anno.removeHandler('onPopupShown');
       anno.addHandler('onCharSizePlus', this.props.onCharSizePlus);
       anno.addHandler('onCharSizeMinus', this.props.onCharSizeMinus);
       anno.addHandler('onAnnotationCreated', this.props.onAnnoCreated);
       anno.addHandler('onAnnotationUpdated', this.props.onAnnoUpdated);
       anno.addHandler('onAnnotationRemoved', this.props.onAnnoRemoved);
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
+      anno.addHandler('onPopupShown', this.onPopupShown);
     }
+  }
+
+  onPopupShown(data) {
+    forEach(this.props.annoList, (item, index) => {
+      const shape = item.shapes[0];
+      const object = data.shapes[0];
+      let diff = [{x: 1}];
+      if (shape.type === object.type && object.type === 'polygon' ) {
+        diff = item.shapes[0]['geometry']['points'] && data.shapes[0]['geometry']['points'] && differenceWith(item.shapes[0]['geometry']['points'], data.shapes[0]['geometry']['points'], isEqual)
+      } else if (shape.type === object.type && object.type === 'rect' ) {
+        diff = item.shapes[0]['geometry'] && data.shapes[0]['geometry'] && differenceWith([item.shapes[0]['geometry']], [data.shapes[0]['geometry']], isEqual)
+      }
+
+      if (size(diff) === 0) {
+        this.activePopup = index
+        return
+      }
+    })
   }
 
   onAnnoSelectionCompleted(event) {
@@ -102,11 +123,11 @@ Annotorious.propTypes = {
  * Functions irrespective of React
  */
 
-function drawAnnotations(annoList = []) {
-  annoList.forEach(box => {
+function drawAnnotations(annoList = [], activeIndex) {
+  annoList.forEach((box, index) => {
     anno.addAnnotation(Object.assign({}, box, {
       src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-    }));
+    }), undefined, index === activeIndex);
   });
 }
 
