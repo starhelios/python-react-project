@@ -125,9 +125,11 @@ Annotorious.propTypes = {
 
 function drawAnnotations(annoList = [], activeIndex) {
   annoList.forEach((box, index) => {
-    anno.addAnnotation(Object.assign({}, box, {
-      src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-    }), undefined, index === activeIndex);
+    if (box.charSizeTmp && parseFloat(box.charSizeTmp)) {
+      anno.addAnnotation(Object.assign({}, box, {
+        src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
+      }), undefined, index === activeIndex);
+    }
   });
 }
 
