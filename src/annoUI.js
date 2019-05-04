@@ -191,6 +191,7 @@ class AnnotationUI extends Component {
       annoList = notEqnAnnoList;
       annoList.push(eqnAnnoList[0]);
     }
+
     this.setState({
       annoList,
       unsaved: true
@@ -551,6 +552,7 @@ class AnnotationUI extends Component {
         )
       }
     </div>;
+
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
         <div className={'screen-lock' + (this.state.loadDataApiStatus === consts.API_LOADING ? '' : ' hidden')}>
@@ -598,6 +600,7 @@ class AnnotationUI extends Component {
                 textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onCharSizeMinus={this.onCharSizeMinus}
+                hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size}
               />
             </div>
             : null

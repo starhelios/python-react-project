@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { cloneDeep, forEach, differenceWith, isEqual, size } from 'lodash';
+import { cloneDeep, forEach, differenceWith, isEqual, size, meanBy } from 'lodash';
 
 let guidelinesActive = false;
 const WRAP_INCREASE = 85;
@@ -22,7 +22,9 @@ export default class Annotorious extends Component {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
     }
-    this.props.annoList.forEach((box) => { box.charSizeTmp = 1.17 * box.charSize * this.props.effScale });
+
+    const meanCharSize = meanBy(this.props.annoList, (box) => box.charSize) || 20;
+    this.props.annoList.forEach((box) => { box.charSizeTmp = 1.17 * box.charSize * this.props.effScale; box.has_char_size = this.props.hasCharSize ? meanCharSize : false});
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList), this.activePopup);
     hideWidget();
