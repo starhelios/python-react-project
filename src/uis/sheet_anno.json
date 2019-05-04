@@ -23,7 +23,8 @@
             "id": "question",
             "has_text": false,
             "marker_width": "2",
-            "color": "#ef07e0"
+            "color": "#ef07e0",
+            "has_char_size": true
           },
           {
             "type": "bbox",
@@ -32,7 +33,8 @@
             "id": "answer",
             "has_text": false,
             "marker_width": "2",
-            "color": "#ed8404"
+            "color": "#ed8404",
+            "has_char_size": true
           },
           {
             "type": "bbox",
@@ -41,7 +43,8 @@
             "id": "question_polygon",
             "has_text": false,
             "marker_width": "2",
-            "color": "#ef07e0"
+            "color": "#ef07e0",
+            "has_char_size": true
           },
           {
             "type": "bbox",
@@ -50,7 +53,8 @@
             "id": "answer_polygon",
             "has_text": false,
             "marker_width": "2",
-            "color": "#ed8404"
+            "color": "#ed8404",
+            "has_char_size": true
           },
           {
             "type": "bbox",
@@ -59,7 +63,8 @@
             "id": "printed_char_size",
             "has_text": true,
             "marker_width": "2",
-            "color": "#009933"
+            "color": "#009933",
+            "has_char_size": true
           },
           {
             "type": "bbox",
@@ -68,7 +73,8 @@
             "id": "handwritten_char_size",
             "has_text": true,
             "marker_width": "2",
-            "color": "#0000FF"
+            "color": "#0000FF",
+            "has_char_size": true
           }
         ]
       }
