@@ -23,7 +23,8 @@
             "id": "chars",
             "has_text": true,
             "marker_width": "1",
-            "color": "#0000FF"
+            "color": "#0000FF",
+            "has_char_size": false
           },
           {
             "type": "bbox",
@@ -32,7 +33,8 @@
             "id": "text",
             "has_text": false,
             "marker_width": "2",
-            "color": "#009933"
+            "color": "#009933",
+            "has_char_size": false
           },
           {
             "type": "bbox",
@@ -41,7 +43,8 @@
             "id": "equations",
             "has_text": false,
             "marker_width": "2",
-            "color": "#FF0000"
+            "color": "#FF0000",
+            "has_char_size": false
           },
           {
             "type": "bbox",
@@ -50,7 +53,8 @@
             "id": "header",
             "has_text": true,
             "marker_width": "2",
-            "color": "#F4D03F"
+            "color": "#F4D03F",
+            "has_char_size": false
           }
         ]
       }
