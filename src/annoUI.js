@@ -172,12 +172,12 @@ class AnnotationUI extends Component {
     let eventTypeFinal = eventType
 
     if (eventType === 'CharSizePlus') {
-      annotation.charSize = annotation.charSize * 1.17;
+      annotation.charSize = (annotation.charSize || annotation.charSizeTmp) * 1.17;
       eventTypeFinal = 'Updated';
     }
 
     if (eventType === 'CharSizeMinus') {
-      annotation.charSize = annotation.charSize * 0.83;
+      annotation.charSize = (annotation.charSize || annotation.charSizeTmp) * 0.83;
       eventTypeFinal = 'Updated';
     }
 
