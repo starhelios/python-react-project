@@ -157,6 +157,7 @@ class AnnotationUI extends Component {
   }
 
   onAnnoChange(eventType, annotation) {
+    annotation.isUpdated = true;
     annotation.text = annotation.text && annotation.text.trim();
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
