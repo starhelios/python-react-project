@@ -29,7 +29,9 @@ export default class DataBody extends Component {
               char_size={item.char_size}
               is_verified={item.is_verified}
               viewType={this.props.viewType}
-              datetime={item.datetime} />
+              datetime={item.datetime}
+              latex={item.latex || ''}
+              latex_normalized={item.latex_normalized} />
           ))
         }
       </tbody>
