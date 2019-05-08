@@ -25,7 +25,7 @@ export default class DataFilters extends Component {
       search2, onSearchChange2,
       searchID, onSearchIDChange,
       queue, onQueueChange, queueUrl,
-      onCreateQueue,
+      onCreateQueue, onViewChange, viewType,
       onApplyFiltersAndSearchClick } = this.props;
 
     let activeFiltersCount = 0;
@@ -136,6 +136,18 @@ export default class DataFilters extends Component {
             :
               null
           }
+        </div>
+        <div className="flex-row-3">
+
+            <div className="form-check form-check-inline">
+              <span>View:</span>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" id="viewRaw" value="raw" onChange={onViewChange} checked={viewType === 'raw'}/> <label className="form-check-label" htmlFor="viewRaw">Raw</label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input className="form-check-input" type="checkbox" id="viewNormalized" value="normalized" onChange={onViewChange} checked={viewType === 'normalized'}/> <label className="form-check-label" htmlFor="viewNormalized">Normalized</label>
+            </div>
         </div>
       </div>
     );

@@ -36,6 +36,12 @@ $filter-control-height: 34px;
 .flex-row-2 {
   @include flex-row;
   margin-top: 1%;
+}
+
+.flex-row-3 {
+  @include flex-row;
+  margin-top: 0;
+  align-items: center;
   padding-bottom: 3%;
 }
 
