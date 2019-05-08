@@ -489,7 +489,6 @@ class Data extends Component {
   }
 
   onViewChange(e) {
-    console.log('onViewChange', e, e.target.value)
     this.setState({'filterViewType': e.target.value})
   }
 
@@ -540,7 +539,7 @@ class Data extends Component {
               <table className="table data table-hover">
                 <thead>
                   <tr>
-                    <th colSpan={filterViewType !== 'normalized' ? 3 : 1} className="pagination-bar">
+                    <th colSpan={filterViewType !== 'normalized' ? 3 : 4} className="pagination-bar">
                       <div className="display-total">{this.state.total} items found</div>
                       <div>
                         <DataPagination count={pageCount} active={this.state.page} pagingFunc={this.onPaging}/></div>

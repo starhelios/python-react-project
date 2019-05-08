@@ -80,27 +80,33 @@ export default class DataRow extends Component {
 
   render() {
     const { viewType, annotator, text, imagePath, properties,
-      char_size, datetime, is_verified, dataset, annoList } = this.props;
+      char_size, datetime, is_verified, dataset, annoList, latex_normalized, latex } = this.props;
     const basePath = imagePath.split("/").slice(-1)[0];
     const textEditURL = "/annotate/" + dataset + "?sessionID=" + basePath.slice(0, -4);
     const imageURL = consts.S3BUCKET_URL + basePath;
 
     let propsStr = "";
-    for (let key in properties) {
-      if (properties[key].value) {
-        propsStr += properties[key].description + "\n";
+
+    if (viewType === 'raw') {
+      for (let key in properties) {
+        if (properties[key].value) {
+          propsStr += properties[key].description + "\n";
+        }
       }
+      if (char_size !== null && char_size !== undefined) {
+        propsStr += 'char_size: ' + char_size + "\n";
+      }
+      if (dataset !== null && dataset !== undefined) {
+        propsStr += 'dataset: ' + dataset + "\n";
+      }
+      if (text.length) {
+        propsStr += "----------\n";
+        propsStr += text;
+      }
+    } else {
+      propsStr = text;
     }
-    if (char_size !== null && char_size !== undefined) {
-      propsStr += 'char_size: ' + char_size + "\n";
-    }
-    if (dataset !== null && dataset !== undefined) {
-      propsStr += 'dataset: ' + dataset + "\n";
-    }
-    if (text.length) {
-      propsStr += "----------\n";
-      propsStr += text;
-    }
+
     const textList = text.split("\n") || [];
     const annoColor = is_verified == true ? "green" : "red";
 
@@ -128,10 +134,23 @@ export default class DataRow extends Component {
             <MathpixMarkdown text={text} isDisableFancy={true} />
           </MathpixLoader>
         </td>
-        { viewType !== 'normalized'
+        <td className="prop-col" style={{textAlign: "left"}}>
+          <div className="code-wrap">
+            <pre>{propsStr}</pre>
+          </div>
+        </td>
+        { viewType === 'normalized'
+          ? <td style={{textAlign: "left"}}>
+            <MathpixLoader>
+              <MathpixMarkdown text={`\\[${latex_normalized}\\]`} isDisableFancy={true}/>
+            </MathpixLoader>
+          </td>
+          : null
+        }
+        { viewType === 'normalized'
           ? <td className="prop-col" style={{textAlign: "left"}}>
             <div className="code-wrap">
-              <pre>{propsStr}</pre>
+              <pre>{latex_normalized}</pre>
             </div>
           </td>
           : null
