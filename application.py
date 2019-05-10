@@ -766,7 +766,7 @@ def latexToS3():
     dataset = "mathpix"
     data_list.append([username, now, 'eqn_images/' + image_path, session_id, latex, text,
                       is_good, False, False, False, False, True, True, anno_list,
-                      group_id, 28, 28, col, row, False, dataset])
+                      group_id, 14.5, 14.5, col, row, False, dataset])
     psycopg2.extras.execute_values(cur, query, data_list, template=None, page_size=100)
     db.commit()
     return json.dumps({'success': True, 'session_id': session_id})
