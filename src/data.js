@@ -47,6 +47,7 @@ class Data extends Component {
       queueUrl: '',
       data: [],
       total: 0,
+      filterViewType: 'raw',
       filterDataset: '',
       filterAnnotator: '',
       filterProperty: {},
@@ -58,7 +59,7 @@ class Data extends Component {
       searchID: '',
       queue: '',
       sort: '-datetime',
-      page: 1
+      page: 1,
     };
 
     this.loadUsers = this.loadUsers.bind(this);
@@ -84,6 +85,7 @@ class Data extends Component {
     this.onPaging = this.onPaging.bind(this);
     this.setStateByLocationQuery = this.setStateByLocationQuery.bind(this);
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
+    this.onViewChange = this.onViewChange.bind(this);
   }
 
   componentWillMount() {
@@ -129,6 +131,7 @@ class Data extends Component {
     }
 
     this.setState({
+      filterViewType: query.view || 'raw',
       filterDataset: query.dataset || '',
       filterAnnotator: query.annotator || '',
       filterProperty: propFilters,
@@ -357,6 +360,9 @@ class Data extends Component {
       if (this.state.filterDataset.length) {
         queryParams.push('dataset=' + encodeURIComponent(this.state.filterDataset));
       }
+      if (this.state.filterViewType) {
+        queryParams.push('view=' + encodeURIComponent(this.state.filterViewType));
+      }
       if (this.state.filterAnnotator.length) {
         queryParams.push('annotator=' + encodeURIComponent(this.state.filterAnnotator));
       }
@@ -482,7 +488,12 @@ class Data extends Component {
     });
   }
 
+  onViewChange(e) {
+    this.setState({'filterViewType': e.target.value})
+  }
+
   render() {
+    const { filterViewType } = this.state;
     if (this.state.loadDataApiStatus === consts.API_LOADED_ERROR) {
       return (
         <div id="page-data">
@@ -517,7 +528,10 @@ class Data extends Component {
           searchID={this.state.searchID} onSearchIDChange={this.onSearchIDChange}
           onQueueChange={this.onQueueChange} queue={this.state.queue}
           onCreateQueue={this.onCreateQueue} queueUrl={this.state.queueUrl} creatingQueue={this.state.creatingQueue}
-          onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick} />
+          onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick}
+          onViewChange={this.onViewChange}
+          viewType={filterViewType || "raw"}
+        />
 
         {
           loadDataApiStatus === consts.API_LOADED_SUCCESS ?
@@ -525,27 +539,35 @@ class Data extends Component {
               <table className="table data table-hover">
                 <thead>
                   <tr>
-                    <th colSpan="3" className="pagination-bar">
+                    <th colSpan={filterViewType !== 'normalized' ? 3 : 4} className="pagination-bar">
                       <div className="display-total">{this.state.total} items found</div>
                       <div>
-                        <DataPagination count={pageCount} active={this.state.page} pagingFunc={this.onPaging} /></div>
+                        <DataPagination count={pageCount} active={this.state.page} pagingFunc={this.onPaging}/></div>
                     </th>
-                    <th className="annotator-col">
-                      <a href="#" className={'sorter ' + (sort === 'username' ? 'asc' : (sort === '-username' ? 'desc' : ''))}
-                        onClick={this.sortByAnnotator}>
-                        Annotator {sortIcons}
-                      </a>
-                    </th>
-                    <th className="date-col">
-                      <a href="#" className={'sorter ' + (sort === 'datetime' ? 'asc' : (sort === '-datetime' ? 'desc' : ''))}
-                        onClick={this.sortByDatetime}>
-                        Date (UTC) {sortIcons}
-                      </a>
-                    </th>
+                    { filterViewType !== 'normalized' ?
+                      <th className="annotator-col">
+                        <a href="#"
+                           className={'sorter ' + (sort === 'username' ? 'asc' : (sort === '-username' ? 'desc' : ''))}
+                           onClick={this.sortByAnnotator}>
+                          Annotator {sortIcons}
+                        </a>
+                      </th>
+                      : null
+                    }
+                    { filterViewType !== 'normalized'
+                      ? <th className="date-col">
+                        <a href="#"
+                           className={'sorter ' + (sort === 'datetime' ? 'asc' : (sort === '-datetime' ? 'desc' : ''))}
+                           onClick={this.sortByDatetime}>
+                          Date (UTC) {sortIcons}
+                        </a>
+                      </th>
+                      : null
+                    }
                     <th>Edit</th>
                   </tr>
                 </thead>
-                <DataBody data={this.state.data} />
+                <DataBody data={this.state.data} viewType={filterViewType || "raw"} />
                 <tfoot>
                   <tr>
                     <td colSpan="6">

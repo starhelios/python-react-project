@@ -8,7 +8,7 @@ export default class DataBody extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.data !== this.props.data) {
+    if (nextProps.data !== this.props.data || nextProps.viewType !== this.props.viewType) {
       return true;
     }
     return false;
@@ -28,7 +28,10 @@ export default class DataBody extends Component {
               properties={item.properties}
               char_size={item.char_size}
               is_verified={item.is_verified}
-              datetime={item.datetime} />
+              viewType={this.props.viewType}
+              datetime={item.datetime}
+              latex={item.latex || ''}
+              latex_normalized={item.latex_normalized} />
           ))
         }
       </tbody>
