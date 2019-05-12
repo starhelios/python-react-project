@@ -92,7 +92,7 @@ export default class Annotorious extends Component {
     if (this.props.imageURL) {
       return (
         <div className="text-center anno-board">
-          <div className="wrapper-annotatable" style={{height: wrapperHeight, paddingTop: 50}}>
+          <div className="wrapper-annotatable" style={{height: wrapperHeight}}>
             <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
               width={this.props.imageWidth} height={this.props.imageHeight}
               onLoad={this.update} />
