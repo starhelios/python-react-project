@@ -387,10 +387,10 @@ class Data extends Component {
         queryParams.push('toDate=' + encodeURIComponent(this.state.filterToDate));
       }
       if (this.state.search.length) {
-        queryParams.push('search=' + encodeURIComponent(this.state.search));
+        queryParams.push('search=' + encodeURIComponent(escape(this.state.search)));
       }
       if (this.state.search2.length) {
-        queryParams.push('search2=' + encodeURIComponent(this.state.search2));
+        queryParams.push('search2=' + encodeURIComponent(escape(this.state.search2)));
       }
       if (this.state.searchID.length) {
         queryParams.push('searchID=' + encodeURIComponent(this.state.searchID));
