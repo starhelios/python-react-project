@@ -16,7 +16,7 @@ def get_db():
 def api_get_duplicates():
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
-    cur.execute("SELECT * FROM TrainingEquations LIMIT 1000000")
+    cur.execute("SELECT * FROM TrainingEquations LIMIT 1000") # set records count here
     row_list = cur.fetchall()
     now = datetime.now()
 
@@ -25,7 +25,14 @@ def api_get_duplicates():
     print(output_str)
     fl.write(output_str)
     for row in row_list:
-        anno_list = list(np.unique(np.array(row['anno_list'])))
+        unique__list = list(np.unique(np.array(row['anno_list'])))
+        anno_list = []
+        for item in unique__list:
+            if 'shapes' in item:
+                duplicates = filter(lambda unique_item: item['shapes'] == unique_item['shapes'], anno_list)
+
+                if (len(duplicates) == 0):
+                    anno_list.append(item)
         if not len(row['anno_list']) == len(anno_list):
             output_str = 'session_id: ' + row['session_id'] + ', length original/unique: ' + str(len(row['anno_list'])) + '/' + str(len(anno_list)) + '\n'
             print(output_str)
