@@ -76,7 +76,7 @@ export default class BaseUIController {
           if (response.redirect_url) {
             window.location.href = response.redirect_url;
           }
-          response.anno_list = uniqWith(response.anno_list, isEqual)
+          response.anno_list = uniqWith(response.anno_list, (a,b) => isEqual(a,b) || isEqual(a.shapes, b.shapes))
           that.setState(
             Object.assign(
               { loadDataApiStatus: consts.API_LOADED_SUCCESS },
