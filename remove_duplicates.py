@@ -16,8 +16,7 @@ def get_db():
 def api_get_duplicates():
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
-    # cur.execute("SELECT * FROM TrainingEquations LIMIT 1000000")
-    cur.execute("SELECT * FROM TrainingEquations WHERE session_id = 'within1000-mul-hline-20190121-340'")
+    cur.execute("SELECT * FROM TrainingEquations LIMIT 1000000")
     row_list = cur.fetchall()
     now = datetime.now()
 
@@ -31,8 +30,8 @@ def api_get_duplicates():
             output_str = 'session_id: ' + row['session_id'] + ', length original/unique: ' + str(len(row['anno_list'])) + '/' + str(len(anno_list)) + '\n'
             print(output_str)
             fl.write(output_str)
-            query = "UPDATE TrainingEquations SET anno_list = %s WHERE session_id = 'within1000-mul-hline-20190121-340'"
-            cur.execute(query, (json.dumps(anno_list),))
+            query = "UPDATE TrainingEquations SET anno_list = %s WHERE session_id = %s"
+            cur.execute(query, (json.dumps(anno_list), row['session_id']))
     db.commit()
     fl.close()
 
