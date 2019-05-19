@@ -1,4 +1,4 @@
-import { find as _find, get as _get } from 'lodash';
+import { find as _find, get as _get, map } from 'lodash';
 import { normalize, schema } from 'normalizr';
 import consts from '../libs/consts';
 import { callApi } from '../libs/api';
@@ -107,8 +107,16 @@ export default class BaseUIController {
       return;
     }
     const that = this.component;
+    const payload = this.deparseState();
+    const annoList = map(payload && payload.anno_list, (item) => {
+        const { charSizeTmp, ...data } = item;
+
+        return data;
+    });
+    payload['anno_list'] = annoList;
+
     that.setState({ saveDataApiStatus: consts.API_LOADING }, () => {
-      callApi(this.SAVE_DATA_API_URL, this.SAVE_DATA_API_METHOD, this.deparseState()).then(
+      callApi(this.SAVE_DATA_API_URL, this.SAVE_DATA_API_METHOD, payload).then(
         response => {
           console.log('Save Annotation Data API success', response);
           that.setState({
