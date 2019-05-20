@@ -1,4 +1,4 @@
-import { find as _find, get as _get, map } from 'lodash';
+import { find as _find, get as _get, map, isEqual, uniqWith } from 'lodash';
 import { normalize, schema } from 'normalizr';
 import consts from '../libs/consts';
 import { callApi } from '../libs/api';
@@ -72,10 +72,11 @@ export default class BaseUIController {
     that.setState({ loadDataApiStatus: consts.API_LOADING }, () => {
       callApi(apiUrl, apiMethod, data).then(
         response => {
-          console.log('Load Annotation Data API success', response);
           if (response.redirect_url) {
             window.location.href = response.redirect_url;
           }
+          response.anno_list  = uniqWith([...response.anno_list], (a,b) => isEqual(a,b) || isEqual(a.shapes, b.shapes));
+          console.log('Load Annotation Data API success', response);
           that.setState(
             Object.assign(
               { loadDataApiStatus: consts.API_LOADED_SUCCESS },
