@@ -18,6 +18,7 @@ from flask import abort
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 from psycopg2.extras import register_json, DictCursor
+import re
 
 
 register_json(oid=3802, array_oid=3807)
@@ -219,12 +220,25 @@ def get_query_params(data_request_params):
                 elif prop in DATA_PROPERTIES.keys():
                     query_condition += " AND %s = true" % prop
     # search
-    if search is not None and search:
-        query_condition += " AND text ~ %s"
-        filters += (search,)
-    if search2 is not None and search2:
-        query_condition += " AND text ~ %s"
-        filters += (search2,)
+    errorFields = []
+    try:
+        if search is not None and search:
+            if is_valid_exp(search) == False:
+                errorFields.append("searchError")
+            else:
+                query_condition += " AND text ~ %s"
+                filters += (search,)
+        if search2 is not None and search2:
+            if is_valid_exp(search2) == False:
+                errorFields.append("search2Error")
+            else:
+                query_condition += " AND text ~ %s"
+                filters += (search,)
+        if len(errorFields) > 0:
+            raise Exception(errorFields)
+    except:
+        raise
+
     if searchID is not None and searchID:
         query_condition += " AND session_id ~ %s"
         filters += (searchID,)
@@ -281,26 +295,37 @@ def api_get_queue():
 @application.route('/api/data', methods=['GET'])
 @requires_auth
 def api_get_data():
-    data_request_params = request.args.to_dict()
-    query_condition, pagination_condition, filters = get_query_params(data_request_params)
-    db = get_db()
-    cur = db.cursor(cursor_factory=DictCursor)
-    count_query = "SELECT count(session_id) " + query_condition
-    application.logger.info("Counting...")
-    cur.execute(count_query, filters)
-    total = cur.fetchone()[0]
-    application.logger.info("Selecting...")
-    select_query = "SELECT * " + query_condition + pagination_condition
-    cur.execute(select_query, filters)
-    row_list = cur.fetchall()
-    data_list = get_data_list(row_list)
-    result = {
-        'data': {
-            'total': total,
-            'list': data_list
-        }
-    }
-    return json.dumps(result, default=str)
+    try:
+        data_request_params = request.args.to_dict()
+        query_condition, pagination_condition, filters = get_query_params(data_request_params)
+        db = get_db()
+        cur = db.cursor(cursor_factory=DictCursor)
+        count_query = "SELECT count(session_id) " + query_condition
+        application.logger.info("Counting...")
+        cur.execute(count_query, filters)
+        total = cur.fetchone()[0]
+        application.logger.info("Selecting...")
+        select_query = "SELECT * " + query_condition + pagination_condition
+        cur.execute(select_query, filters)
+        row_list = cur.fetchall()
+        data_list = get_data_list(row_list)
+        result = {
+            'data': {
+                'total': total,
+                'list': data_list
+            }
+        } 
+        return json.dumps(result, default=str)
+    except Exception as e :
+        fields = list(e)[0]
+        return json.dumps({'error': {'fields': fields, 'type': 'inputError'}}), 400
+
+def is_valid_exp(exp):
+    try:
+        re.compile(exp)
+        return True
+    except:
+        return False
 
 @application.route('/api/groups', methods=['GET'])
 @requires_auth
