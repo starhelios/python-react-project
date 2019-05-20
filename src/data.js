@@ -56,6 +56,8 @@ class Data extends Component {
       filterGroup: '',
       search: '',
       search2: '',
+      searchError: false,
+      search2Error: false,
       searchID: '',
       queue: '',
       sort: '-datetime',
@@ -261,7 +263,9 @@ class Data extends Component {
             this.setState({
               loadDataApiStatus: consts.API_LOADED_SUCCESS,
               data: response.data.list,
-              total: response.data.total
+              total: response.data.total,
+              searchError: false,
+              search2Error: false,
             }, () => {
               MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
@@ -274,7 +278,19 @@ class Data extends Component {
         },
         error => {
           console.log('Load Data API fail', error);
-          if (error.error && error.error.message) {
+          if (error.error.type == 'inputError') {
+            const errorState = {
+              searchError: false,
+              search2Error: false
+            }
+            error.error.fields.forEach(i => {
+              errorState[i] = true;
+            })
+            this.setState({
+              loadDataApiStatus: consts.API_NOT_LOADED,
+              ...errorState
+            });
+          } else if (error.error && error.error.message) {
             this.setState({
               loadDataApiStatus: consts.API_LOADED_ERROR,
               loadDataApiError: 'Unable to fetch data. ' + error.error.message
@@ -525,6 +541,7 @@ class Data extends Component {
           toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}
           search={this.state.search} onSearchChange={this.onSearchChange}
           search2={this.state.search2} onSearchChange2={this.onSearchChange2}
+          searchError={this.state.searchError} search2Error={this.state.search2Error}
           searchID={this.state.searchID} onSearchIDChange={this.onSearchIDChange}
           onQueueChange={this.onQueueChange} queue={this.state.queue}
           onCreateQueue={this.onCreateQueue} queueUrl={this.state.queueUrl} creatingQueue={this.state.creatingQueue}
@@ -590,6 +607,12 @@ class Data extends Component {
         {
           loadDataApiStatus === consts.API_LOADED_SUCCESS && !this.state.data.length ?
             <div className="error">No data matching the criteria</div>
+            :
+            null
+        }
+        {
+          loadDataApiStatus === consts.API_NOT_LOADED ?
+            <div className="error">Invalid data entered</div>
             :
             null
         }

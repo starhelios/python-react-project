@@ -22,6 +22,7 @@ export default class DataFilters extends Component {
       fromDate, onFromDateChange,
       toDate, onToDateChange,
       search, onSearchChange,
+      searchError, search2Error,
       search2, onSearchChange2,
       searchID, onSearchIDChange,
       queue, onQueueChange, queueUrl,
@@ -101,10 +102,12 @@ export default class DataFilters extends Component {
         </div>
         <div className="flex-row-2">
           <div className="group-1">
-            <input type="text" className="form-control" value={search} placeholder="Regex match ..." onChange={onSearchChange} />
+            <input type="text" name='search' className={`form-control ${ searchError ? ' has-error' : ''}`} value={search} placeholder="Regex match ..." onChange={onSearchChange} />
+            <span>Invalid regex</span>
           </div>
           <div className="group-1">
-            <input type="text" className="form-control" value={search2} placeholder="Regex match (2)" onChange={onSearchChange2} />
+            <input type="text" name='search2' className={`form-control ${ search2Error ? ' has-error' : ''}`} value={search2} placeholder="Regex match (2)" onChange={onSearchChange2} />
+            <span>Invalid regex</span>
           </div>
           <div className="group-1">
             <input type="text" className="form-control" value={searchID} placeholder="Search equation ID ..." onChange={onSearchIDChange} />
@@ -176,6 +179,8 @@ DataFilters.propTypes = {
   onToDateChange: PropTypes.func.isRequired,
   search: PropTypes.string.isRequired,
   search2: PropTypes.string.isRequired,
+  searchError: PropTypes.bool.isRequired,
+  search2Error: PropTypes.bool.isRequired,
   onSearchChange: PropTypes.func.isRequired,
   onSearchChange2: PropTypes.func.isRequired,
   searchID: PropTypes.string.isRequired,
