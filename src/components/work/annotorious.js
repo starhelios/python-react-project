@@ -26,7 +26,7 @@ export default class Annotorious extends Component {
     let meanCharSize = 0;
     this.props.annoList.forEach((box) => { if (box.charSize) { meanCharSize += parseFloat(box.charSize); nn++}});
     meanCharSize = nn > 0 && meanCharSize ? meanCharSize / nn : 20
-    this.props.annoList.forEach((box) => {box.charSizeTmp = 1.17 * (box.charSize ? box.charSize : (box.isUpdated ? meanCharSize : undefined))  * this.props.effScale; box.has_char_size = this.props.hasCharSize});
+    this.props.annoList.forEach((box) => {box.charSizeTmp = 1.17 * (box.charSize) * this.props.effScale; box.has_char_size = this.props.hasCharSize});
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList), this.activePopup);
     hideWidget();
@@ -95,7 +95,7 @@ export default class Annotorious extends Component {
           <div className="wrapper-annotatable" style={{height: wrapperHeight}}>
             <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
               width={this.props.imageWidth} height={this.props.imageHeight}
-              onLoad={this.update} />
+              onLoad={() => console.log('onLoad')} />
           </div>
         </div>
       );
