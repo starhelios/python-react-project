@@ -24,9 +24,10 @@ export default class DataFilters extends Component {
       search, onSearchChange,
       searchError, search2Error,
       search2, onSearchChange2,
-      searchID, onSearchIDChange,
+      searchString, searchID, onSearchIDChange,
       queue, onQueueChange, queueUrl,
-      onCreateQueue, onViewChange, viewType,
+      onCreateQueue, viewType,
+      onInputChange,
       onApplyFiltersAndSearchClick } = this.props;
 
     let activeFiltersCount = 0;
@@ -40,7 +41,7 @@ export default class DataFilters extends Component {
       <div className="main-body">
         <div className="flex-row-1">
           <div className="group-1">
-            <select className="form-control" value={dataset} onChange={onDatasetChange}>
+            <select className="form-control" name="filterDataset" value={dataset} onChange={onInputChange}>
             <option value="">All Datasets</option>
             {
               this.props.datasets.map((_dataset, index) => (
@@ -50,7 +51,7 @@ export default class DataFilters extends Component {
             </select>
           </div>
           <div className="group-1">
-            <select className="form-control" value={annotator} onChange={onAnnotatorChange}>
+            <select className="form-control" name="filterAnnotator" value={annotator} onChange={onInputChange}>
             <option value="">All Annotators</option>
             {
               this.props.annotators.map((_annotator, index) => (
@@ -60,7 +61,7 @@ export default class DataFilters extends Component {
             </select>
           </div>
           <div className="group-1">
-            <select className="form-control" value={group} onChange={onGroupChange}>
+            <select className="form-control" name="filterGroup" value={group} onChange={onInputChange}>
             <option value="">All Groups</option>
             {
               this.props.groups.sort(function (a, b) {
@@ -92,31 +93,34 @@ export default class DataFilters extends Component {
           </div>
           <div className="group-2">
             <small className="text-muted"><label className="control-label" htmlFor="fromDate">Start date</label></small>
-            <input type="date" className="form-control" id="fromDate" value={fromDate} onChange={onFromDateChange} />
+            <input type="date" className="form-control" name="filterFromDate" id="fromDate" value={fromDate} onChange={onInputChange} />
             <span className="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
           </div>
           <div>
             <small className="text-muted"><label className="control-label" htmlFor="toDate">End date</label></small>
-            <input type="date" className="form-control" id="toDate" value={toDate} onChange={onToDateChange} />
+            <input type="date" className="form-control" name="filterToDate" id="toDate" value={toDate} onChange={onInputChange} />
           </div>
         </div>
         <div className="flex-row-2">
           <div className="group-1">
-            <input type="text" name='search' className={`form-control ${ searchError ? ' has-error' : ''}`} value={search} placeholder="Regex match ..." onChange={onSearchChange} />
+            <input type="text" name='searchString' className={`form-control`} value={searchString} placeholder="String" onChange={onInputChange} />
+          </div>
+          <div className="group-1">
+            <input type="text" name='search' className={`form-control ${ searchError ? ' has-error' : ''}`} value={search} placeholder="Regex match ..." onChange={onInputChange} />
             <span>Invalid regex</span>
           </div>
           <div className="group-1">
-            <input type="text" name='search2' className={`form-control ${ search2Error ? ' has-error' : ''}`} value={search2} placeholder="Regex match (2)" onChange={onSearchChange2} />
+            <input type="text" name='search2' className={`form-control ${ search2Error ? ' has-error' : ''}`} value={search2} placeholder="Regex match (2)" onChange={onInputChange} />
             <span>Invalid regex</span>
           </div>
           <div className="group-1">
-            <input type="text" className="form-control" value={searchID} placeholder="Search equation ID ..." onChange={onSearchIDChange} />
+            <input type="text" className="form-control" name="searchID" value={searchID} placeholder="Search equation ID ..." onChange={onInputChange} />
           </div>
           <div className="group-1">
             <button className="btn btn-primary" onClick={onApplyFiltersAndSearchClick}>Go</button>
           </div>
           <div className="group-1">
-            <input type="text" className="form-control" value={queue} placeholder="My new queue name " onChange={onQueueChange} />
+            <input type="text" className="form-control" name="queue" value={queue} placeholder="My new queue name " onChange={onInputChange} />
           </div>
           <div className="group-1">
             <button className="btn btn-primary" onClick={onCreateQueue}>
@@ -146,17 +150,15 @@ export default class DataFilters extends Component {
               <span>View:</span>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" id="viewRaw" value="raw" onChange={onViewChange} checked={viewType === 'raw'}/> <label className="form-check-label" htmlFor="viewRaw">Raw</label>
+              <input className="form-check-input" name="filterViewType" type="checkbox" id="viewRaw" value="raw" onChange={onInputChange} checked={viewType === 'raw'}/> <label className="form-check-label" htmlFor="viewRaw">Raw</label>
             </div>
             <div className="form-check form-check-inline">
-              <input className="form-check-input" type="checkbox" id="viewNormalized" value="normalized" onChange={onViewChange} checked={viewType === 'normalized'}/> <label className="form-check-label" htmlFor="viewNormalized">Normalized</label>
+              <input className="form-check-input" name="filterViewType" type="checkbox" id="viewNormalized" value="normalized" onChange={onInputChange} checked={viewType === 'normalized'}/> <label className="form-check-label" htmlFor="viewNormalized">Normalized</label>
             </div>
         </div>
       </div>
     );
-
   }
-
 }
 
 DataFilters.propTypes = {
@@ -168,24 +170,16 @@ DataFilters.propTypes = {
   group: PropTypes.string.isRequired,
   queue: PropTypes.string.isRequired,
   queueUrl: PropTypes.string.isRequired,
-  onDatasetChange: PropTypes.func.isRequired,
-  onAnnotatorChange: PropTypes.func.isRequired,
-  onGroupChange: PropTypes.func.isRequired,
   property: PropTypes.object.isRequired,
   onPropertyChange: PropTypes.func.isRequired,
   fromDate: PropTypes.string.isRequired,
-  onFromDateChange: PropTypes.func.isRequired,
   toDate: PropTypes.string.isRequired,
-  onToDateChange: PropTypes.func.isRequired,
+  searchString: PropTypes.string.isRequired,
   search: PropTypes.string.isRequired,
   search2: PropTypes.string.isRequired,
   searchError: PropTypes.bool.isRequired,
   search2Error: PropTypes.bool.isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  onSearchChange2: PropTypes.func.isRequired,
   searchID: PropTypes.string.isRequired,
-  onSearchIDChange: PropTypes.func.isRequired,
-  onQueueChange: PropTypes.func.isRequired,
   onCreateQueue: PropTypes.func.isRequired,
   creatingQueue: PropTypes.bool.isRequired,
   onApplyFiltersAndSearchClick: PropTypes.func.isRequired

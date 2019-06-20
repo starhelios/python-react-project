@@ -19,26 +19,18 @@
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Title",
-            "id": "title",
+            "label": "Line",
+            "id": "line",
             "has_text": false,
             "marker_width": "3",
+            "has_char_size": true,
             "color": "#3cb44b"
           },
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Section title",
-            "id": "section_title",
-            "has_text": false,
-            "marker_width": "3",
-            "color": "#800000"
-          },
-          {
-            "type": "bbox",
-            "geometry": "box",
-            "label": "Text line",
-            "id": "text_line",
+            "label": "Equation",
+            "id": "equation",
             "has_text": false,
             "marker_width": "3",
             "color": "#e6194B"
@@ -46,17 +38,26 @@
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Math line",
-            "id": "math_line",
+            "label": "Equation block",
+            "id": "equation_block",
             "has_text": false,
             "marker_width": "3",
-            "color": "#4363d8"
+            "color": "#800000"
           },
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Math block",
-            "id": "math_block",
+            "label": "Header",
+            "id": "header",
+            "has_text": false,
+            "marker_width": "3",
+            "color": "#F4D03F"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Eq. number",
+            "id": "equation_number",
             "has_text": false,
             "marker_width": "3",
             "color": "#000075"

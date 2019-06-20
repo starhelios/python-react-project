@@ -54,6 +54,7 @@ class Data extends Component {
       filterFromDate: '',
       filterToDate: '',
       filterGroup: '',
+      searchString: '',
       search: '',
       search2: '',
       searchError: false,
@@ -62,22 +63,14 @@ class Data extends Component {
       queue: '',
       sort: '-datetime',
       page: 1,
+      errorMessage: '',
     };
 
     this.loadUsers = this.loadUsers.bind(this);
     this.loadDatasets = this.loadDatasets.bind(this);
     this.loadGroups = this.loadGroups.bind(this);
-    this.loadData = this.loadData.bind(this);
-    this.onDatasetChange = this.onDatasetChange.bind(this);
-    this.onAnnotatorChange = this.onAnnotatorChange.bind(this);
-    this.onGroupChange = this.onGroupChange.bind(this);
+    this.loadData = this.loadData.bind(this);    
     this.onPropertyChange = this.onPropertyChange.bind(this);
-    this.onFromDateChange = this.onFromDateChange.bind(this);
-    this.onToDateChange = this.onToDateChange.bind(this);
-    this.onSearchChange = this.onSearchChange.bind(this);
-    this.onSearchChange2 = this.onSearchChange2.bind(this);
-    this.onSearchIDChange = this.onSearchIDChange.bind(this);
-    this.onQueueChange = this.onQueueChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
     this.onCreateQueue = this.onCreateQueue.bind(this);
@@ -87,7 +80,8 @@ class Data extends Component {
     this.onPaging = this.onPaging.bind(this);
     this.setStateByLocationQuery = this.setStateByLocationQuery.bind(this);
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
-    this.onViewChange = this.onViewChange.bind(this);
+    this.onInputChange = this.onInputChange.bind(this);
+
   }
 
   componentWillMount() {
@@ -142,6 +136,7 @@ class Data extends Component {
       filterGroup: query.group || '',
       search: query.search || '',
       search2: query.search2 || '',
+      searchString: query.searchString || '',
       searchID: query.searchID || '',
       queue: query.queue || '',
       sort: query.sort || '-datetime',
@@ -278,18 +273,25 @@ class Data extends Component {
         },
         error => {
           console.log('Load Data API fail', error);
-          if (error.error.type == 'inputError') {
-            const errorState = {
-              searchError: false,
-              search2Error: false
-            }
+          const errorState = {
+            searchError: false,
+            search2Error: false
+          }
+          if (error.error && error.error.type == 'inputError') {
             error.error.fields.forEach(i => {
               errorState[i] = true;
             })
             this.setState({
               loadDataApiStatus: consts.API_NOT_LOADED,
-              ...errorState
+              ...errorState,
+              errorMessage: 'Entered invalid data.'
             });
+          } else if (error.error && error.error.type == 'dbError') {
+            this.setState({
+              loadDataApiStatus: consts.API_NOT_LOADED,
+              ...errorState,
+              errorMessage: `Sorry, Error database: \"${error.error.message}\".`
+            })
           } else if (error.error && error.error.message) {
             this.setState({
               loadDataApiStatus: consts.API_LOADED_ERROR,
@@ -327,46 +329,16 @@ class Data extends Component {
     });
   }
 
-  onAnnotatorChange(event) {
-    this.setState({ filterAnnotator: event.currentTarget.value });
-  }
-
-  onDatasetChange(event) {
-    this.setState({ filterDataset: event.currentTarget.value });
-  }
-
-  onGroupChange(event) {
-    this.setState({ filterGroup: event.currentTarget.value });
+  onInputChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+    })
   }
 
   onPropertyChange(propKey, propValue) {
     const changed = this.state.filterProperty;
     changed[propKey] = propValue;
     this.setState({ filterProperty: changed });
-  }
-
-  onFromDateChange(event) {
-    this.setState({ filterFromDate: event.currentTarget.value });
-  }
-
-  onToDateChange(event) {
-    this.setState({ filterToDate: event.currentTarget.value });
-  }
-
-  onSearchChange(event) {
-    this.setState({ search: event.currentTarget.value });
-  }
-
-  onSearchChange2(event) {
-    this.setState({ search2: event.currentTarget.value });
-  }
-
-  onSearchIDChange(event) {
-    this.setState({ searchID: event.currentTarget.value });
-  }
-
-  onQueueChange(event) {
-    this.setState({ queue: event.currentTarget.value });
   }
 
   makeQueryParamsForPageAndApi(filter_search = true, sort = false, page = false) {
@@ -407,6 +379,9 @@ class Data extends Component {
       }
       if (this.state.search2.length) {
         queryParams.push('search2=' + encodeURIComponent(this.state.search2));
+      }
+      if (this.state.searchString.length) {
+        queryParams.push('searchString=' + encodeURIComponent(this.state.searchString.trim()));
       }
       if (this.state.searchID.length) {
         queryParams.push('searchID=' + encodeURIComponent(this.state.searchID));
@@ -504,10 +479,6 @@ class Data extends Component {
     });
   }
 
-  onViewChange(e) {
-    this.setState({'filterViewType': e.target.value})
-  }
-
   render() {
     const { filterViewType } = this.state;
     if (this.state.loadDataApiStatus === consts.API_LOADED_ERROR) {
@@ -530,23 +501,24 @@ class Data extends Component {
     return (
       <div id="page-data">
         <DataFilters
+          onInputChange={this.onInputChange}
           datasets={this.state.datasets}
           dataset={this.state.filterDataset}
           onDatasetChange={this.onDatasetChange}
           annotators={this.state.annotators} annotator={this.state.filterAnnotator}
-          onAnnotatorChange={this.onAnnotatorChange} groups={this.state.groups}
-          group={this.state.filterGroup} onGroupChange={this.onGroupChange}
+          groups={this.state.groups}
+          group={this.state.filterGroup}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyChange}
-          fromDate={this.state.filterFromDate} onFromDateChange={this.onFromDateChange}
-          toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}
-          search={this.state.search} onSearchChange={this.onSearchChange}
-          search2={this.state.search2} onSearchChange2={this.onSearchChange2}
+          fromDate={this.state.filterFromDate}
+          toDate={this.state.filterToDate}
+          search={this.state.search}
+          search2={this.state.search2}
+          searchString={this.state.searchString}
           searchError={this.state.searchError} search2Error={this.state.search2Error}
-          searchID={this.state.searchID} onSearchIDChange={this.onSearchIDChange}
-          onQueueChange={this.onQueueChange} queue={this.state.queue}
+          searchID={this.state.searchID} 
+          queue={this.state.queue}
           onCreateQueue={this.onCreateQueue} queueUrl={this.state.queueUrl} creatingQueue={this.state.creatingQueue}
           onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick}
-          onViewChange={this.onViewChange}
           viewType={filterViewType || "raw"}
         />
 
@@ -612,7 +584,7 @@ class Data extends Component {
         }
         {
           loadDataApiStatus === consts.API_NOT_LOADED ?
-            <div className="error">Invalid data entered</div>
+            <div className="error">{this.state.errorMessage}</div>
             :
             null
         }

@@ -40,7 +40,6 @@ class UIController extends BaseUIController {
     parsed.verified_by = data.verified_by;
     parsed.image_height = data.image_height;
     parsed.char_size = data.char_size || data.char_size_predicted;
-    parsed.char_size_predicted = data.char_size_predicted;
     parsed.is_good = data.is_good;
     parsed.image_properties = that.options.image_properties.options.filter(option => data[option.value]).map(option => option.value);
     parsed.info_properties = that.options.info_properties.options.filter(option => data[option.value]).map(option => option.value);
@@ -147,7 +146,7 @@ class UIController extends BaseUIController {
       'image_width': that.state.image_width,
       'image_height': that.state.image_height,
       'char_size': that.state.char_size,
-      'char_size_predicted': that.state.char_size_predicted
+      'is_verified': that.state.is_verified
     };
 
     that.options.image_properties.options.forEach(option => {

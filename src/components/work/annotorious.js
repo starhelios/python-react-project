@@ -26,7 +26,7 @@ export default class Annotorious extends Component {
     let meanCharSize = 0;
     this.props.annoList.forEach((box) => { if (box.charSize) { meanCharSize += parseFloat(box.charSize); nn++}});
     meanCharSize = nn > 0 && meanCharSize ? meanCharSize / nn : 20
-    this.props.annoList.forEach((box) => {box.charSizeTmp = 1.17 * (box.charSize) * this.props.effScale; box.has_char_size = this.props.hasCharSize});
+    this.props.annoList.forEach((box) => { box.charSizeTmp = 1.17 * (box.charSize) * this.props.effScale; box.has_char_size = this.props.hasCharSize });
     anno.reset();
     drawAnnotations(cloneDeep(this.props.annoList), this.activePopup);
     hideWidget();
@@ -58,10 +58,10 @@ export default class Annotorious extends Component {
     forEach(this.props.annoList, (item, index) => {
       const shape = item.shapes[0];
       const object = data.shapes[0];
-      let diff = [{x: 1}];
-      if (shape.type === object.type && object.type === 'polygon' ) {
+      let diff = [{ x: 1 }];
+      if (shape.type === object.type && object.type === 'polygon') {
         diff = item.shapes[0]['geometry']['points'] && data.shapes[0]['geometry']['points'] && differenceWith(item.shapes[0]['geometry']['points'], data.shapes[0]['geometry']['points'], isEqual)
-      } else if (shape.type === object.type && object.type === 'rect' ) {
+      } else if (shape.type === object.type && object.type === 'rect') {
         diff = item.shapes[0]['geometry'] && data.shapes[0]['geometry'] && differenceWith([item.shapes[0]['geometry']], [data.shapes[0]['geometry']], isEqual)
       }
 
@@ -92,7 +92,7 @@ export default class Annotorious extends Component {
     if (this.props.imageURL) {
       return (
         <div className="text-center anno-board">
-          <div className="wrapper-annotatable" style={{height: wrapperHeight}}>
+          <div className="wrapper-annotatable" style={{ height: wrapperHeight }}>
             <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
               width={this.props.imageWidth} height={this.props.imageHeight}
               onLoad={() => console.log('onLoad')} />
