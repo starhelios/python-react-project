@@ -173,6 +173,7 @@ def get_query_params(data_request_params):
     toDate = data_request_params.get('toDate')
     search = data_request_params.get('search')
     search2 = data_request_params.get('search2')
+    searchString = data_request_params.get('searchString')
     searchID = data_request_params.get('searchID')
     sort = data_request_params.get('sort')
     page = data_request_params.get('page')  # 1, 2, 3, ...
@@ -233,7 +234,10 @@ def get_query_params(data_request_params):
                 errorFields.append("search2Error")
             else:
                 query_condition += " AND text ~ %s"
-                filters += (search,)
+                filters += (search2,)
+        if searchString is not None and searchString:
+            query_condition += " AND replace(text, ' ', '') ~ %s"
+            filters += (re.escape(searchString.replace(" ", "")),)
         if len(errorFields) > 0:
             raise Exception(errorFields)
     except:
@@ -314,8 +318,10 @@ def api_get_data():
                 'total': total,
                 'list': data_list
             }
-        } 
+        }
         return json.dumps(result, default=str)
+    except psycopg2.Error as e:
+        return json.dumps({'error': {'message': e.diag.message_primary.capitalize(), 'type': 'dbError'}}), 400
     except Exception as e :
         fields = list(e)[0]
         return json.dumps({'error': {'fields': fields, 'type': 'inputError'}}), 400
@@ -403,21 +409,19 @@ def save():
     # insert into Equation table
     json_data_copy = json_data.copy()
     session_id = json_data_copy['session_id']
-    json_data_copy['version'] = 2
-    json_data_copy['latex'] = ""
-    json_data_copy['text_normalized'] = None
     json_data_copy['anno_list'] = json.dumps(json_data_copy['anno_list'])
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
     json_data_copy['saved'] = True
-    # new feature; everything that is saved must be checked!
-    json_data_copy['is_verified'] = False
-    # TODO: fix this horror
-    if json_data_copy['group_id'] == 'LimiFullPage':
-        json_data_copy['dataset'] = 'limi'
-    else:
-        json_data_copy['dataset'] = 'mathpix'
     queue_name = json_data.get('queue', MAIN_QUEUE) or MAIN_QUEUE
+    # everything that is saved that's not synth must be checked!
+    if json_data_copy.get('is_verified', False) is not True:
+        if '_clean' in queue_name or json_data_copy['group_id'] == 'synth':
+            json_data_copy['is_verified'] = True
+        else:
+            json_data_copy['is_verified'] = False
+    if json_data_copy.get('is_verified', False):
+        json_data_copy['verified_by'] = json_data_copy['username']
     clean_queue_name = queue_name + "_clean"
     application.logger.info("Adding %s to %s" % (session_id, str(clean_queue_name)))
     redis_db.sadd('queues', clean_queue_name)
@@ -425,14 +429,29 @@ def save():
     redis_db.lpush(clean_queue_name, session_id)
     if json_data_copy.get('is_good', False) is not True:
         json_data_copy['is_good'] = False
-    columns = ', '.join(json_data_copy.keys())
-    placeholders = ('%s, ' * len(json_data_copy))[:-2]
+    # now filter keys
+    keys = ['text', 'username', 'anno_list', 'dataset', 'datetime',
+            'image_path', 'session_id', 'saved', 'is_good',
+            'image_height', 'image_width', 'fully_boxed',
+            'group_id', 'contains_foreign_alphabet', 'verified_by',
+            'metadata', 'is_verified', 'queue', 'char_size',
+            'is_printed', 'is_inverted', 'contains_words', 'contains_geometry',
+            'contains_table', 'contains_equation', 'contains_header',
+            'contains_graph', 'contains_chart', 'contains_diagram']
+    json_data_final = {}
+    for (key, val) in json_data_copy.iteritems():
+        if key not in keys:
+            continue
+        json_data_final[key] = val
+    # construct sql query
+    columns = ', '.join(json_data_final.keys())
+    placeholders = ('%s, ' * len(json_data_final))[:-2]
     sql = 'INSERT INTO TrainingEquations ({}) VALUES ({})'.format(columns, placeholders)
     sql += ' ON CONFLICT(session_id) DO UPDATE SET ';
-    for key, val in json_data_copy.iteritems():
-        sql += ("%s=" % key) + '%s, ';
-    sql = sql[:-2];
-    cur.execute(sql, json_data_copy.values() + json_data_copy.values())
+    for key, val in json_data_final.iteritems():
+        sql += ("%s=" % key) + '%s, '
+    sql = sql[:-2]
+    cur.execute(sql, json_data_final.values() + json_data_final.values())
     cur.execute("DELETE FROM queues WHERE image_id=%s", (session_id,))
     db.commit()
     return json.dumps({'success': True, 'affected': cur.rowcount})
@@ -489,7 +508,7 @@ def get_predicted_properties(image_id):
     request_args = item_list[1]
     internal = item_list[2]
     group_id = item_list[3]
-    latex_anno = internal['latex_anno']
+    latex_anno = internal.get('latex_anno', '')
     text = result.get('text', None)
     if text is None:
         text = "\\[ %s \\]" % latex_anno
@@ -532,13 +551,18 @@ def get_predicted_properties(image_id):
 def get_data_list(row_list):
     data_list = []
     for row in row_list:
-        cur_data = {'image_path': row['image_path'], 'username': row['username'],
-                    'datetime': row['datetime'], 'group_id': row['group_id'],
-                    'anno_list': row['anno_list'], 'session_id': row['session_id'],
-                    'latex_normalized': row['latex_normalized'], 'latex': row['latex'],
-                    'properties': {'is_good': row['is_good']}, 'dataset': row['dataset'],
-                    'text': row['text'], 'text_normalized': row['text_normalized'],
-                    'char_size': row['char_size'], 'char_size_predicted': row['char_size_predicted'],
+        cur_data = {'image_path': row['image_path'],
+                    'username': row['username'],
+                    'datetime': row['datetime'],
+                    'group_id': row['group_id'],
+                    'anno_list': row['anno_list'],
+                    'session_id': row['session_id'],
+                    'latex_normalized': row['latex_normalized'],
+                    'properties': {'is_good': row['is_good']},
+                    'dataset': row['dataset'],
+                    'text': row['text'],
+                    'text_normalized': row['text_normalized'],
+                    'char_size': row['char_size'],
                     'is_verified': row['is_verified']}
         for prop, description in DATA_PROPERTIES.iteritems():
             if str(prop) in cur_data['properties']:
@@ -770,7 +794,7 @@ def latexToS3():
     cur = db.cursor(cursor_factory=DictCursor)
     query = (
        'INSERT INTO TrainingEquations ',
-       '(username, datetime, image_path, session_id, latex, text, is_good, ',
+       '(username, datetime, image_path, session_id, text, is_good, ',
        'contains_words, contains_geometry, contains_table, is_inverted, is_printed, ',
        'contains_equation, anno_list, group_id, char_size_predicted, ',
        'char_size, image_width, image_height, contains_foreign_alphabet, dataset) ',
@@ -787,9 +811,8 @@ def latexToS3():
     # makes it convenient to delete data (newer than now!)
     now = 'NOW()'
     data_list = []
-    latex = ""
     dataset = "mathpix"
-    data_list.append([username, now, 'eqn_images/' + image_path, session_id, latex, text,
+    data_list.append([username, now, 'eqn_images/' + image_path, session_id, text,
                       is_good, False, False, False, False, True, True, anno_list,
                       group_id, 14.5, 14.5, col, row, False, dataset])
     psycopg2.extras.execute_values(cur, query, data_list, template=None, page_size=100)

@@ -49,15 +49,6 @@ class UserData extends Component {
     this.onAnnotatedFilterChange = this.onAnnotatedFilterChange.bind(this);
     this.onQueuedFilterChange = this.onQueuedFilterChange.bind(this);
     this.onPropertyFilterChange = this.onPropertyFilterChange.bind(this);
-    this.onFromDateChange = this.onFromDateChange.bind(this);
-    this.onToDateChange = this.onToDateChange.bind(this);
-    this.onSearchLatexChange = this.onSearchLatexChange.bind(this);
-    this.onSearchMinConfidence = this.onSearchMinConfidence.bind(this);
-    this.onSearchMaxConfidence = this.onSearchMaxConfidence.bind(this);
-    this.onSearchMinSeqLenChange = this.onSearchMinSeqLenChange.bind(this);
-    this.onSearchMaxSeqLenChange = this.onSearchMaxSeqLenChange.bind(this);
-    this.onSearchUserChange = this.onSearchUserChange.bind(this);
-    this.onSearchGroupChange = this.onSearchGroupChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
     this.sortByDatetime = this.onSortClick.bind(this, 'datetime');
@@ -69,6 +60,7 @@ class UserData extends Component {
     this.onPrevPaging = this.onPaging.bind(this, -1);
     this.setStateByLocationQuery = this.setStateByLocationQuery.bind(this);
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
+    this.onInputChange = this.onInputChange.bind(this);
   }
 
   componentWillMount() {
@@ -237,6 +229,13 @@ class UserData extends Component {
     });
   }
 
+  onInputChange(e) {
+    console.log('handler')
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
   onAnnotatedFilterChange(name, value) {
     this.setState({ filterAnnotated: value });
   }
@@ -249,42 +248,6 @@ class UserData extends Component {
     const changed = this.state.filterProperty;
     changed[propKey] = propValue;
     this.setState({ filterProperty: changed });
-  }
-
-  onFromDateChange(event) {
-    this.setState({ filterFromDate: event.currentTarget.value });
-  }
-
-  onToDateChange(event) {
-    this.setState({ filterToDate: event.currentTarget.value });
-  }
-
-  onSearchLatexChange(event) {
-    this.setState({ searchLatex: event.currentTarget.value });
-  }
-
-  onSearchMinConfidence(event) {
-    this.setState({ searchMinConfidence: event.currentTarget.value });
-  }
-
-  onSearchMaxConfidence(event) {
-    this.setState({ searchMaxConfidence: event.currentTarget.value });
-  }
-
-  onSearchMinSeqLenChange(event) {
-    this.setState({ searchMinSeqLen: event.currentTarget.value });
-  }
-
-  onSearchMaxSeqLenChange(event) {
-    this.setState({ searchMaxSeqLen: event.currentTarget.value });
-  }
-
-  onSearchUserChange(event) {
-    this.setState({ searchUser: event.currentTarget.value });
-  }
-
-  onSearchGroupChange(event) {
-    this.setState({ searchGroup: event.currentTarget.value });
   }
 
   makeQueryParamsForPageAndApi(filter_search = true, sort = false, page = false) {
@@ -397,7 +360,6 @@ class UserData extends Component {
         <i className="fa fa-sort" /><i className="fa fa-sort-asc" /><i className="fa fa-sort-desc" />
       </span>
     );
-
     return (
       <div id="page-user-data">
         <UserDataFilters
@@ -406,14 +368,15 @@ class UserData extends Component {
           property={this.state.filterProperty} onPropertyChange={this.onPropertyFilterChange}
           fromDate={this.state.filterFromDate} onFromDateChange={this.onFromDateChange}
           toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}
-          latex={this.state.searchLatex} onLatexChange={this.onSearchLatexChange}
-          minConfidence={this.state.searchMinConfidence} onMinConfidenceChange={this.onSearchMinConfidence}
-          maxConfidence={this.state.searchMaxConfidence} onMaxConfidenceChange={this.onSearchMaxConfidence}
-          minSeqLen={this.state.searchMinSeqLen} onMinSeqLenChange={this.onSearchMinSeqLenChange}
-          maxSeqLen={this.state.searchMaxSeqLen} onMaxSeqLenChange={this.onSearchMaxSeqLenChange}
-          user={this.state.searchUser} onUserChange={this.onSearchUserChange}
-          group={this.state.searchGroup} onGroupChange={this.onSearchGroupChange}
-          onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick} />
+          latex={this.state.searchLatex}
+          minConfidence={this.state.searchMinConfidence}
+          maxConfidence={this.state.searchMaxConfidence}
+          minSeqLen={this.state.searchMinSeqLen} maxSeqLen={this.state.searchMaxSeqLen}
+          user={this.state.searchUser}
+          group={this.state.searchGroup}
+          onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick}
+          onInputChange={this.onInputChange}
+          />
         {
           loadUserDataApiStatus === consts.API_LOADED_SUCCESS ?
             <div className="table-responsive">

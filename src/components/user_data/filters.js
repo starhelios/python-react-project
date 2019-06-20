@@ -7,19 +7,17 @@ import PropertyFilterCheckbox from './property_filter_checkbox';
 export default class UserDataFilters extends Component {
 
   render() {
-
     const { annotated, onAnnotatedChange,
       queued, onQueuedChange,
       property, onPropertyChange,
-      fromDate, onFromDateChange,
-      toDate, onToDateChange,
-      latex, onLatexChange,
-      minConfidence, onMinConfidenceChange,
-      maxConfidence, onMaxConfidenceChange,
-      minSeqLen, onMinSeqLenChange,
-      maxSeqLen, onMaxSeqLenChange,
-      user, onUserChange,
-      group, onGroupChange,
+      fromDate,
+      latex, toDate,
+      minConfidence,
+      maxConfidence,
+      minSeqLen,
+      maxSeqLen,
+      user, onInputChange,
+      group,
       onApplyFiltersAndSearchClick } = this.props;
 
     let activeFiltersCount = 0;
@@ -34,10 +32,10 @@ export default class UserDataFilters extends Component {
       <div className="filters">
         <div className="row">
           <div className="search-user col-sm-6 col-lg-2">
-            <input type="text" className="form-control" value={user} placeholder="Search user ..." onChange={onUserChange} />
+            <input type="text" name="searchUser" className="form-control" value={user} placeholder="Search user ..." onChange={onInputChange} />
           </div>
           <div className="search-group col-sm-6 col-lg-2">
-            <input type="text" className="form-control" value={group} placeholder="Search group ..." onChange={onGroupChange} />
+            <input type="text" name="searchGroup" className="form-control" value={group} placeholder="Search group ..." onChange={onInputChange} />
           </div>
 
           <div className="property col-sm-6 col-lg-2">
@@ -70,25 +68,25 @@ export default class UserDataFilters extends Component {
 
           <div className="date col-sm-12 col-lg-5">
             <label className="control-label" htmlFor="fromDate">From</label>
-            <input type="date" className="form-control" id="fromDate" value={fromDate} onChange={onFromDateChange} />
+            <input type="date" name="filterFromDate" className="form-control" id="fromDate" value={fromDate} onChange={onInputChange} />
             <label className="control-label" htmlFor="toDate">To</label>
-            <input type="date" className="form-control" id="toDate" value={toDate} onChange={onToDateChange} />
+            <input type="date" name="filterToDate" className="form-control" id="toDate" value={toDate} onChange={onInputChange} />
           </div>
 
           <div className="search-latex col-sm-6 col-lg-2">
-            <input type="text" className="form-control" value={latex} placeholder="Search latex ..." onChange={onLatexChange} />
+            <input type="text" name="searchLatex" className="form-control" value={latex} placeholder="Search latex ..." onChange={onInputChange} />
           </div>
           <div className="min-conf col-sm-6 col-lg-2">
-            <input type="number" className="form-control" value={minConfidence} placeholder="Min confidence" onChange={onMinConfidenceChange} />
+            <input type="number" name="searchMinConfidence" className="form-control" value={minConfidence} placeholder="Min confidence" onChange={onInputChange} />
           </div>
           <div className="max-conf col-sm-6 col-lg-2">
-            <input type="number" className="form-control" value={maxConfidence} placeholder="Max confidence" onChange={onMaxConfidenceChange} />
+            <input type="number" name="searchMaxConfidence" className="form-control" value={maxConfidence} placeholder="Max confidence" onChange={onInputChange} />
           </div>
           <div className="min-conf col-sm-6 col-lg-2">
-            <input type="number" className="form-control" value={minSeqLen} placeholder="Min seq len" onChange={onMinSeqLenChange} />
+            <input type="number" name="searchMinSeqLen" className="form-control" value={minSeqLen} placeholder="Min seq len" onChange={onInputChange} />
           </div>
           <div className="max-conf col-sm-6 col-lg-2">
-            <input type="number" className="form-control" value={maxSeqLen} placeholder="Max seq len" onChange={onMaxSeqLenChange} />
+            <input type="number" name="searchMaxSeqLen" className="form-control" value={maxSeqLen} placeholder="Max seq len" onChange={onInputChange} />
           </div>
           <div className="apply col-sm-6 col-lg-1 text-center">
             <button className="btn btn-primary" onClick={onApplyFiltersAndSearchClick}>Go</button>
@@ -110,16 +108,10 @@ UserDataFilters.propTypes = {
   property: PropTypes.object.isRequired,
   onPropertyChange: PropTypes.func.isRequired,
   fromDate: PropTypes.string.isRequired,
-  onFromDateChange: PropTypes.func.isRequired,
   toDate: PropTypes.string.isRequired,
-  onToDateChange: PropTypes.func.isRequired,
   latex: PropTypes.string.isRequired,
-  onLatexChange: PropTypes.func.isRequired,
-  onMinConfidenceChange: PropTypes.func.isRequired,
-  onMaxConfidenceChange: PropTypes.func.isRequired,
   user: PropTypes.string.isRequired,
-  onUserChange: PropTypes.func.isRequired,
+  onInputChange: PropTypes.func.isRequired,
   onApplyFiltersAndSearchClick: PropTypes.func.isRequired,
   group: PropTypes.string.isRequired,
-  onGroupChange: PropTypes.func.isRequired
 };

@@ -23,6 +23,7 @@ export default class DataBody extends Component {
               annotator={item.username}
               annoList={item.anno_list}
               text={item.text || ""}
+              session_id={item.session_id}
               dataset={item.dataset}
               imagePath={item.image_path}
               properties={item.properties}

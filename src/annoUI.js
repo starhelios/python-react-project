@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { cloneDeep, get as _get } from 'lodash';
+import { cloneDeep, get as _get, sum, findIndex } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
 import consts from './libs/consts';
@@ -19,6 +19,7 @@ const dataset = window.__DATASET__;
 const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'lines': 'lines_anno' };
 const UIID = dataset_to_ui[dataset];
 const UIController = UIs[UIID] || UIs['default'];
+const DEFAULT_BOX_CHAR_SIZE = 20;
 
 class AnnotationUI extends Component {
   constructor(...args) {
@@ -38,6 +39,7 @@ class AnnotationUI extends Component {
       alert: null,
       char_size: null,
       char_size_predicted: null,
+      isChangedSize: false,
     };
     this.uiController = new UIController(this);
     this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
@@ -119,19 +121,15 @@ class AnnotationUI extends Component {
         this.setState({ char_size: parseFloat(char_size * 1.1) });
       }
     }
-
     // TODO: not sure this is even necessary here
     if (document.activeElement.id !== this.textEditId) {
       return;
     }
-
     const that = this;
-
     if (event.ctrlKey && event.key === 'm') {
       event.preventDefault();
       that.onNext();
     }
-
     if (event.ctrlKey && event.key === 'k') {
       event.preventDefault();
       that.uiController.markDone(function () {
@@ -141,24 +139,27 @@ class AnnotationUI extends Component {
 
   }
 
-  onCharSizeChange(eventType, annotation) {
-    let char_size = this.state.char_size;
-
-    if (eventType === 'CharSizePlus') {
-      char_size = char_size * 1.1;
-      console.log('CharSizePlus', char_size);
-    }
-    if (eventType === 'CharSizeMinus') {
-      char_size = char_size * 0.9;
-      console.log('CharSizeMinus', char_size);
-    }
-
-    this.setState({char_size});
-  }
+  averageCharSize(list) {
+    const sizes = list.map(i => {
+      return i.charSize ? i.charSize : DEFAULT_BOX_CHAR_SIZE;
+    });
+    return sum(sizes) / list.length;
+  };
 
   onAnnoChange(eventType, annotation) {
+    const boxes = {};
+
+    this.state.annoList.forEach((i) => {
+      if (!boxes[i.boxId]) {
+        boxes[i.boxId] = [];
+      }
+        boxes[i.boxId].push(i);
+    });
+
+    let char_size = null;
     annotation.isUpdated = true;
     annotation.text = annotation.text && annotation.text.trim();
+
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
       annotation.shapes[0].style = {
@@ -169,22 +170,29 @@ class AnnotationUI extends Component {
         annotation.text = '';
       }
     }
+    let eventTypeFinal = eventType;
 
-    let eventTypeFinal = eventType
+    if (boxes[annotation.boxId]) {
+      const isCharSizeChanged = boxes[annotation.boxId].findIndex(({charSize}) => charSize !== null);
+      if(isCharSizeChanged !== -1)
+        char_size = this.averageCharSize(boxes[annotation.boxId]);
+    }
 
     if (eventType === 'CharSizePlus') {
-      annotation.charSize = (annotation.charSize || annotation.charSizeTmp || 20)  * 1.17;
+      char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 1.17;
       eventTypeFinal = 'Updated';
     }
 
     if (eventType === 'CharSizeMinus') {
-      annotation.charSize = (annotation.charSize || annotation.charSizeTmp || 20) * 0.83;
+      char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 0.83;
       eventTypeFinal = 'Updated';
     }
 
+    annotation.charSize = char_size;
+
     let annoList = cloneDeep(anno.getAnnotations());
     // recompute charSize
-    let char_size = this.state.char_size;
+
     const eqnAnnoList = annoList.filter(anno => (anno.boxId == 'equations'));
     const notEqnAnnoList = annoList.filter(anno => (anno.boxId !== 'equations'));
     // TODO: fix this horrible hack to remove duplicates
@@ -197,7 +205,6 @@ class AnnotationUI extends Component {
       annoList,
       unsaved: true
     }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventTypeFinal, annotation); });
-
   }
 
   setBoxType(boxType) {
@@ -221,7 +228,6 @@ class AnnotationUI extends Component {
     if (this.state.loadUIApiStatus !== consts.API_LOADED_SUCCESS || this.state.loadDataApiStatus !== consts.API_LOADED_SUCCESS) {
       return;
     }
-
     this.uiController.onSave && this.uiController.onSave();
   }
 
@@ -248,13 +254,6 @@ class AnnotationUI extends Component {
     });
   }
 
-  onTextFieldChange(fieldSchema, event) {
-    this.setState({
-      [fieldSchema.id]: event.currentTarget.value,
-      unsaved: true
-    }, () => { this.uiController.onTextFieldChange && this.uiController.onTextFieldChange(fieldSchema, event); });
-  }
-
   onDropdownFieldChange(fieldSchema, event) {
     this.setState({
       [fieldSchema.id]: event.currentTarget.value,
@@ -276,18 +275,15 @@ class AnnotationUI extends Component {
     } else {
       fieldState = fieldState.filter(checkedOption => checkedOption !== option.value);
     }
-
     this.setState({
       [field.id]: fieldState,
       unsaved: true
     }, () => { this.uiController.onMultiChoiceFieldChange && this.uiController.onMultiChoiceFieldChange(field, option, event); });
-
     event.currentTarget.blur();
   }
 
   onTextFieldChange(e) {
     const that = this;
-
     this.setState({ [that.textEditId]: e.currentTarget.value, unsaved: true }, function () {
       if (that.textRenderTimeoutID) {
         clearTimeout(that.textRenderTimeoutID);
@@ -475,6 +471,7 @@ class AnnotationUI extends Component {
   // }
 
   render() {
+
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
@@ -494,6 +491,7 @@ class AnnotationUI extends Component {
 
     // compute resized image bounds
     var char_size = this.state.char_size || this.state.char_size_predicted;
+
     var effScale;
     var resizedImageWidth;
     var resizedImageHeight;

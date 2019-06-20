@@ -12,12 +12,16 @@ export default class UserDataRow extends Component {
 
   constructor(...args) {
     super(...args);
-
     this.state = { queuing: false };
-
     this.onQueueClick = this.onQueueClick.bind(this);
     this.onImageClick = this.onImageClick.bind(this);
   }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if(this.state.queuing === nextState.queuing )
+      return false;
+    return true;
+  };
 
   onImageClick(e) {
     this.setState({ queuing: true });
@@ -26,7 +30,7 @@ export default class UserDataRow extends Component {
     });
   }
 
-  onQueueClick(dataset) {
+  onQueueClick = dataset => () => {
     this.setState({ queuing: true });
     this.props.queueImage(this.props.image, dataset, () => {
       this.setState({ queuing: false });
@@ -42,7 +46,6 @@ export default class UserDataRow extends Component {
     const linesEditURL = "/annotate/lines?sessionID=" + image.image_id;
     const imageURL = consts.S3BUCKET_URL + image.image_id + '.jpg';
     // const detectionMap = get(properties, 'detection_map');
-    let propsStr = "";
     const confidence = image.confidence || 0.0;
     let latexEl = "";
     if (image.result.text) {
@@ -79,7 +82,7 @@ export default class UserDataRow extends Component {
               </div>
               :
               <div>
-                <button type="button" className="btn btn-info btn-queue" onClick={() => this.onQueueClick('mathpix')} disabled={this.state.queuing}>
+                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('mathpix')}>
                   {
                     this.state.queuing || image.is_queueing ?
                       <img src="/static/img/spinner-sm.gif" />
@@ -88,7 +91,7 @@ export default class UserDataRow extends Component {
                   }
                 </button>
                 <p></p>
-                <button type="button" className="btn btn-info btn-queue" onClick={() => this.onQueueClick('limi')} disabled={this.state.queuing}>
+                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('limi')}>
                   {
                     this.state.queuing || image.is_queueing ?
                       <img src="/static/img/spinner-sm.gif" />
@@ -97,7 +100,7 @@ export default class UserDataRow extends Component {
                   }
                 </button>
                 <p></p>
-                <button type="button" className="btn btn-info btn-queue" onClick={() => this.onQueueClick('lines')} disabled={this.state.queuing}>
+                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('lines')}>
                   {
                     this.state.queuing || image.is_queueing ?
                       <img src="/static/img/spinner-sm.gif" />
