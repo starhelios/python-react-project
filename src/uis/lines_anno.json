@@ -19,7 +19,7 @@
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Line",
+            "label": "Text line",
             "id": "line",
             "has_text": false,
             "marker_width": "3",
@@ -33,6 +33,7 @@
             "id": "equation",
             "has_text": false,
             "marker_width": "3",
+            "has_char_size": true,
             "color": "#e6194B"
           },
           {
@@ -42,6 +43,7 @@
             "id": "equation_block",
             "has_text": false,
             "marker_width": "3",
+            "has_char_size": true,
             "color": "#800000"
           },
           {
@@ -51,6 +53,7 @@
             "id": "header",
             "has_text": false,
             "marker_width": "3",
+            "has_char_size": true,
             "color": "#F4D03F"
           },
           {
@@ -60,6 +63,7 @@
             "id": "equation_number",
             "has_text": false,
             "marker_width": "3",
+            "has_char_size": true,
             "color": "#000075"
           }
         ]
