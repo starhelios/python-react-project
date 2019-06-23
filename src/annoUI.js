@@ -16,7 +16,7 @@ require('./styles/annoUI.scss');
 
 import UIs from './uis';
 const dataset = window.__DATASET__;
-const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'lines': 'lines_anno' };
+const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'triage': 'triage_anno' };
 const UIID = dataset_to_ui[dataset];
 const UIController = UIs[UIID] || UIs['default'];
 const DEFAULT_BOX_CHAR_SIZE = 20;
