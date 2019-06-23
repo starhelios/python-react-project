@@ -84,8 +84,8 @@ def requires_api_auth(f):
             abort(403)
     return decorated
 
-def get_image_dim(session_id):
-    URL = 'https://s3.amazonaws.com/mpxdata/eqn_images/' + session_id + '.jpg'
+def get_image_dim(image_path):
+    URL = 'https://s3.amazonaws.com/mpxdata/' + image_path
     file_cur = cStringIO.StringIO(urllib.urlopen(URL).read())
     image = Image.open(file_cur)
     cols, rows = image.size
@@ -512,12 +512,13 @@ def get_predicted_properties(image_id):
     text = result.get('text', None)
     if text is None:
         text = "\\[ %s \\]" % latex_anno
+    image_path = 'eqn_images/' + image_id.rstrip('_triage') + '.jpg'
     data = {
         'latex_confidence': result.get('latex_confidence', -1.),
         'latex': latex_anno,
         'text': text,
         'anno_list': None,
-        'image_path': 'eqn_images/' + image_id + '.jpg',
+        'image_path': image_path,
         'group_id': group_id,
         'session_id': image_id,
         'char_size_predicted': internal.get('char_size', None)
@@ -527,7 +528,7 @@ def get_predicted_properties(image_id):
         data[detection] = True
     # get image coordinates
     eqn_position = result.get('position', {})
-    (cols, rows) = get_image_dim(image_id)
+    (cols, rows) = get_image_dim(image_path)
     data['image_width'] = cols
     data['image_height'] = rows
     data['metadata'] = request_args.get('metadata', {})
@@ -537,7 +538,8 @@ def get_predicted_properties(image_id):
         w = eqn_position['width'] / float(cols)
         h = eqn_position['height'] / float(rows)
         if (x, y, w, h) != (0, 0, 0, 0):
-            anno = create_anno(image_id, 'eqn', x, y, w, h)
+            base_path = os.path.basename(image_path)
+            anno = create_anno(base_path, 'eqn', x, y, w, h)
             data['anno_list'] = [anno]
     anno_list = data.get('anno_list', [])
     if anno_list is None:
@@ -605,8 +607,8 @@ def user(user_id):
 def admin():
     return render_template("admin.html")
 
-def create_anno(session_id, text, x, y, w, h):
-    anno = {"src": session_id + '.jpg',
+def create_anno(image_basepath, text, x, y, w, h):
+    anno = {"src": image_basepath,
             "text": text,
             "shapes": [
                 {
@@ -660,6 +662,7 @@ def get_graph():
 @application.route('/api/queue-image', methods=['POST'])
 @requires_auth
 def queue_equation():
+    # NOTE: currently only suitable for OCR / TRIAGE datasets
     data = request.get_json(cache=False)
     image = data['image']
     update_log = data.get('update_log', False)
@@ -669,12 +672,21 @@ def queue_equation():
     request_args = image['request_args']
     group_id = image['group_id']
     queue = data.get('queue', MAIN_QUEUE)
-    dataset = data.get('dataset', 'mathpix')
     db = get_db()
     cur = db.cursor()
+    # insert for mathpix dataset
+    dataset = 'mathpix'
     query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
     query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
     cur.execute(query, (image_id, json.dumps(result, default=str),
+                        json.dumps(request_args, default=str),
+                        json.dumps(internal, default=str),
+                        queue, group_id))
+    # duplicate for triage dataset
+    dataset = 'triage'
+    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
+    query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
+    cur.execute(query, (image_id + "_triage", json.dumps(result, default=str),
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
                         queue, group_id))
@@ -800,7 +812,8 @@ def latexToS3():
        'char_size, image_width, image_height, contains_foreign_alphabet, dataset) ',
        'VALUES %s')
     query = "".join(query)
-    col, row = get_image_dim(session_id)
+    image_path = 'eqn_images/' + session_id + '.jpg'
+    col, row = get_image_dim(image_path)
     anno_list = json.dumps([
         {"src": image_path,
          "text": "",

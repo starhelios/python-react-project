@@ -1,5 +1,5 @@
 {
-  "ui-id": "lines_anno",
+  "ui-id": "triage_anno",
   "schema": {
     "fields": [
       { "type": "multi-choice", "label": "Image properties", "id": "image_properties", "colspan": 6 },

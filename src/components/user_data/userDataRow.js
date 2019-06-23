@@ -42,8 +42,7 @@ export default class UserDataRow extends Component {
     //         is_queued, group, user_id, is_queueing } = this.props.image_data;
     const image = this.props.image;
     const mathpixEditURL = "/annotate/mathpix?sessionID=" + image.image_id;
-    const limiEditURL = "/annotate/limi?sessionID=" + image.image_id;
-    const linesEditURL = "/annotate/lines?sessionID=" + image.image_id;
+    const triageEditURL = "/annotate/triage?sessionID=" + image.image_id + "_triage";
     const imageURL = consts.S3BUCKET_URL + image.image_id + '.jpg';
     // const detectionMap = get(properties, 'detection_map');
     const confidence = image.confidence || 0.0;
@@ -74,10 +73,7 @@ export default class UserDataRow extends Component {
                   <a className="edit-link" target="_blank" href={mathpixEditURL}>Mathpix edit</a>
                 </p>
                 <p>
-                  <a className="edit-link" target="_blank" href={limiEditURL}>Limi edit</a>
-                </p>
-                <p>
-                  <a className="edit-link" target="_blank" href={linesEditURL}>Lines edit</a>
+                  <a className="edit-link" target="_blank" href={triageEditURL}>Triage edit</a>
                 </p>
               </div>
               :
@@ -87,25 +83,7 @@ export default class UserDataRow extends Component {
                     this.state.queuing || image.is_queueing ?
                       <img src="/static/img/spinner-sm.gif" />
                       :
-                      'Queue mathpix'
-                  }
-                </button>
-                <p></p>
-                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('limi')}>
-                  {
-                    this.state.queuing || image.is_queueing ?
-                      <img src="/static/img/spinner-sm.gif" />
-                      :
-                      'Queue limi'
-                  }
-                </button>
-                <p></p>
-                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('lines')}>
-                  {
-                    this.state.queuing || image.is_queueing ?
-                      <img src="/static/img/spinner-sm.gif" />
-                      :
-                      'Queue lines'
+                      'Queue Mathpix'
                   }
                 </button>
               </div>
