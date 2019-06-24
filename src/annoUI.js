@@ -140,10 +140,12 @@ class AnnotationUI extends Component {
   }
 
   averageCharSize(list) {
-    const sizes = list.map(i => {
-      return i.charSize ? i.charSize : DEFAULT_BOX_CHAR_SIZE;
-    });
-    return sum(sizes) / list.length;
+    const sizes = list.filter(i => i.charSize).map(i => i.charSize);
+    if (sizes.length == 0) {
+      return DEFAULT_BOX_CHAR_SIZE;
+    }
+    const avg = sum(sizes) / list.length;
+    return avg;
   };
 
   onAnnoChange(eventType, annotation) {
@@ -176,6 +178,8 @@ class AnnotationUI extends Component {
       const isCharSizeChanged = boxes[annotation.boxId].findIndex(({charSize}) => charSize !== null);
       if(isCharSizeChanged !== -1)
         char_size = this.averageCharSize(boxes[annotation.boxId]);
+    } else {
+      char_size = this.averageCharSize(this.state.annoList);
     }
 
     if (eventType === 'CharSizePlus') {
