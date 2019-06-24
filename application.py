@@ -435,9 +435,7 @@ def save():
             'image_height', 'image_width', 'fully_boxed',
             'group_id', 'contains_foreign_alphabet', 'verified_by',
             'metadata', 'is_verified', 'queue', 'char_size',
-            'is_printed', 'is_inverted', 'contains_words', 'contains_geometry',
-            'contains_table', 'contains_equation', 'contains_header',
-            'contains_graph', 'contains_chart', 'contains_diagram']
+            'is_printed', 'is_inverted', 'contains_table']
     json_data_final = {}
     for (key, val) in json_data_copy.iteritems():
         if key not in keys:
@@ -808,7 +806,7 @@ def latexToS3():
        'INSERT INTO TrainingEquations ',
        '(username, datetime, image_path, session_id, text, is_good, ',
        'contains_words, contains_geometry, contains_table, is_inverted, is_printed, ',
-       'contains_equation, anno_list, group_id, char_size_predicted, ',
+       'anno_list, group_id, char_size_predicted, ',
        'char_size, image_width, image_height, contains_foreign_alphabet, dataset) ',
        'VALUES %s')
     query = "".join(query)
@@ -826,7 +824,7 @@ def latexToS3():
     data_list = []
     dataset = "mathpix"
     data_list.append([username, now, 'eqn_images/' + image_path, session_id, text,
-                      is_good, False, False, False, False, True, True, anno_list,
+                      is_good, False, False, False, False, True, anno_list,
                       group_id, 14.5, 14.5, col, row, False, dataset])
     psycopg2.extras.execute_values(cur, query, data_list, template=None, page_size=100)
     db.commit()
