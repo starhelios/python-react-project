@@ -107,7 +107,7 @@
     "image_name": "First equation",
     "image_type": "math",
     "is_good": true,
-    "image_properties": ["is_text_only", "contains_equation"],
+    "image_properties": [],
     "info_properties": ["is_printed"],
     "image": { "url": "http://static4.businessinsider.com/image/587fbec3ee14b6c7148b892e-1495" },
     "username": "George",

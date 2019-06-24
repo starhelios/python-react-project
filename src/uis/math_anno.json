@@ -19,41 +19,11 @@
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Math char box",
-            "id": "chars",
-            "has_text": true,
-            "marker_width": "1",
-            "color": "#0000FF",
-            "has_char_size": false
-          },
-          {
-            "type": "bbox",
-            "geometry": "box",
-            "label": "Text word box",
-            "id": "text",
-            "has_text": false,
-            "marker_width": "2",
-            "color": "#009933",
-            "has_char_size": false
-          },
-          {
-            "type": "bbox",
-            "geometry": "box",
             "label": "Equation bounding box",
             "id": "equations",
             "has_text": false,
             "marker_width": "2",
             "color": "#FF0000",
-            "has_char_size": false
-          },
-          {
-            "type": "bbox",
-            "geometry": "box",
-            "label": "Header",
-            "id": "header",
-            "has_text": true,
-            "marker_width": "2",
-            "color": "#F4D03F",
             "has_char_size": false
           }
         ]
@@ -73,15 +43,7 @@
     },
     "image_properties": {
       "options": [
-        { "value": "is_text_only", "label": "Is text dominant.", "help": "Mostly just contains text." },
-        { "value": "contains_geometry", "label": "Contains geometry problem or a graph", "disabled": true, "help": "Is automatically set to true whenever one of the following 3 options is true." },
-        { "value": "contains_graph", "label": "Contains graph", "help": "2D or 3D graph." },
-        { "value": "contains_chart", "label": "Contains chart", "help": "Visualization of discrete dataset." },
-        { "value": "contains_diagram", "label": "Contains diagram", "help": "Contains diagram." },
-        { "value": "contains_table", "label": "Contains table", "help": "Contains a gridded table - does not include matrices which are math." },
-        { "value": "contains_foreign_alphabet", "label": "Contains foreign alphabet", "disabled": false, "help": "Is set to true automatically when there is Chinese / Russian / other alphabets as the main text in the image." },
-        { "value": "fully_boxed", "label": "Fully boxed", "help": "Not missing any math character boxes." },
-        { "value": "contains_equation", "label": "Contains equation", "disabled": true, "help": "Is set to true automatically when there is an equation box in image." }
+        { "value": "contains_table", "label": "Contains table", "help": "Contains a gridded table - does not include matrices which are math." }
       ],
       "default": []
     },
@@ -98,7 +60,7 @@
     "image_name": "First equation",
     "image_type": "math",
     "is_good": true,
-    "image_properties": ["is_text_only", "contains_equation"],
+    "image_properties": [],
     "info_properties": ["is_printed"],
     "image": { "url": "http://static4.businessinsider.com/image/587fbec3ee14b6c7148b892e-1495" },
     "username": "George",

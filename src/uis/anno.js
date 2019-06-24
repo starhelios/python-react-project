@@ -39,7 +39,7 @@ class UIController extends BaseUIController {
     parsed.is_verified = data.is_verified;
     parsed.verified_by = data.verified_by;
     parsed.image_height = data.image_height;
-    parsed.char_size = data.char_size || data.char_size_predicted;
+    parsed.char_size = data.char_size || data.char_size_predicted || 20.;
     parsed.is_good = data.is_good;
     parsed.image_properties = that.options.image_properties.options.filter(option => data[option.value]).map(option => option.value);
     parsed.info_properties = that.options.info_properties.options.filter(option => data[option.value]).map(option => option.value);
@@ -61,10 +61,6 @@ class UIController extends BaseUIController {
     }
     parsed.annoList = data.anno_list || [];
     parsed.metadata = data.metadata || [];
-    const contains_equation = parsed.annoList.some(box => box.boxId === 'equations');
-    parsed.image_properties = contains_equation ? _union(parsed.image_properties, ['contains_equation'])
-      : _without(parsed.image_properties, 'contains_equation');
-
     return parsed;
   }
 
@@ -106,12 +102,6 @@ class UIController extends BaseUIController {
     const that = this.component;
     // validate contains_geometry
     const imgProps = that.state.image_properties;
-    const containsGeometryShouldBe = imgProps.indexOf('contains_graph') > -1 || imgProps.indexOf('contains_chart') > -1 ||
-      imgProps.indexOf('contains_diagram') > -1 || imgProps.indexOf('contains_table') > -1 ;
-    if ((imgProps.indexOf('contains_geometry') > -1) !== containsGeometryShouldBe) {
-      that.showAlert('danger', 'Please select geometry properties correctly.');
-      return false;
-    }
     let text_raw = that.state[that.textEditId];
     text_raw = text_raw.replace("\\[", "");
     text_raw = text_raw.replace("\\]", "");
@@ -119,6 +109,10 @@ class UIController extends BaseUIController {
     console.log(text_raw);
     if (that.state.annoList.length == 0 && text_raw.length > 0) {
       that.showAlert('danger', 'Please create equation box(es) or delete all text.');
+      return false;
+    }
+    if (!that.state.char_size) {
+      that.showAlert('danger', 'Please set char_size (modify if necessary).');
       return false;
     }
     return true;
@@ -177,22 +171,11 @@ class UIController extends BaseUIController {
   }
 
   onMultiChoiceFieldChange(field, option, event) {
-    const that = this.component;
-    if (field.id === 'image_properties') {
-      let imgProps = that.state.image_properties;
-      const contains_geometry = imgProps.indexOf('contains_graph') > -1 || imgProps.indexOf('contains_chart') > -1 ||
-        imgProps.indexOf('contains_diagram') > -1 || imgProps.indexOf('contains_table') > -1 ;
-      imgProps = contains_geometry ? _union(imgProps, ['contains_geometry']) : _without(imgProps, 'contains_geometry');
-      that.setState({ 'image_properties': imgProps });
-    }
   }
 
   onAnnoChange(eventType, annotation) {
     const that = this.component;
     let imgProps = that.state.image_properties;
-    const contains_equation = that.state.annoList.some(box => box.boxId === 'equations');
-    imgProps = contains_equation ? _union(imgProps, ['contains_equation']) : _without(imgProps, 'contains_equation');
-    that.setState({ 'image_properties': imgProps });
   }
 
 }
