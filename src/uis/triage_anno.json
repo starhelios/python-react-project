@@ -48,6 +48,16 @@
           },
           {
             "type": "bbox",
+            "geometry": "polygon",
+            "label": "Text line (polygon)",
+            "id": "line_polygon",
+            "has_text": false,
+            "marker_width": "3",
+            "has_char_size": true,
+            "color": "#3cb44b"
+          },
+          {
+            "type": "bbox",
             "geometry": "box",
             "label": "Equation block",
             "id": "equation_block",
@@ -65,6 +75,26 @@
             "marker_width": "3",
             "has_char_size": true,
             "color": "#000075"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Table",
+            "id": "table",
+            "has_text": false,
+            "marker_width": "3",
+            "has_char_size": true,
+            "color": "#eb42f4"
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Diagram",
+            "id": "diagram",
+            "has_text": false,
+            "marker_width": "3",
+            "has_char_size": true,
+            "color": "#02b3ff"
           }
         ]
       }
@@ -83,11 +113,14 @@
     },
     "image_properties": {
       "options": [
+        { "value": "contains_foreign_alphabet", "label": "Contains foreign alphabet", "help": "Contains non-Latin alphabet (Russian, Chinese, Japenese, ...)" }
       ],
       "default": []
     },
     "info_properties": {
       "options": [
+        { "value": "is_printed", "label": "Printed", "help": "Main information is not handwritten." },
+        { "value": "is_inverted", "label": "Inverted", "help": "Light ink on dark background, eg. blackboards." }
       ],
       "default": []
     }

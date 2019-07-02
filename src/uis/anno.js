@@ -162,7 +162,6 @@ class UIController extends BaseUIController {
       annoList: [],
       annoUpdateHash: that.state.annoUpdateHash + 1,
       unsaved: true,
-      char_size: null
     }, () => { this.onAnnoChange(); });
   }
 

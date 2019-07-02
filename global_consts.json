@@ -2,7 +2,8 @@
   "IMAGE_PROPERTIES": {
     "is_good": "Is done.",
     "is_text_only": "Is text dominant.",
-    "contains_table": "Contains table"
+    "contains_table": "Contains table",
+    "contains_geometry": "Contains geometry"
   },
 
   "EQUATION_PROPERTIES": {
@@ -18,6 +19,7 @@
     "saved": "Previously saved by annotator",
     "contains_table": "Contains table",
     "contains_header": "Contains header",
+    "contains_geometry": "Contains geometry",
     "is_printed": "Printed (not handwritten)",
     "is_inverted": "Inverted (white on black)",
     "char_size_null": "char_size is null"
