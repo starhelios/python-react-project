@@ -281,18 +281,14 @@ def api_get_queue():
     cur = db.cursor(cursor_factory=DictCursor)
     cur.execute(countQuery, filters)
     queue = data_request_params['queue']
+    dataset = data_request_params['dataset']
     redis_db.delete(queue)
     for row in cur.fetchall():
         redis_db.rpush(queue, row[0])
-    # TODO: fix this crap
-    if 'limi' in queue:
-        redis_db.sadd('queues', queue)
-        redis_db.hset('queues_dataset', queue, 'limi')
-        url = 'annotate/limi?queue=' + queue
-    else:
-        redis_db.sadd('queues', queue)
-        redis_db.hset('queues_dataset', queue, 'mathpix')
-        url = 'annotate/mathpix?queue=' + queue
+    redis_db.sadd('queues', queue)
+    application.logger.info(dataset)
+    redis_db.hset('queues_dataset', queue, dataset)
+    url = 'annotate/' + dataset +  '?queue=' + queue
     return json.dumps({'success': True, 'error': '', 'url': url})
 
 
@@ -669,29 +665,34 @@ def queue_equation():
     internal = image['internal']
     request_args = image['request_args']
     group_id = image['group_id']
-    queue = data.get('queue', MAIN_QUEUE)
     db = get_db()
     cur = db.cursor()
     # insert for mathpix dataset
     dataset = 'mathpix'
+    queue = dataset
     query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
     query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
     cur.execute(query, (image_id, json.dumps(result, default=str),
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
                         queue, group_id))
+    redis_db.sadd('queues', queue)
+    redis_db.hset('queues_dataset', queue, dataset)
+    redis_db.rpush(queue, image_id)
     # duplicate for triage dataset
     dataset = 'triage'
+    queue = dataset
     query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
     query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
     cur.execute(query, (image_id + "_triage", json.dumps(result, default=str),
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
                         queue, group_id))
-    db.commit()
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset)
     redis_db.rpush(queue, image_id)
+    # commit to db, return response
+    db.commit()
     json_body = {'image_id': image_id, 'datetime': image['datetime']}
     if update_log is True:
         request_url = proxy_address + "/queue-image"
@@ -797,6 +798,7 @@ def latexToS3():
         LATEX_API_URL + '/text-to-s3',
         headers={"api-key": LATEX_API_KEY, "Content-type": "application/json"},
         data=json.dumps({"text": text})).json()
+    application.logger.info("Text API response: %s" % json.dumps(text_api_response))
     image_path = text_api_response['image_path']
     application.logger.info("Image path: %s" % image_path)
     session_id = image_path[:-4]
@@ -805,9 +807,9 @@ def latexToS3():
     query = (
        'INSERT INTO TrainingEquations ',
        '(username, datetime, image_path, session_id, text, is_good, ',
-       'contains_words, contains_geometry, contains_table, is_inverted, is_printed, ',
-       'anno_list, group_id, char_size_predicted, ',
-       'char_size, image_width, image_height, contains_foreign_alphabet, dataset) ',
+       'contains_geometry, contains_table, is_inverted, is_printed, ',
+       'anno_list, group_id, char_size, image_width, ' +
+       'image_height, contains_foreign_alphabet, dataset) ',
        'VALUES %s')
     query = "".join(query)
     image_path = 'eqn_images/' + session_id + '.jpg'
@@ -823,9 +825,9 @@ def latexToS3():
     now = 'NOW()'
     data_list = []
     dataset = "mathpix"
-    data_list.append([username, now, 'eqn_images/' + image_path, session_id, text,
-                      is_good, False, False, False, False, True, anno_list,
-                      group_id, 14.5, 14.5, col, row, False, dataset])
+    data_list.append([username, now, image_path, session_id, text,
+                      is_good, False, False, False, True, anno_list,
+                      group_id, 14.5, col, row, False, dataset])
     psycopg2.extras.execute_values(cur, query, data_list, template=None, page_size=100)
     db.commit()
     return json.dumps({'success': True, 'session_id': session_id})
