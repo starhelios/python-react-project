@@ -15,9 +15,9 @@ import { Router, Route, browserHistory } from 'react-router';
 require('./styles/annoUI.scss');
 
 import UIs from './uis';
-const dataset = window.__DATASET__;
+const DATASET = window.__DATASET__;
 const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'triage': 'triage_anno' };
-const UIID = dataset_to_ui[dataset];
+const UIID = dataset_to_ui[DATASET];
 const UIController = UIs[UIID] || UIs['default'];
 const DEFAULT_BOX_CHAR_SIZE = 20;
 
@@ -62,7 +62,7 @@ class AnnotationUI extends Component {
   componentWillMount() {
     this.uiController.loadUI(UIID, (err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
-      !err && this.uiController.loadData((err) => {
+      !err && this.uiController.loadData(DATASET, (err) => {
         err && typeof err === 'string' && console.log('Error: ', err);
         !err && this.setState({ [this.textRenderId]: this.state[this.textEditId] });
       });
@@ -237,10 +237,10 @@ class AnnotationUI extends Component {
 
   onNext() {
     const queue = this.uiController.queue || 'main';
-    this.uiController.loadData((err) => {
+    this.uiController.loadData(DATASET, (err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
       if (!err) {
-        browserHistory.push('/annotate/' + dataset + '?queue=' + queue + "&sessionID=" + this.uiController.sessionId);
+        browserHistory.push('/annotate/' + DATASET + '?queue=' + queue + "&sessionID=" + this.uiController.sessionId);
         this.setState({ [this.textRenderId]: this.state[this.textEditId] });
       }
     }, queue);
@@ -572,18 +572,18 @@ class AnnotationUI extends Component {
         }
 
         {
-          dataset != "mathpix" ? bboxSelectors : null
+          DATASET != "mathpix" ? bboxSelectors : null
         }
 
         {
-          dataset == "mathpix" ?
+          DATASET == "mathpix" ?
             <div style={{ textAlign: 'center' }}><h3>{propListStr}</h3></div>
             :
             null
         }
 
         {
-          dataset == "mathpix" ?
+          DATASET == "mathpix" ?
             this.renderLatexUI(effScale)
             :
             null
@@ -610,7 +610,7 @@ class AnnotationUI extends Component {
         }
 
         {
-          dataset == "mathpix" ? bboxSelectors : null
+          DATASET == "mathpix" ? bboxSelectors : null
         }
 
 
