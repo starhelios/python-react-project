@@ -472,12 +472,12 @@ def delete_queues(queue):
     redis_db.hdel('queues_dataset', queue)
     return json.dumps({"success": True})
 
-@application.route('/api/get-json/<path:session_id>', methods=['GET'])
+@application.route('/api/get-json/<dataset>/<path:session_id>', methods=['GET'])
 @requires_auth
-def get_json(session_id):
+def get_json(dataset, session_id):
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
-    cur.execute("SELECT * FROM TrainingEquations WHERE session_id=%s", (session_id,))
+    cur.execute("SELECT * FROM TrainingEquations WHERE session_id=%s AND dataset=%s", (session_id, dataset))
     rows = cur.fetchall()
     json_data = {}
     if len(rows) != 0:
@@ -486,15 +486,15 @@ def get_json(session_id):
             json_data[key] = data_row[key]
     else:
         application.logger.info("Using predicted annotations.")
-        json_data = get_predicted_properties(session_id)
+        json_data = get_predicted_properties(session_id, dataset)
     json_str = json.dumps(json_data, default=str)
     return json_str
 
-def get_predicted_properties(image_id):
+def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
-    cur.execute('SELECT result, request_args, internal, group_id FROM queues WHERE image_id=%s', (image_id,))
+    cur.execute('SELECT result, request_args, internal, group_id, dataset FROM queues WHERE image_id=%s AND dataset=%s', (image_id, dataset))
     item_list = cur.fetchone()
     if not item_list:
         return {}
@@ -502,6 +502,7 @@ def get_predicted_properties(image_id):
     request_args = item_list[1]
     internal = item_list[2]
     group_id = item_list[3]
+    dataset = item_list[4]
     latex_anno = internal.get('latex_anno', '')
     text = result.get('text', None)
     if text is None:
@@ -515,7 +516,8 @@ def get_predicted_properties(image_id):
         'image_path': image_path,
         'group_id': group_id,
         'session_id': image_id,
-        'char_size_predicted': internal.get('char_size', None)
+        'char_size_predicted': internal.get('char_size', None),
+        'dataset': dataset
     }
     detection_list = result.get('detection_list', [])
     for detection in detection_list:
@@ -670,27 +672,28 @@ def queue_equation():
     # insert for mathpix dataset
     dataset = 'mathpix'
     queue = dataset
-    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
-    query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
+    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id, dataset)'
+    query += ' VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
     cur.execute(query, (image_id, json.dumps(result, default=str),
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
-                        queue, group_id))
+                        queue, group_id, dataset))
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset)
     redis_db.rpush(queue, image_id)
     # duplicate for triage dataset
     dataset = 'triage'
+    image_id_triage = image_id + "_triage"
     queue = dataset
-    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id)'
-    query += ' VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
-    cur.execute(query, (image_id + "_triage", json.dumps(result, default=str),
+    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id, dataset)'
+    query += ' VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
+    cur.execute(query, (image_id_triage, json.dumps(result, default=str),
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
-                        queue, group_id))
+                        queue, group_id, dataset))
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset)
-    redis_db.rpush(queue, image_id)
+    redis_db.rpush(queue, image_id_triage)
     # commit to db, return response
     db.commit()
     json_body = {'image_id': image_id, 'datetime': image['datetime']}

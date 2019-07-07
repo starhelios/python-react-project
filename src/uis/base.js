@@ -64,8 +64,8 @@ export default class BaseUIController {
     });
   }
 
-  loadData(callback, queue) {
-    const apiUrl = queue ? '/api/dequeue-json/' + queue : this.LOAD_DATA_API_URL + this.sessionId + '?_=' + Date.now();
+  loadData(dataset, callback, queue) {
+    const apiUrl = queue ? '/api/dequeue-json/' + queue : this.LOAD_DATA_API_URL + dataset + "/" + this.sessionId + '?_=' + Date.now();
     const apiMethod = queue ? 'POST' : this.LOAD_DATA_API_METHOD;
     const data = { session_id: this.sessionId };
     const that = this.component;
