@@ -361,9 +361,9 @@ def api_get_datasets():
     }
     return json.dumps(result)
 
-@application.route('/api/dequeue-json/<queue_id>', methods=['POST'])
+@application.route('/api/dequeue-json/<dataset>/<queue_id>', methods=['POST'])
 @requires_auth
-def dequeue_json(queue_id):
+def dequeue_json(dataset, queue_id):
     json_data = request.get_json(cache=False)
     session_id_prev = json_data.get('session_id', None)
     db = get_db()
@@ -391,7 +391,7 @@ def dequeue_json(queue_id):
             json_data[key] = data_row[key]
     else:
         application.logger.info("Using predicted annotations.")
-        json_data = get_predicted_properties(session_id)
+        json_data = get_predicted_properties(session_id, dataset)
     json_data['queue_count'] = queue_count
     json_str = json.dumps(json_data, default=str)
     return json_str
@@ -507,7 +507,7 @@ def get_predicted_properties(image_id, dataset):
     text = result.get('text', None)
     if text is None:
         text = "\\[ %s \\]" % latex_anno
-    image_path = 'eqn_images/' + image_id.rstrip('_triage') + '.jpg'
+    image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
     data = {
         'latex_confidence': result.get('latex_confidence', -1.),
         'latex': latex_anno,
