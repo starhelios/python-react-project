@@ -12,13 +12,14 @@ export default class UserDataRow extends Component {
 
   constructor(...args) {
     super(...args);
-    this.state = { queuing: false };
+    this.state = { queuing: false, blocked: {} };
     this.onQueueClick = this.onQueueClick.bind(this);
     this.onImageClick = this.onImageClick.bind(this);
+    this.blockUser = this.blockUser.bind(this);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if(this.state.queuing === nextState.queuing )
+    if(this.state.queuing === nextState.queuing && this.state.blocked === nextState.blocked )
       return false;
     return true;
   };
@@ -34,6 +35,30 @@ export default class UserDataRow extends Component {
     this.setState({ queuing: true });
     this.props.queueImage(this.props.image, dataset, () => {
       this.setState({ queuing: false });
+    });
+  }
+
+  blockUser() {
+    const image = this.props.image || {};
+    const ips = image && image.internal && image.internal.ip || "";
+    const ipArr = ips && ips.split(",");
+    const payload = {"user_id": image.user_id, "ip": ipArr && ipArr[0] || '', "app_id": image.app_id}
+    
+    $.ajax({
+      url: "/api/block-user",
+      type: "POST",
+      data: JSON.stringify(payload),
+      contentType: "application/json; charset=utf-8",
+      success: function(data) {
+        if (data.success) {
+          const blocked = {...this.state.blocked};
+          blocked[image.user_id] = true;
+          this.setState({blocked});
+        } else {
+          this.setState({curStatus: "User Block failed!"});
+        }
+      }.bind(this),
+      dataType: "json"
     });
   }
 
@@ -59,6 +84,7 @@ export default class UserDataRow extends Component {
     delete imageResult.position;
     delete imageResult.detection_map;
     let internal = JSON.parse(JSON.stringify(image.internal));
+    const isBlocked = this.state.blocked[image.user_id]; // TODO update status here after implementing in dbase
 
     return (
       <tr style={{background: rowColor}}>
@@ -103,7 +129,13 @@ export default class UserDataRow extends Component {
         <td className="prop-col"><pre>{JSON.stringify(image.request_args, null, 2)}</pre></td>
         <td className="prop-col"><pre>{JSON.stringify(imageResult, null, 2)}</pre></td>
         <td className="prop-col"><pre>{JSON.stringify(internal, null, 2)}</pre></td>
-        <td className="user-col"><a target="_blank" href={"/user-data?user=" + image.user_id}>{image.user_id}</a></td>
+        <td className="user-col">
+          <a target="_blank" href={"/user-data?user=" + image.user_id}>{image.user_id}</a>
+          {isBlocked
+            ? <button type="button" className="btn btn-danger" disabled>Blocked User</button>
+            : <button type="button" className="btn btn-primary" onClick={this.blockUser}>Block User</button>
+          }
+        </td>
         <td className="group-col"><a target="_blank" href={"/user-data?group=" + image.group_id}>{image.group_id}</a></td>
         <td>{image.datetime && moment.utc(image.datetime).format('YYYY-MM-DD HH:mm')}</td>
       </tr>
