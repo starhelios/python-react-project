@@ -60,6 +60,27 @@ export default class UserDataBody extends Component {
     });
   }
 
+  unblockUser(item = {}) {
+    const ips = item && item.internal && item.internal.ip || "";
+    const ipArr = ips && ips.split(",");
+    const payload = {"user_id": item.user_id, "ip": ipArr && ipArr[0] || '', "app_id": item.app_id}
+
+    $.ajax({
+      url: "/api/unblock-user",
+      type: "POST",
+      data: JSON.stringify(payload),
+      contentType: "application/json; charset=utf-8",
+      success: function(data) {
+        if (data.success) {
+          const blocked = {...this.state.blocked};
+          blocked[item.user_id] = false;
+          this.setState({blocked});
+        }
+      }.bind(this),
+      dataType: "json"
+    });
+  }
+
   render() {
     return (
       <tbody>
@@ -73,7 +94,14 @@ export default class UserDataBody extends Component {
           const isBlocked = this.state.blocked[item.user_id] || alreadyBlocked; // TODO update status here after implementing in dbase
 
           return (
-            <UserDataRow key={index} image={item} queueImage={this.props.queueImage} isBlocked={isBlocked} onBlockUser={() => this.blockUser(item)} />
+            <UserDataRow
+              key={index}
+              image={item}
+              queueImage={this.props.queueImage}
+              isBlocked={isBlocked}
+              onBlockUser={() => this.blockUser(item)}
+              onUnblockUser={() => this.unblockUser(item)}
+            />
           )
         })
       }
