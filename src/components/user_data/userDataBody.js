@@ -42,7 +42,8 @@ export default class UserDataBody extends Component {
   blockUser(item = {}) {
     const ips = item && item.internal && item.internal.ip || "";
     const ipArr = ips && ips.split(",");
-    const payload = {"user_id": item.user_id, "ip": ipArr && ipArr[0] || '', "app_id": item.app_id}
+    // TODO: fix the hardcoding
+    const payload = {"user_id": item.user_id, "ip": ipArr && ipArr[0] || '', "app_id": "mathpix_chrome"}
 
     $.ajax({
       url: "/api/block-user",
@@ -63,7 +64,8 @@ export default class UserDataBody extends Component {
   unblockUser(item = {}) {
     const ips = item && item.internal && item.internal.ip || "";
     const ipArr = ips && ips.split(",");
-    const payload = {"user_id": item.user_id, "ip": ipArr && ipArr[0] || '', "app_id": item.app_id}
+    // TODO: fix hardcoded values
+    const payload = {"user_id": item.user_id, "ip": ipArr && ipArr[0] || '', "app_id": "mathpix_chrome"}
 
     $.ajax({
       url: "/api/unblock-user",
