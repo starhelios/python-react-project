@@ -107,7 +107,7 @@ export default class UserDataRow extends Component {
           <a target="_blank" href={"/user-data?user=" + image.user_id}>{image.user_id}</a>
           {this.props.isBlocked
             ? <button type="button" className="btn btn-danger" onClick={this.props.onUnblockUser}>Unblock User</button>
-            : <button type="button" className="btn btn-primary" onClick={this.props.onBlockUser}>Block User</button>
+            : (this.props.isBlocked > -1 ? <button type="button" className="btn btn-primary" onClick={this.props.onBlockUser}>Block User</button> : null)
           }
         </td>
         <td className="group-col"><a target="_blank" href={"/user-data?group=" + image.group_id}>{image.group_id}</a></td>
