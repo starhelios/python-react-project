@@ -886,68 +886,6 @@ def other3(other):
                               status=r.status_code)
     return flask_response
 
-@application.route('/block-user', methods=['POST'])
-@requires_auth
-def block_ip():
-    # only relevant for mathpix_chrome!
-    application.logger.info("Block user.")
-    json_data = request.get_json(cache=False)
-    app_id = json_data['app_id']
-    ip = json_data.get('ip', None)
-    user_id = json_data.get('user_id', None)
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT properties FROM appkeys WHERE app_id=%s", (app_id, ))
-    properties = cur.fetchone()[0]
-    if user_id is None and ip is None:
-        return json.dumps({"success": False, "error": "Must specify user_id or ip"})
-    if ip is not None:
-        if "ip" in properties:
-            if ip not in properties["ip"]:
-                properties["ip"].append(ip)
-        else:
-            properties["ip"] = [ip]
-    if user_id is not None:
-        if "user_id_list" in properties:
-            if user_id not in properties["user_id_list"]:
-                properties["user_id_list"].append(user_id)
-        else:
-            properties["user_id_list"] = [user_id]
-    cur.execute("UPDATE appkeys SET properties=%s WHERE app_id=%s", (json.dumps(properties), app_id))
-    db.commit()
-    return json.dumps({"success": True})
-
-@application.route('/unblock-user', methods=['POST'])
-@requires_auth
-def unblock_ip():
-    # only relevant for mathpix_chrome!
-    application.logger.info("Unblock user.")
-    json_data = request.get_json(cache=False)
-    app_id = json_data['app_id']
-    ip = json_data.get('ip', None)
-    user_id = json_data.get('user_id', None)
-    db = get_db()
-    cur = db.cursor()
-    cur.execute("SELECT properties FROM appkeys WHERE app_id=%s", (app_id, ))
-    properties = cur.fetchone()[0]
-    if user_id is None and ip is None:
-        return json.dumps({"success": False, "error": "Must specify user_id or ip"})
-    update = False
-    if ip is not None:
-        if "ip" in properties:
-            if ip in properties["ip"]:
-                properties["ip"].remove(ip)
-                update = True
-    if user_id is not None:
-        if "user_id_list" in properties:
-            if user_id in properties["user_id_list"]:
-                properties["user_id_list"].remove(user_id)
-                update = True
-    if update is True:
-        cur.execute("UPDATE appkeys SET properties=%s WHERE app_id=%s", (json.dumps(properties), app_id))
-        db.commit()
-    return json.dumps({"success": True})
-
 
 application.secret_key = '1IjhrtKRRiOeY9B'
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
