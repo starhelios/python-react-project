@@ -886,6 +886,7 @@ def other3(other):
                               status=r.status_code)
     return flask_response
 
+
 application.secret_key = '1IjhrtKRRiOeY9B'
 application.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 parser = argparse.ArgumentParser()
