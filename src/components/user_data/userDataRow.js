@@ -18,7 +18,7 @@ export default class UserDataRow extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if(this.state.queuing === nextState.queuing )
+    if(this.state.queuing === nextState.queuing && this.props.isBlocked === nextProps.isBlocked )
       return false;
     return true;
   };
@@ -103,7 +103,13 @@ export default class UserDataRow extends Component {
         <td className="prop-col"><pre>{JSON.stringify(image.request_args, null, 2)}</pre></td>
         <td className="prop-col"><pre>{JSON.stringify(imageResult, null, 2)}</pre></td>
         <td className="prop-col"><pre>{JSON.stringify(internal, null, 2)}</pre></td>
-        <td className="user-col"><a target="_blank" href={"/user-data?user=" + image.user_id}>{image.user_id}</a></td>
+        <td className="user-col">
+          <a target="_blank" href={"/user-data?user=" + image.user_id}>{image.user_id}</a>
+          {this.props.isBlocked
+            ? <button type="button" className="btn btn-danger" onClick={this.props.onUnblockUser}>Unblock User</button>
+            : (this.props.isBlocked > -1 ? <button type="button" className="btn btn-primary" onClick={this.props.onBlockUser}>Block User</button> : null)
+          }
+        </td>
         <td className="group-col"><a target="_blank" href={"/user-data?group=" + image.group_id}>{image.group_id}</a></td>
         <td>{image.datetime && moment.utc(image.datetime).format('YYYY-MM-DD HH:mm')}</td>
       </tr>
