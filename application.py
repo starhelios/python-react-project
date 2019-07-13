@@ -280,6 +280,10 @@ def api_get_queue():
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
     cur.execute(countQuery, filters)
+    if 'queue' not in data_request_params:
+        return json.dumps({'success': False, 'error': 'Must specify queue name'})
+    if 'dataset' not in data_request_params:
+        return json.dumps({'success': False, 'error': 'Must specify dataset (cannot be all)'})
     queue = data_request_params['queue']
     dataset = data_request_params['dataset']
     redis_db.delete(queue)
