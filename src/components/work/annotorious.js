@@ -87,14 +87,17 @@ export default class Annotorious extends Component {
   }
 
   render() {
-    const wrapperHeight = this.props.imageHeight + WRAP_INCREASE;
+    const single = this.props.annoList.length === 1;
+    const margin = single ? 200 : 0;
+    const wrapperHeight = this.props.imageHeight + margin + WRAP_INCREASE;
 
     if (this.props.imageURL) {
       return (
         <div className="text-center anno-board">
           <div className="wrapper-annotatable" style={{ height: wrapperHeight }}>
             <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
-              width={this.props.imageWidth} height={this.props.imageHeight}
+              // style={{marginRight: margin, marginBottom: margin}}
+              width={this.props.imageWidth} height={this.props.imageHeight} data-count={this.props.annoList.length}
               onLoad={() => console.log('onLoad')} />
           </div>
         </div>
@@ -128,10 +131,11 @@ Annotorious.propTypes = {
  */
 
 function drawAnnotations(annoList = [], activeIndex) {
+  const annoCount = annoList.length;
   annoList.forEach((box, index) => {
     anno.addAnnotation(Object.assign({}, box, {
       src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-    }), undefined, index === activeIndex);
+    }), undefined, index === activeIndex, annoCount);
   });
 }
 
