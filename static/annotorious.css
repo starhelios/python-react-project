@@ -1,4 +1,5 @@
 /** Global item styles **/
+@import url('https://fonts.googleapis.com/css?family=Roboto:300&display=swap');
 
 .annotorious-opacity-fade {
   -moz-transition-property: opacity;
