@@ -78,14 +78,27 @@ export default class UserDataRow extends Component {
               </div>
               :
               <div>
-                <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('mathpix')}>
-                  {
-                    this.state.queuing || image.is_queueing ?
-                      <img src="/static/img/spinner-sm.gif" />
-                      :
-                      'Queue Mathpix'
-                  }
-                </button>
+                <div>
+                  <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('mathpix')}>
+                    {
+                      this.state.queuing || image.is_queueing ?
+                        <img src="/static/img/spinner-sm.gif" />
+                        :
+                        'Queue Mathpix'
+                    }
+                  </button>
+                </div>
+                <br />
+                <div>
+                  <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('triage')}>
+                    {
+                      this.state.queuing || image.is_queueing ?
+                        <img src="/static/img/spinner-sm.gif" />
+                        :
+                        'Queue Triage'
+                    }
+                  </button>
+                </div>
               </div>
           }
         </td>

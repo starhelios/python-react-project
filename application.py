@@ -18,11 +18,24 @@ from flask import abort
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 from psycopg2.extras import register_json, DictCursor
+import glob
 import re
 
-
+file_list = glob.glob("src/uis/*_anno.json")
+ANNO_ID_LIST = []
+for file_cur in file_list:
+    with open(file_cur, 'r') as f:
+        anno_json = json.load(f)
+        for field in anno_json['schema']['fields']:
+            if field['type'] == "image":
+                for subfield in field['fields']:
+                    subfield_id = subfield['id']
+                    subfield_id = subfield_id.replace("_polygon", "")
+                    # helps simplify regexes
+                    subfield_id = subfield_id.replace("equations", "equation")
+                    if subfield_id not in ANNO_ID_LIST:
+                        ANNO_ID_LIST.append(subfield_id)
 register_json(oid=3802, array_oid=3807)
-
 DATA_DIR = os.path.dirname(os.path.realpath(__file__))
 application = Flask(__name__)
 oauth = OAuth(application)
@@ -665,6 +678,7 @@ def queue_equation():
     # NOTE: currently only suitable for OCR / TRIAGE datasets
     data = request.get_json(cache=False)
     image = data['image']
+    dataset_original = data['dataset']
     update_log = data.get('update_log', False)
     image_id = image['image_id']
     result = image['result']
@@ -682,9 +696,6 @@ def queue_equation():
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
                         queue, group_id, dataset))
-    redis_db.sadd('queues', queue)
-    redis_db.hset('queues_dataset', queue, dataset)
-    redis_db.rpush(queue, image_id)
     # duplicate for triage dataset
     dataset = 'triage'
     image_id_triage = image_id + "_triage"
@@ -695,9 +706,11 @@ def queue_equation():
                         json.dumps(request_args, default=str),
                         json.dumps(internal, default=str),
                         queue, group_id, dataset))
+    # insert into redis
+    queue = dataset_original
     redis_db.sadd('queues', queue)
-    redis_db.hset('queues_dataset', queue, dataset)
-    redis_db.rpush(queue, image_id_triage)
+    redis_db.hset('queues_dataset', queue, dataset_original)
+    redis_db.rpush(queue, image_id)
     # commit to db, return response
     db.commit()
     json_body = {'image_id': image_id, 'datetime': image['datetime']}
@@ -789,6 +802,16 @@ def api_get_users():
     result = {
         'data': {
             'users': users
+        }
+    }
+    return json.dumps(result)
+
+@application.route('/api/anno-id-list', methods=['GET'])
+@requires_auth
+def api_get_anno_id_list():
+    result = {
+        'data': {
+            'anno_id_list': ANNO_ID_LIST
         }
     }
     return json.dumps(result)
