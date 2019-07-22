@@ -525,6 +525,7 @@ def get_predicted_properties(image_id, dataset):
     if text is None:
         text = "\\[ %s \\]" % latex_anno
     image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
+    char_size_predicted = internal.get('char_size', None)
     data = {
         'latex_confidence': result.get('latex_confidence', -1.),
         'latex': latex_anno,
@@ -533,7 +534,7 @@ def get_predicted_properties(image_id, dataset):
         'image_path': image_path,
         'group_id': group_id,
         'session_id': image_id,
-        'char_size_predicted': internal.get('char_size', None),
+        'char_size_predicted': char_size_predicted,
         'dataset': dataset
     }
     detection_list = result.get('detection_list', [])
@@ -558,7 +559,11 @@ def get_predicted_properties(image_id, dataset):
     if anno_list is None:
         anno_list = []
     for elem in anno_list:
-        elem['boxId'] = 'equations'
+        if dataset == "triage":
+            elem['boxId'] = 'equation'
+            elem['charSize'] = char_size_predicted
+        elif dataset == "mathpix":
+            elem['boxId'] = 'equations'
         elem['text'] = ''
         elem['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
     return data
@@ -708,6 +713,8 @@ def queue_equation():
                         queue, group_id, dataset))
     # insert into redis
     queue = dataset_original
+    if dataset_original == "triage":
+        image_id = image_id_triage
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset_original)
     redis_db.rpush(queue, image_id)
