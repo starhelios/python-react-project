@@ -713,11 +713,12 @@ def queue_equation():
                         queue, group_id, dataset))
     # insert into redis
     queue = dataset_original
-    if dataset_original == "triage":
-        image_id = image_id_triage
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset_original)
-    redis_db.rpush(queue, image_id)
+    if dataset_original == "triage":
+        redis_db.rpush(queue, image_id_triage)
+    else:
+        redis_db.rpush(queue, image_id)
     # commit to db, return response
     db.commit()
     json_body = {'image_id': image_id, 'datetime': image['datetime']}
