@@ -1,6 +1,6 @@
 branch-defaults:
   master:
-    environment: zenpix-docker
+    environment: Zenpix-python
 deploy:
   artifact: zenpix.zip
 global:
