@@ -25,6 +25,13 @@ jobs:
             sudo pip install awsebcli==3.14.11
 
       - run:
+          name: Compile JS
+          command: |
+            sudo npm install
+            sudo npm install -g webpack@1.14.0
+            sudo ./node_modules/webpack/bin/webpack.js --production
+
+      - run:
           name: Deploy
           command: ./deploy.sh
           no_output_timeout: 2000
