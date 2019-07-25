@@ -3,7 +3,7 @@ jobs:
   deploy:
     working_directory: ~/app
     docker:
-      - image: circleci/node:stretch
+      - image: circleci/node:9
     steps:
       - checkout
 
@@ -23,6 +23,14 @@ jobs:
             sudo pip install --upgrade requests
             sudo pip install awscli --upgrade
             sudo pip install awsebcli==3.14.11
+
+      - run:
+          name: Compile JS
+          command: |
+            npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            npm install
+            npm install -g webpack@1.14.0
+            ./node_modules/webpack/bin/webpack.js --production
 
       - run:
           name: Deploy

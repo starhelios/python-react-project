@@ -236,6 +236,7 @@ class AnnotationUI extends Component {
   }
 
   onNext() {
+    anno.reset();
     const queue = this.uiController.queue || 'main';
     this.uiController.loadData(DATASET, (err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
