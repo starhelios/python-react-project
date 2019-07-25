@@ -392,7 +392,9 @@ def dequeue_json(dataset, queue_id):
     # TODO: explore whether we can remove this hack
     if session_id_prev is not None and queue_id.endswith("_clean"):
         application.logger.info("Setting %s as verified!" % session_id_prev)
-        username = session['profile']['username'].decode('utf-8')
+        username = session['profile']['username']
+        if type(username) != str:
+            username = username.decode('utf-8')
         cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW() WHERE session_id=%s AND is_good=true",
                     (True, username, session_id_prev))
         db.commit()
@@ -426,7 +428,11 @@ def save():
     # insert into Equation table
     json_data_copy = json_data.copy()
     session_id = json_data_copy['session_id']
-    json_data_copy['anno_list'] = json.dumps(json_data_copy['anno_list'])
+    session_id_check = session_id.replace("_triage", "")
+    anno_list = json_data_copy['anno_list']
+    # make sure we're not accidentally saved annotations from a previous image
+    anno_list = [anno for anno in anno_list if session_id_check in anno['src']]
+    json_data_copy['anno_list'] = json.dumps(anno_list)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
     json_data_copy['saved'] = True
@@ -437,7 +443,10 @@ def save():
             json_data_copy['is_verified'] = True
         else:
             json_data_copy['is_verified'] = False
-    json_data_copy['username'] = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
+    json_data_copy['username'] = username
     if json_data_copy.get('is_verified', False):
         json_data_copy['verified_by'] = json_data_copy['username']
     clean_queue_name = queue_name + "_clean"
@@ -761,8 +770,9 @@ def session_id_pop(queue_id):
 def index():
     session_id = request.args.get('sessionID', None)
     queue_id = request.args.get('queue', MAIN_QUEUE)
-    # username = session['profile']['username']
-    username = str(session['profile']['username'].decode('utf-8'))
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     application.logger.info("Username: %s" % (username, ))
     application.logger.info("Index request with username: %s" % username)
     if session_id is None and queue_id is None:
@@ -774,7 +784,9 @@ def index():
 def annotate(dataset):
     session_id = request.args.get('sessionID', None)
     queue_id = request.args.get('queue', dataset)
-    username = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     application.logger.info("Index request with username: %s" % username)
     # application.logger.info("JSON profile data: %s" % session['profile'])
     if session_id is None and queue_id is not None:
@@ -789,7 +801,9 @@ def annotate(dataset):
 @application.route('/synthetic')
 @requires_auth
 def synthetic():
-    username = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     application.logger.info("synthetic request with username: %s" % username)
     return render_template('synthetic.html', username=username)
 
@@ -884,7 +898,9 @@ def latexToS3():
 @requires_auth
 def other(other):
     request_url = proxy_address + "/" + other
-    username = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     if len(request.query_string) > 0:
         request_url += "?" + request.query_string.decode('utf-8')
         extra = urlencode({"username": username})
@@ -907,7 +923,9 @@ def other2(other):
         json_body = {}
         application.logger.error(e)
         application.logger.error("Route name: %s" % other)
-    username = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     json_body['username'] = username
     r = requests.post(request_url, json=json_body, headers=DB_API_HEADERS)
     flask_response = Response(response=r.content,
@@ -923,7 +941,9 @@ def other3(other):
     except Exception as e:
         json_body = {}
         application.logger.error(e)
-    username = session['profile']['username'].decode('utf-8')
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     json_body['username'] = username
     r = requests.patch(request_url, json=json_body, headers=DB_API_HEADERS)
     flask_response = Response(response=r.content,
