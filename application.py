@@ -182,6 +182,7 @@ def get_query_params(data_request_params):
     dataset = data_request_params.get('dataset')
     annotator = data_request_params.get('annotator')
     property = data_request_params.get('property')
+    boxId = data_request_params.get('boxId')
     fromDate = data_request_params.get('fromDate')
     toDate = data_request_params.get('toDate')
     search = data_request_params.get('search')
@@ -233,6 +234,14 @@ def get_query_params(data_request_params):
                     query_condition += """ AND anno_list @> '[{"boxId":"header"}]'"""
                 elif prop in DATA_PROPERTIES.keys():
                     query_condition += " AND %s = true" % prop
+
+    if boxId is not None:
+        boxIdFilters = boxId.split('*')
+        for prop in boxIdFilters:
+            if prop.startswith('!'):
+                query_condition += """ AND NOT anno_list @> '[{"boxId": "%s" }]'""" % prop[1:]
+            else:
+                query_condition += """ AND anno_list @> '[{"boxId": "%s" }]'""" % prop
     # search
     errorFields = []
     try:
