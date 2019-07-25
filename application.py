@@ -8,7 +8,8 @@ from functools import wraps
 from PIL import Image
 from flask import Flask, g, redirect, session
 from flask import render_template, request, Response
-import urllib, cStringIO
+import urllib
+import io
 from datetime import datetime, date, timedelta
 import redis
 import psycopg2
@@ -18,6 +19,9 @@ from flask import abort
 from authlib.flask.client import OAuth
 from six.moves.urllib.parse import urlencode
 from psycopg2.extras import register_json, DictCursor
+from future.utils import iteritems
+from io import BytesIO
+import urllib.request
 import glob
 import re
 
@@ -99,8 +103,8 @@ def requires_api_auth(f):
 
 def get_image_dim(image_path):
     URL = 'https://s3.amazonaws.com/mpxdata/' + image_path
-    file_cur = cStringIO.StringIO(urllib.urlopen(URL).read())
-    image = Image.open(file_cur)
+    response = requests.get(URL)
+    image = Image.open(BytesIO(response.content))
     cols, rows = image.size
     return cols, rows
 
@@ -398,6 +402,8 @@ def dequeue_json(dataset, queue_id):
     if session_id_prev is not None and queue_id.endswith("_clean"):
         application.logger.info("Setting %s as verified!" % session_id_prev)
         username = session['profile']['username']
+        if type(username) != str:
+            username = username.decode('utf-8')
         cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW() WHERE session_id=%s AND is_good=true",
                     (True, username, session_id_prev))
         db.commit()
@@ -413,7 +419,7 @@ def dequeue_json(dataset, queue_id):
     json_data = {}
     if len(rows) != 0:
         data_row = dict(rows[0])
-        for key, val in data_row.iteritems():
+        for key, val in iteritems(data_row):
             json_data[key] = data_row[key]
     else:
         application.logger.info("Using predicted annotations.")
@@ -431,7 +437,11 @@ def save():
     # insert into Equation table
     json_data_copy = json_data.copy()
     session_id = json_data_copy['session_id']
-    json_data_copy['anno_list'] = json.dumps(json_data_copy['anno_list'])
+    session_id_check = session_id.replace("_triage", "")
+    anno_list = json_data_copy['anno_list']
+    # make sure we're not accidentally saved annotations from a previous image
+    anno_list = [anno for anno in anno_list if session_id_check in anno['src']]
+    json_data_copy['anno_list'] = json.dumps(anno_list)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
     json_data_copy['saved'] = True
@@ -442,6 +452,10 @@ def save():
             json_data_copy['is_verified'] = True
         else:
             json_data_copy['is_verified'] = False
+    username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
+    json_data_copy['username'] = username
     if json_data_copy.get('is_verified', False):
         json_data_copy['verified_by'] = json_data_copy['username']
     clean_queue_name = queue_name + "_clean"
@@ -459,7 +473,7 @@ def save():
             'metadata', 'is_verified', 'queue', 'char_size',
             'is_printed', 'is_inverted', 'contains_table']
     json_data_final = {}
-    for (key, val) in json_data_copy.iteritems():
+    for (key, val) in iteritems(json_data_copy):
         if key not in keys:
             continue
         json_data_final[key] = val
@@ -468,10 +482,10 @@ def save():
     placeholders = ('%s, ' * len(json_data_final))[:-2]
     sql = 'INSERT INTO TrainingEquations ({}) VALUES ({})'.format(columns, placeholders)
     sql += ' ON CONFLICT(session_id) DO UPDATE SET ';
-    for key, val in json_data_final.iteritems():
+    for key, val in iteritems(json_data_final):
         sql += ("%s=" % key) + '%s, '
     sql = sql[:-2]
-    cur.execute(sql, json_data_final.values() + json_data_final.values())
+    cur.execute(sql, list(json_data_final.values()) + list(json_data_final.values()))
     cur.execute("DELETE FROM queues WHERE image_id=%s", (session_id,))
     db.commit()
     return json.dumps({'success': True, 'affected': cur.rowcount})
@@ -483,9 +497,9 @@ def get_queues():
     output_list = []
     for queue in queue_list:
         queue_count = redis_db.llen(queue)
-        queue_dataset = redis_db.hget('queues_dataset', queue)
-        url = "annotate/" + queue_dataset + "?" + urllib.urlencode({ "queue": queue })
-        output_list.append({'name': queue, 'length': queue_count, 'url': url})
+        queue_dataset = redis_db.hget('queues_dataset', queue).decode('utf-8')
+        url = "annotate/" + queue_dataset + "?" + urlencode({ "queue": queue })
+        output_list.append({'name': queue.decode('utf-8'), 'length': queue_count, 'url': url})
     json_data = {"queues": output_list}
     json_str = json.dumps(json_data, default=str)
     return json_str
@@ -508,7 +522,7 @@ def get_json(dataset, session_id):
     json_data = {}
     if len(rows) != 0:
         data_row = dict(rows[0])
-        for key, val in data_row.iteritems():
+        for key, val in iteritems(data_row):
             json_data[key] = data_row[key]
     else:
         application.logger.info("Using predicted annotations.")
@@ -593,7 +607,7 @@ def get_data_list(row_list):
                     'text_normalized': row['text_normalized'],
                     'char_size': row['char_size'],
                     'is_verified': row['is_verified']}
-        for prop, description in DATA_PROPERTIES.iteritems():
+        for prop, description in iteritems(DATA_PROPERTIES):
             if str(prop) in cur_data['properties']:
                 cur_data['properties'][str(prop)] = {'value': row[str(prop)],
                                                      'description': str(description)}
@@ -722,11 +736,12 @@ def queue_equation():
                         queue, group_id, dataset))
     # insert into redis
     queue = dataset_original
-    if dataset_original == "triage":
-        image_id = image_id_triage
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset_original)
-    redis_db.rpush(queue, image_id)
+    if dataset_original == "triage":
+        redis_db.rpush(queue, image_id_triage)
+    else:
+        redis_db.rpush(queue, image_id)
     # commit to db, return response
     db.commit()
     json_body = {'image_id': image_id, 'datetime': image['datetime']}
@@ -755,6 +770,7 @@ def session_id_pop(queue_id):
     if queue_count == 0:
         return None, 0
     _, session_id = redis_db.brpop(queue_id)
+    session_id = session_id.decode('utf-8')
     application.logger.info(session_id)
     return session_id, queue_count - 1
 
@@ -764,6 +780,9 @@ def index():
     session_id = request.args.get('sessionID', None)
     queue_id = request.args.get('queue', MAIN_QUEUE)
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
+    application.logger.info("Username: %s" % (username, ))
     application.logger.info("Index request with username: %s" % username)
     if session_id is None and queue_id is None:
         return render_template('home.html')
@@ -775,10 +794,13 @@ def annotate(dataset):
     session_id = request.args.get('sessionID', None)
     queue_id = request.args.get('queue', dataset)
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     application.logger.info("Index request with username: %s" % username)
+    # application.logger.info("JSON profile data: %s" % session['profile'])
     if session_id is None and queue_id is not None:
         session_id, queue_count = session_id_pop(queue_id)
-        query_param = request.base_url + "?" + urllib.urlencode({
+        query_param = request.base_url + "?" + urlencode({
             "sessionID": session_id,
             "queue": queue_id})
         return redirect(query_param)
@@ -789,6 +811,8 @@ def annotate(dataset):
 @requires_auth
 def synthetic():
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     application.logger.info("synthetic request with username: %s" % username)
     return render_template('synthetic.html', username=username)
 
@@ -884,12 +908,14 @@ def latexToS3():
 def other(other):
     request_url = proxy_address + "/" + other
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     if len(request.query_string) > 0:
-        request_url += "?" + request.query_string
-        extra = urllib.urlencode({"username": username})
+        request_url += "?" + request.query_string.decode('utf-8')
+        extra = urlencode({"username": username})
         request_url += "&" + extra
     else:
-        extra = urllib.urlencode({"username": username})
+        extra = urlencode({"username": username})
         request_url += "?" + extra
     r = requests.get(request_url, headers=DB_API_HEADERS)
     flask_response = Response(response=r.content,
@@ -907,6 +933,8 @@ def other2(other):
         application.logger.error(e)
         application.logger.error("Route name: %s" % other)
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     json_body['username'] = username
     r = requests.post(request_url, json=json_body, headers=DB_API_HEADERS)
     flask_response = Response(response=r.content,
@@ -923,6 +951,8 @@ def other3(other):
         json_body = {}
         application.logger.error(e)
     username = session['profile']['username']
+    if type(username) != str:
+        username = username.decode('utf-8')
     json_body['username'] = username
     r = requests.patch(request_url, json=json_body, headers=DB_API_HEADERS)
     flask_response = Response(response=r.content,
