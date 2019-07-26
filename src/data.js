@@ -89,19 +89,20 @@ class Data extends Component {
 
   }
 
-  async componentWillMount() {
-    this.loadIDList();
-    this.loadDatasets();
-    this.loadUsers();
-    this.loadGroups();
-    this.setStateByLocationQuery(this.props.location.query, function () {
+  componentWillMount() {
+    this.loadIDList(() => {
+      this.setStateByLocationQuery(this.props.location.query, function () {
       const queryParams = this.makeQueryParamsForPageAndApi(true, true, true);
       this.loadData(queryParams.join('&'));
     }.bind(this));
+    });
+    this.loadDatasets();
+    this.loadUsers();
+    this.loadGroups();
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!isEqual(this.props.location.query, nextProps.location.query) || !isEqual(this.props.location.query, nextProps.location.query)) {
+    if (!isEqual(this.props.location.query, nextProps.location.query)) {
       this.setStateByLocationQuery(nextProps.location.query, function () {
         const queryParams = this.makeQueryParamsForPageAndApi(true, true, true);
         this.loadData(queryParams.join('&'));
@@ -116,6 +117,8 @@ class Data extends Component {
   setStateByLocationQuery(query, callback) {
     const propFilters = cloneDeep(consts.DATA_PROPERTIES);
     Object.keys(propFilters).forEach(propKey => propFilters[propKey] = 0);
+    const filterAppId = {}
+    this.state.IDList.forEach(propKey => filterAppId[propKey] = 0);
 
     if (query.property) {
       const props = query.property.split('*');
@@ -131,28 +134,6 @@ class Data extends Component {
         }
       });
     }
-
-    this.setState({
-      filterViewType: query.view || 'raw',
-      filterDataset: query.dataset || '',
-      filterAnnotator: query.annotator || '',
-      filterProperty: propFilters,
-      filterFromDate: query.fromDate || '',
-      filterToDate: query.toDate || '',
-      filterGroup: query.group || '',
-      search: query.search || '',
-      search2: query.search2 || '',
-      searchString: query.searchString || '',
-      searchID: query.searchID || '',
-      queue: query.queue || '',
-      sort: query.sort || '-datetime',
-      page: isNaN(query.page) ? 1 : parseInt(query.page)
-    }, callback);
-  }
-
-  setStateAnnoIDByLocationQuery(query, callback) {
-    const filterAppId = {}
-    this.state.IDList.forEach(propKey => filterAppId[propKey] = 0);
 
     if (query.boxId) {
       const props = query.boxId.split('*');
@@ -171,7 +152,21 @@ class Data extends Component {
     }
 
     this.setState({
+      filterViewType: query.view || 'raw',
+      filterDataset: query.dataset || '',
+      filterAnnotator: query.annotator || '',
+      filterProperty: propFilters,
       filterAppId: filterAppId,
+      filterFromDate: query.fromDate || '',
+      filterToDate: query.toDate || '',
+      filterGroup: query.group || '',
+      search: query.search || '',
+      search2: query.search2 || '',
+      searchString: query.searchString || '',
+      searchID: query.searchID || '',
+      queue: query.queue || '',
+      sort: query.sort || '-datetime',
+      page: isNaN(query.page) ? 1 : parseInt(query.page)
     }, callback);
   }
 
@@ -210,7 +205,7 @@ class Data extends Component {
     });
   }
 
-  loadIDList() {
+  loadIDList(cb) {
     this.setState({ loadDatasetsApiStatus: consts.API_LOADING }, () => {
       callApi(LOAD_ID_LIST_API_URL, LOAD_DATASETS_API_METHOD).then(
         response => {
@@ -220,7 +215,9 @@ class Data extends Component {
               loadDatasetsApiStatus: consts.API_LOADED_SUCCESS,
               IDList: response.data.anno_id_list.sort()
             }, () => {
-              this.setStateAnnoIDByLocationQuery(this.props.location.query)
+              if (cb && typeof cb === 'function') {
+                cb();
+              }
             });
           } else {
             this.setState({
