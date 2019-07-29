@@ -26,14 +26,21 @@ export default class DataFilters extends Component {
       search2, onSearchChange2,
       searchString, searchID, onSearchIDChange,
       queue, onQueueChange, queueUrl,
-      onCreateQueue, viewType,
-      onInputChange,
+      onCreateQueue, viewType, appId,
+      onInputChange, IDList, onAppIdChange,
       onApplyFiltersAndSearchClick } = this.props;
 
     let activeFiltersCount = 0;
     Object.keys(property).forEach(propKey => {
       if (property[propKey] !== 0) {
         activeFiltersCount ++;
+      }
+    });
+
+    let activeIDFiltersCount = 0;
+    Object.keys(appId).forEach(propKey => {
+      if (appId[propKey] !== 0) {
+        activeIDFiltersCount ++;
       }
     });
 
@@ -86,6 +93,25 @@ export default class DataFilters extends Component {
                                         label={consts.DATA_PROPERTIES[propKey]}
                                         checked={property[propKey]}
                                         onChange={onPropertyChange} />
+              ))
+            }
+            </DropdownContent>
+            </Dropdown>
+          </div>
+          <div className="property group-1">
+            <Dropdown className="property-dropdown" ref="propertyDropdown">
+            <DropdownTrigger className="form-control">
+              Anno ID filters ({activeIDFiltersCount})
+              <i className="glyphicon glyphicon-filter"> </i>
+            </DropdownTrigger>
+            <DropdownContent>
+            {
+              IDList.map(propKey => (
+                <PropertyFilterCheckbox key={propKey}
+                                        name={propKey}
+                                        label={propKey}
+                                        checked={appId[propKey] || 0}
+                                        onChange={onAppIdChange} />
               ))
             }
             </DropdownContent>
