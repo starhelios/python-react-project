@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory } from 'react-router';
-import { cloneDeep, isEqual, get as _get } from 'lodash';
+import { cloneDeep, isEqual, get as _get, indexOf } from 'lodash';
 
 import { callApi } from './libs/api';
 import consts from './libs/consts';
@@ -12,6 +12,7 @@ import DataBody from './components/data/dataBody';
 // import styles
 require('./styles/data.scss');
 
+const LOAD_ID_LIST_API_URL = '/api/anno-id-list';
 const LOAD_DATASETS_API_URL = '/api/datasets';
 const LOAD_DATASETS_API_METHOD = 'get';
 const LOAD_GROUPS_API_URL = '/api/groups';
@@ -46,11 +47,13 @@ class Data extends Component {
       loadQueueApiError: '',
       queueUrl: '',
       data: [],
+      IDList: [],
       total: 0,
       filterViewType: 'raw',
       filterDataset: '',
       filterAnnotator: '',
       filterProperty: {},
+      filterAppId: {},
       filterFromDate: '',
       filterToDate: '',
       filterGroup: '',
@@ -67,6 +70,7 @@ class Data extends Component {
     };
 
     this.loadUsers = this.loadUsers.bind(this);
+    this.loadIDList = this.loadIDList.bind(this);
     this.loadDatasets = this.loadDatasets.bind(this);
     this.loadGroups = this.loadGroups.bind(this);
     this.loadData = this.loadData.bind(this);    
@@ -81,17 +85,20 @@ class Data extends Component {
     this.setStateByLocationQuery = this.setStateByLocationQuery.bind(this);
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
+    this.onAppIdChange = this.onAppIdChange.bind(this);
 
   }
 
   componentWillMount() {
-    this.loadDatasets();
-    this.loadUsers();
-    this.loadGroups();
-    this.setStateByLocationQuery(this.props.location.query, function () {
+    this.loadIDList(() => {
+      this.setStateByLocationQuery(this.props.location.query, function () {
       const queryParams = this.makeQueryParamsForPageAndApi(true, true, true);
       this.loadData(queryParams.join('&'));
     }.bind(this));
+    });
+    this.loadDatasets();
+    this.loadUsers();
+    this.loadGroups();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -110,6 +117,8 @@ class Data extends Component {
   setStateByLocationQuery(query, callback) {
     const propFilters = cloneDeep(consts.DATA_PROPERTIES);
     Object.keys(propFilters).forEach(propKey => propFilters[propKey] = 0);
+    const filterAppId = {}
+    this.state.IDList.forEach(propKey => filterAppId[propKey] = 0);
 
     if (query.property) {
       const props = query.property.split('*');
@@ -126,11 +135,28 @@ class Data extends Component {
       });
     }
 
+    if (query.boxId) {
+      const props = query.boxId.split('*');
+
+      props.forEach(prop => {
+        if (prop.startsWith('!')) {
+          if (indexOf(this.state.IDList, prop.substr(1) > -1)) {
+            filterAppId[prop.substr(1)] = -1;
+          }
+        } else {
+          if (indexOf(this.state.IDList, prop) > -1) {
+            filterAppId[prop] = 1;
+          }
+        }
+      });
+    }
+
     this.setState({
       filterViewType: query.view || 'raw',
       filterDataset: query.dataset || '',
       filterAnnotator: query.annotator || '',
       filterProperty: propFilters,
+      filterAppId: filterAppId,
       filterFromDate: query.fromDate || '',
       filterToDate: query.toDate || '',
       filterGroup: query.group || '',
@@ -172,6 +198,45 @@ class Data extends Component {
             this.setState({
               loadUsersApiStatus: consts.API_LOADED_ERROR,
               loadUsersApiError: 'Sorry, Failed to fetch users. Please try again.'
+            });
+          }
+        }
+      );
+    });
+  }
+
+  loadIDList(cb) {
+    this.setState({ loadDatasetsApiStatus: consts.API_LOADING }, () => {
+      callApi(LOAD_ID_LIST_API_URL, LOAD_DATASETS_API_METHOD).then(
+        response => {
+          console.log('Load IDList API success', response);
+          if (response.data && Array.isArray(response.data.anno_id_list)) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_SUCCESS,
+              IDList: response.data.anno_id_list.sort()
+            }, () => {
+              if (cb && typeof cb === 'function') {
+                cb();
+              }
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Failed to fetch ID list. Please try again.'
+            });
+          }
+        },
+        error => {
+          console.log('Load ID List API fail', error);
+          if (error.error && error.error.message) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Unable to fetch ID list. ' + error.error.message
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Sorry, Failed to fetch ID list. Please try again.'
             });
           }
         }
@@ -341,6 +406,12 @@ class Data extends Component {
     this.setState({ filterProperty: changed });
   }
 
+  onAppIdChange(propKey, propValue) {
+    const changed = this.state.filterAppId;
+    changed[propKey] = propValue;
+    this.setState({ filterAppId: changed });
+  }
+
   makeQueryParamsForPageAndApi(filter_search = true, sort = false, page = false) {
     let queryParams = [];
 
@@ -367,6 +438,17 @@ class Data extends Component {
       });
       if (propFilters.length) {
         queryParams.push('property=' + encodeURIComponent(propFilters.join('*')));
+      }
+      const appIdFilters = [];
+      Object.keys(this.state.filterAppId).forEach(propKey => {
+        if (this.state.filterAppId[propKey] === 1) {
+          appIdFilters.push(propKey);
+        } else if (this.state.filterAppId[propKey] === -1) {
+          appIdFilters.push('!' + propKey);
+        }
+      });
+      if (appIdFilters.length) {
+        queryParams.push('boxId=' + encodeURIComponent(appIdFilters.join('*')));
       }
       if (this.state.filterFromDate.length) {
         queryParams.push('fromDate=' + encodeURIComponent(this.state.filterFromDate));
@@ -504,11 +586,13 @@ class Data extends Component {
           onInputChange={this.onInputChange}
           datasets={this.state.datasets}
           dataset={this.state.filterDataset}
+          IDList={this.state.IDList}
           onDatasetChange={this.onDatasetChange}
           annotators={this.state.annotators} annotator={this.state.filterAnnotator}
           groups={this.state.groups}
           group={this.state.filterGroup}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyChange}
+          appId={this.state.filterAppId} onAppIdChange={this.onAppIdChange}
           fromDate={this.state.filterFromDate}
           toDate={this.state.filterToDate}
           search={this.state.search}
