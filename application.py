@@ -243,9 +243,9 @@ def get_query_params(data_request_params):
         boxIdFilters = boxId.split('*')
         for prop in boxIdFilters:
             if prop.startswith('!'):
-                query_condition += """ AND NOT anno_list @> '[{"boxId": "%s" }]'""" % prop[1:]
+                query_condition += """ AND NOT (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (prop[1:], prop[1:])
             else:
-                query_condition += """ AND anno_list @> '[{"boxId": "%s" }]'""" % prop
+                query_condition += """ AND (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (prop, prop)
     # search
     errorFields = []
     try:
