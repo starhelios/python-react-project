@@ -123,7 +123,8 @@
     },
     "image_properties": {
       "options": [
-        { "value": "contains_foreign_alphabet", "label": "Contains foreign alphabet", "help": "Contains non-Latin alphabet (Russian, Chinese, Japenese, ...)" }
+        { "value": "contains_foreign_alphabet", "label": "Contains foreign alphabet", "help": "Contains non-Latin alphabet (Russian, Chinese, Japenese, ...)" },
+        { "value": "is_full_page", "label": "Is full page", "help": "Is full page" }
       ],
       "default": []
     },
