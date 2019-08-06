@@ -22,7 +22,8 @@
     "contains_geometry": "Contains geometry",
     "is_printed": "Printed (not handwritten)",
     "is_inverted": "Inverted (white on black)",
-    "char_size_null": "char_size is null"
+    "char_size_null": "char_size is null",
+    "is_full_page": "Is full page"
   },
 
   "PREDICTED_PROPERTIES": {
