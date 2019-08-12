@@ -140,6 +140,9 @@
 .annotorious-popup-button-active {
   opacity:0.9;
 }
+.annotorious-popup-button-hide {
+  display: none;
+}
 
 .annotorious-popup-button-edit {
   background:url(pencil.png);
