@@ -107,10 +107,6 @@ class UIController extends BaseUIController {
     text_raw = text_raw.replace("\\]", "");
     text_raw = text_raw.trim();
     console.log(text_raw);
-    if (that.state.annoList.length == 0 && text_raw.length > 0) {
-      that.showAlert('danger', 'Please create equation box(es) or delete all text.');
-      return false;
-    }
     if (!that.state.char_size) {
       that.showAlert('danger', 'Please set char_size (modify if necessary).');
       return false;
