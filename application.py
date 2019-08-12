@@ -35,8 +35,6 @@ for file_cur in file_list:
                 for subfield in field['fields']:
                     subfield_id = subfield['id']
                     subfield_id = subfield_id.replace("_polygon", "")
-                    # helps simplify regexes
-                    subfield_id = subfield_id.replace("equations", "equation")
                     if subfield_id not in ANNO_ID_LIST:
                         ANNO_ID_LIST.append(subfield_id)
 register_json(oid=3802, array_oid=3807)
@@ -437,10 +435,8 @@ def save():
     # insert into Equation table
     json_data_copy = json_data.copy()
     session_id = json_data_copy['session_id']
-    session_id_check = session_id.replace("_triage", "")
+    image_path = json_data_copy['image_path']
     anno_list = json_data_copy['anno_list']
-    # make sure we're not accidentally saved annotations from a previous image
-    anno_list = [anno for anno in anno_list if session_id_check in anno['src']]
     json_data_copy['anno_list'] = json.dumps(anno_list)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
