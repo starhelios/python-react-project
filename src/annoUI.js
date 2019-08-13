@@ -40,6 +40,7 @@ class AnnotationUI extends Component {
       char_size: null,
       char_size_predicted: null,
       isChangedSize: false,
+      showMarkers: false,
     };
     this.uiController = new UIController(this);
     this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
@@ -259,6 +260,9 @@ class AnnotationUI extends Component {
     });
   }
 
+  onShowMarkers(event) {
+    this.setState({showMarkers: !this.state.showMarkers});
+  }
   onDropdownFieldChange(fieldSchema, event) {
     this.setState({
       [fieldSchema.id]: event.currentTarget.value,
@@ -604,7 +608,7 @@ class AnnotationUI extends Component {
                 textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onCharSizeMinus={this.onCharSizeMinus}
-                hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size}
+                hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size && this.state.showMarkers}
               />
             </div>
             : null
@@ -617,6 +621,15 @@ class AnnotationUI extends Component {
 
         <div className="row">
           <div className="col-xs-6 col-xs-push-3 col-md-3 col-md-push-9 heading text-center">
+            <div className="checkbox">
+              <label htmlFor="show-markers" >
+                <input type="checkbox" ref="show-markers" id="show-markers" checked={this.state["showMarkers"]}
+                       title="Show 2x markers"
+                       onChange={this.onShowMarkers.bind(this)} />
+                Show 2x markers
+              </label>
+            </div>
+            
             <div className="stats">
               <h4>Queue ({window.__QUEUE_NAME__}): {this.state.queue_count || '(loading...)'}</h4>
               <h4>Is verified: {String(this.state.is_verified || "false")}</h4>
