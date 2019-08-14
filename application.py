@@ -402,7 +402,8 @@ def dequeue_json(dataset, queue_id):
         username = session['profile']['username']
         if type(username) != str:
             username = username.decode('utf-8')
-        cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW() WHERE session_id=%s AND is_good=true",
+        cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW(), " +
+                    "verified_at=NOW() WHERE session_id=%s AND is_good=true",
                     (True, username, session_id_prev))
         db.commit()
 
@@ -440,6 +441,7 @@ def save():
     json_data_copy['anno_list'] = json.dumps(anno_list)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
+    json_data_copy['saved_at'] = 'NOW()'
     json_data_copy['saved'] = True
     queue_name = json_data.get('queue', MAIN_QUEUE) or MAIN_QUEUE
     # everything that is saved that's not synth must be checked!
@@ -454,6 +456,7 @@ def save():
     json_data_copy['username'] = username
     if json_data_copy.get('is_verified', False):
         json_data_copy['verified_by'] = json_data_copy['username']
+        json_data_copy['verified_at'] = 'NOW()'
     clean_queue_name = queue_name + "_clean"
     application.logger.info("Adding %s to %s" % (session_id, str(clean_queue_name)))
     redis_db.sadd('queues', clean_queue_name)
