@@ -40,7 +40,7 @@ class AnnotationUI extends Component {
       char_size: null,
       char_size_predicted: null,
       isChangedSize: false,
-      showMarkers: false,
+      showMarkers: true,
     };
     this.uiController = new UIController(this);
     this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
