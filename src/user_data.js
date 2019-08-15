@@ -31,6 +31,7 @@ class UserData extends Component {
       userData: [],
       filterAnnotated: 0,
       filterQueued: 0,
+      filterNullOcr: 0,
       filterProperty: {},
       filterFromDate: '',
       filterToDate: '',
@@ -48,6 +49,7 @@ class UserData extends Component {
     this.queueImage = this.queueImage.bind(this);
     this.onAnnotatedFilterChange = this.onAnnotatedFilterChange.bind(this);
     this.onQueuedFilterChange = this.onQueuedFilterChange.bind(this);
+    this.onNullOcrFilterChange = this.onNullOcrFilterChange.bind(this);
     this.onPropertyFilterChange = this.onPropertyFilterChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
@@ -119,6 +121,7 @@ class UserData extends Component {
     this.setState({
       filterAnnotated: parseInt(query.annotated) || 0,
       filterQueued: parseInt(query.queued) || 0,
+      filterNullOcr: parseInt(query.nullOcr) || 0,
       filterProperty: propFilters,
       filterFromDate: query.fromDate || d,
       filterToDate: query.toDate || '',
@@ -244,6 +247,10 @@ class UserData extends Component {
     this.setState({ filterQueued: value });
   }
 
+  onNullOcrFilterChange(name, value) {
+    this.setState({ filterNullOcr: value });
+  }
+
   onPropertyFilterChange(propKey, propValue) {
     const changed = this.state.filterProperty;
     changed[propKey] = propValue;
@@ -259,6 +266,9 @@ class UserData extends Component {
       }
       if (this.state.filterQueued !== 0) {
         queryParams.push('queued=' + this.state.filterQueued);
+      }
+      if (this.state.filterNullOcr !== 0) {
+        queryParams.push('nullOcr=' + this.state.filterNullOcr);
       }
       const propFilters = [];
       Object.keys(this.state.filterProperty).forEach(propKey => {
@@ -365,6 +375,7 @@ class UserData extends Component {
         <UserDataFilters
           annotated={this.state.filterAnnotated} onAnnotatedChange={this.onAnnotatedFilterChange}
           queued={this.state.filterQueued} onQueuedChange={this.onQueuedFilterChange}
+          nullOcr={this.state.filterNullOcr} onNullOcrChange={this.onNullOcrFilterChange}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyFilterChange}
           fromDate={this.state.filterFromDate} onFromDateChange={this.onFromDateChange}
           toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}

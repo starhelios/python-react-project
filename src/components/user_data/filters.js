@@ -9,6 +9,7 @@ export default class UserDataFilters extends Component {
   render() {
     const { annotated, onAnnotatedChange,
       queued, onQueuedChange,
+      nullOcr, onNullOcrChange,
       property, onPropertyChange,
       fromDate,
       latex, toDate,
@@ -26,7 +27,7 @@ export default class UserDataFilters extends Component {
         activeFiltersCount ++;
       }
     });
-    activeFiltersCount += (annotated ? 1 : 0) + (queued ? 1 : 0);
+    activeFiltersCount += (annotated ? 1 : 0) + (queued ? 1 : 0) + (nullOcr ? 1 : 0);
 
     return (
       <div className="filters">
@@ -52,6 +53,10 @@ export default class UserDataFilters extends Component {
                                         label="Is Queued"
                                         checked={queued}
                                         onChange={onQueuedChange} />
+                <PropertyFilterCheckbox name="nullOcr"
+                                        label="Null OCR"
+                                        checked={nullOcr}
+                                        onChange={onNullOcrChange} />
                 <hr />
               {
                 Object.keys(consts.PREDICTED_PROPERTIES).map(propKey => (
@@ -104,7 +109,9 @@ UserDataFilters.propTypes = {
   annotated: PropTypes.number.isRequired,
   onAnnotatedChange: PropTypes.func.isRequired,
   queued: PropTypes.number.isRequired,
+  nullOcr: PropTypes.number.isRequired,
   onQueuedChange: PropTypes.func.isRequired,
+  onNullOcrChange: PropTypes.func.isRequired,
   property: PropTypes.object.isRequired,
   onPropertyChange: PropTypes.func.isRequired,
   fromDate: PropTypes.string.isRequired,
