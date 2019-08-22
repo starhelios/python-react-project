@@ -402,8 +402,9 @@ def dequeue_json(dataset, queue_id):
         username = session['profile']['username']
         if type(username) != str:
             username = username.decode('utf-8')
+        # don't update db row if already verified via save-json
         cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW(), " +
-                    "verified_at=NOW() WHERE session_id=%s AND is_good=true",
+                    "verified_at=NOW() WHERE session_id=%s AND is_good=true AND is_verified=false",
                     (True, username, session_id_prev))
         db.commit()
 
