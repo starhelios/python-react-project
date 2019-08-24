@@ -41,6 +41,13 @@ register_json(oid=3802, array_oid=3807)
 DATA_DIR = os.path.dirname(os.path.realpath(__file__))
 application = Flask(__name__)
 oauth = OAuth(application)
+# slack stuff
+SLACK_API_URL = os.environ['SLACK_API_URL']
+SLACK_API_TOKEN = os.environ['SLACK_API_TOKEN']
+SLACK_COMMENT_NOTIFICATION_CHANNEL = os.environ['SLACK_COMMENT_NOTIFICATION_CHANNEL']
+SLACK_COMMENT_NOTIFICATION_USERNAME = os.environ['SLACK_COMMENT_NOTIFICATION_USERNAME']
+SLACK_COMMENT_NOTIFICATION_EMOJI = os.environ['SLACK_COMMENT_NOTIFICATION_EMOJI']
+# auth0 stuff
 BASE_URL = os.environ['BASE_URL']
 CALLBACK_URL = BASE_URL + "/callback"
 CLIENT_ID = os.environ['CLIENT_ID']
@@ -439,7 +446,9 @@ def save():
     session_id = json_data_copy['session_id']
     image_path = json_data_copy['image_path']
     anno_list = json_data_copy['anno_list']
-    json_data_copy['anno_list'] = json.dumps(anno_list)
+    image_path_basename = os.path.basename(image_path)
+    anno_list_new = [anno for anno in anno_list if image_path_basename in anno['src']]
+    json_data_copy['anno_list'] = json.dumps(anno_list_new)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'
     json_data_copy['saved_at'] = 'NOW()'
@@ -529,6 +538,43 @@ def get_json(dataset, session_id):
         json_data = get_predicted_properties(session_id, dataset)
     json_str = json.dumps(json_data, default=str)
     return json_str
+
+@application.route('/api/cr', methods=['POST'])
+@requires_auth
+def cr():
+    json_data = request.get_json(cache=False)
+    user_id_annotated = json_data.get('user_id_annotated', None)
+    user_id_verified = json_data.get('user_id_verified', None)
+    slack_text = json_data.get('msg', 'No message')
+    anno_url = json_data.get('anno_url', None)
+    if anno_url is None:
+        err = "Must provide annotation link!"
+        json_str = json.dumps({"success": False, "error": err}, default=str)
+        return json_str
+    if user_id_annotated:
+        slack_text += "\n" + user_id_annotated
+    if user_id_verified:
+        slack_text += "\n" + user_id_verified
+    attachments = [{
+        'color': '#ee0099',
+        'title': "New comment from bot",
+        'title_link': anno_url,
+        'text': slack_text,
+        'footer': "Good work and keep it up!"
+    }]
+    arguments = {
+        'token': SLACK_API_TOKEN,
+        'channel': SLACK_COMMENT_NOTIFICATION_CHANNEL,
+        'username': SLACK_COMMENT_NOTIFICATION_USERNAME,
+        'icon_emoji': SLACK_COMMENT_NOTIFICATION_EMOJI,
+        'attachments': json.dumps(attachments)
+    }
+    url = "%s?%s" % (SLACK_API_URL, urllib.parse.urlencode(arguments))
+    f = urlopen(url)
+    print('=== Slack API called to notify new comment ===\n' + str(f.read()))
+    f.close()
+    json_str = json.dumps({"success": True}, default=str)
+
 
 def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
