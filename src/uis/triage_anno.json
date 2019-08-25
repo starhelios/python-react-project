@@ -48,6 +48,16 @@
           },
           {
             "type": "bbox",
+            "geometry": "polygon",
+            "label": "Header (polygon)",
+            "id": "header_polygon",
+            "has_text": false,
+            "marker_width": "3",
+            "has_char_size": true,
+            "color": "#F4D03F"
+          },
+          {
+            "type": "bbox",
             "geometry": "box",
             "label": "Text word",
             "id": "word",
@@ -88,6 +98,16 @@
           },
           {
             "type": "bbox",
+            "geometry": "polygon",
+            "label": "Table (polygon)",
+            "id": "table_polygon",
+            "has_text": false,
+            "marker_width": "3",
+            "has_char_size": true,
+            "color": "#eb42f4"
+          },
+          {
+            "type": "bbox",
             "geometry": "box",
             "label": "Diagram",
             "id": "diagram",
@@ -95,16 +115,6 @@
             "marker_width": "3",
             "has_char_size": true,
             "color": "#02b3ff"
-          },
-          {
-            "type": "bbox",
-            "geometry": "box",
-            "label": "Brace",
-            "id": "brace",
-            "has_text": false,
-            "marker_width": "3",
-            "has_char_size": true,
-            "color": "#ffa500"
           }
         ]
       }
