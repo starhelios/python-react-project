@@ -31,6 +31,8 @@ class AnnotationUI extends Component {
       loadDataApiError: '',
       saveDataApiStatus: consts.API_NOT_LOADED,
       saveDataApiError: '',
+      sendCrApiStatus:  consts.API_NOT_LOADED,
+      sendCrApiError: '',
       annoList: [],
       annoResetHash: 1000,
       annoUpdateHash: 1000,
@@ -57,6 +59,8 @@ class AnnotationUI extends Component {
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
     this.renderUI = this.renderUI.bind(this);
     this.onTextFieldChange = this.onTextFieldChange.bind(this);
+    this.onCrMessageChange = this.onCrMessageChange.bind(this);
+    this.onSendCr = this.onSendCr.bind(this);
     this.textRenderTimeoutID = false;
   }
 
@@ -236,6 +240,17 @@ class AnnotationUI extends Component {
     this.uiController.onSave && this.uiController.onSave();
   }
 
+  onSendCr() {
+    if (this.state.loadUIApiStatus !== consts.API_LOADED_SUCCESS || this.state.loadDataApiStatus !== consts.API_LOADED_SUCCESS || !this.state.crMessage) {
+      return;
+    }
+    this.uiController.onSendCr && this.uiController.onSendCr((error, res) => {
+      if (!error && res && res.success) {
+        this.setState({crMessage: ''});
+      }
+    });
+  }
+
   onNext() {
     anno.reset();
     const queue = this.uiController.queue || 'main';
@@ -301,6 +316,10 @@ class AnnotationUI extends Component {
         that.setState({ [that.textRenderId]: that.state[that.textEditId] });
       }, UIController.LATEX_RENDER_WAIT_SECONDS);
     });
+  }
+
+  onCrMessageChange(e) {
+    this.setState({crMessage: e.target.value});
   }
 
   renderLatexUI(effScale) {
@@ -668,6 +687,21 @@ class AnnotationUI extends Component {
               </div>
               <div className="col-sm-7 col-md-12">
                 <b>CTRL+U</b>: Zoom out
+              </div>
+            </div>
+            <div className="row">
+              <div className="dynamic-field col-sm-7 col-md-12">
+                <textarea
+                  className="cr-field"
+                  value={this.state.crMessage}
+                  onChange={this.onCrMessageChange}
+                  placeholder="Compliance report"
+                />
+                <div className="col-sm-7 col-md-12">
+                  <button type="button" className='btn btn-success' onClick={this.onSendCr}>
+                    Send
+                  </button>
+                </div>
               </div>
             </div>
           </div>

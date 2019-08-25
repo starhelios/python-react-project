@@ -20,6 +20,8 @@ class UIController extends BaseUIController {
     this.LOAD_DATA_API_METHOD = 'get';
     this.SAVE_DATA_API_URL = '/api/save-json';
     this.SAVE_DATA_API_METHOD = 'post';
+    this.SEND_CR_URL = '/api/cr';
+    this.SEND_CR_METHOD = 'post';
     this.sessionId = getURLParameterByName('sessionID');
     this.queue = getURLParameterByName('queue');
     this.groupIsValidation = this.groupIsValidation.bind(this);
