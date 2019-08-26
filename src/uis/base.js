@@ -133,4 +133,37 @@ export default class BaseUIController {
       );
     });
   }
+
+  onSendCr(callback) {
+    const that = this.component;
+
+    const payload = {
+      user_id_annotated: that.state.username,
+      user_id_verified: that.state.verified_by,
+      msg: that.state.crMessage,
+      anno_url: window.location.href,
+    };
+    callApi(this.SEND_CR_URL, this.SEND_CR_METHOD, payload).then(
+      response => {
+        console.log('Send Compliance report success', response);
+        that.setState({
+          sendCrApiStatus: consts.API_LOADED_SUCCESS,
+          unsaved: false
+        }, function() {
+          callback && callback(null, response);
+        });
+        that.showAlert(response && response.success ? 'success' : 'danger', response && response.success ? 'Successfully saved.' : response && response.error);
+      },
+      error => {
+        console.log('Send Compliance report fail', error);
+        that.setState({
+          sendCrApiStatus: consts.API_LOADED_ERROR,
+          sendCrApiError: 'Failed to send. ' + (error.error || '')
+        }, function() {
+          callback && callback(error);
+        });
+        that.showAlert('danger', 'Sorry, Failed to send Compliance report. Please try again or contact support.');
+      }
+    );
+  }
 }
