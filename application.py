@@ -547,20 +547,40 @@ def cr():
     user_id_verified = json_data.get('user_id_verified', None)
     slack_text = json_data.get('msg', 'No message')
     anno_url = json_data.get('anno_url', None)
+    session_id = json_data.get('session_id', None)
+    if session_id is not None:
+        db = get_db()
+        cur = db.cursor(cursor_factory=DictCursor)
+        query = "UPDATE TrainingEquations SET is_good = %s WHERE session_id = %s"
+        cur.execute(query, (False, session_id))
+        db.commit()
     if anno_url is None:
         err = "Must provide annotation link!"
         json_str = json.dumps({"success": False, "error": err}, default=str)
         return json_str
-    if user_id_annotated:
-        slack_text += "\n" + user_id_annotated
-    if user_id_verified:
-        slack_text += "\n" + user_id_verified
+    username = None
+    if user_id_annotated is not None:
+        username = user_id_annotated
+    elif user_id_verified:
+        username = user_id_verified
+    footer = "Good work and keep it up!"
+    if username is not None:
+        db = get_db()
+        cur = db.cursor(cursor_factory=DictCursor)
+        query = "SELECT slack_username FROM users WHERE username = %s"
+        cur.execute(query, (username,))
+        row = cur.fetchone()
+        if row:
+            slack_username = row[0]
+            footer = "<@%s>" % slack_username
+        else:
+            footer = "<@%s>" % username
     attachments = [{
         'color': '#ee0099',
-        'title': "New comment from bot",
+        'title': "CR notification",
         'title_link': anno_url,
         'text': slack_text,
-        'footer': "Good work and keep it up!"
+        'footer': footer
     }]
     arguments = {
         'token': SLACK_API_TOKEN,
@@ -574,6 +594,7 @@ def cr():
     print('=== Slack API called to notify new comment ===\n' + str(f.read()))
     f.close()
     json_str = json.dumps({"success": True}, default=str)
+    return json_str
 
 
 def get_predicted_properties(image_id, dataset):
