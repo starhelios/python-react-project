@@ -851,7 +851,7 @@ def annotate(dataset):
             "queue": queue_id})
         return redirect(query_param)
     queue_count = redis_db.llen(queue_id)
-    return render_template('annoUI.html', username=username, queue_name=queue_id, queue_count=queue_count, dataset=dataset)
+    return render_template('annoUI.html', username=username, queue_name=queue_id, queue_count=queue_count, dataset=dataset, timestamp=time.time())
 
 @application.route('/synthetic')
 @requires_auth
