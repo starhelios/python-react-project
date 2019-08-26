@@ -570,7 +570,7 @@ def cr():
         'attachments': json.dumps(attachments)
     }
     url = "%s?%s" % (SLACK_API_URL, urllib.parse.urlencode(arguments))
-    f = urlopen(url)
+    f = urllib.request.urlopen(url)
     print('=== Slack API called to notify new comment ===\n' + str(f.read()))
     f.close()
     json_str = json.dumps({"success": True}, default=str)
