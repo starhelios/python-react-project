@@ -63,9 +63,9 @@ var Root = React.createClass({
           <br />
           <div>
             <h3>Good sources of data</h3>
-            <p><a href={window.location.origin + "/user-data?property=!is_printed&fromDate=2019-03-04&minSeqLen=10&group=mathpix_chrome"}>Handwriting data</a></p>
-            <p><a href={window.location.origin + "/user-data?property=!is_printed&fromDate=2019-03-04&latex=aligned&group=mathpix_chrome"}>Aligned handwritten</a></p>
-            <p><a href={window.location.origin + "/user-data?fromDate=2019-03-04&latex=aligned&group=mathpix_chrome"}>Aligned printed</a></p>
+            <p><a href={window.location.origin + "/user-data?property=!is_printed*is_not_math*!is_blank&fromDate=2019-08-16&sort=-datetime"}>Handwriting data (for triage)</a></p>
+            <p><a href={window.location.origin + "/user-data?property=!is_printed&fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned handwritten</a></p>
+            <p><a href={window.location.origin + "/user-data?fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned printed</a></p>
           </div>
         </div>
       );
