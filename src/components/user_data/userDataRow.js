@@ -32,9 +32,17 @@ export default class UserDataRow extends Component {
 
   onQueueClick = dataset => () => {
     this.setState({ queuing: true });
-    this.props.queueImage(this.props.image, dataset, () => {
-      this.setState({ queuing: false });
-    });
+    if (dataset === 'all') {
+      this.props.queueImage(this.props.image, 'mathpix', () => {
+        this.props.queueImage(this.props.image, 'triage', () => {
+          this.setState({ queuing: false });
+        });
+      });
+    } else {
+      this.props.queueImage(this.props.image, dataset, () => {
+        this.setState({ queuing: false });
+      });
+    }
   }
 
   render() {
@@ -96,6 +104,17 @@ export default class UserDataRow extends Component {
                         <img src="/static/img/spinner-sm.gif" />
                         :
                         'Queue Triage'
+                    }
+                  </button>
+                </div>
+                <br />
+                <div>
+                  <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('all')}>
+                    {
+                      this.state.queuing || image.is_queueing ?
+                        <img src="/static/img/spinner-sm.gif" />
+                        :
+                        'Queue All'
                     }
                   </button>
                 </div>
