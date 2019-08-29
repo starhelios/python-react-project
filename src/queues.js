@@ -41,6 +41,21 @@ var Root = React.createClass({
       console.log(this.state.queues);
       return (
         <div>
+          <div>
+            <h3>Data verification links</h3>
+            <p><a href={window.location.origin + "/annotate/triage?queue=triage_clean"}>Triage</a></p>
+            <p><a href={window.location.origin + "/annotate/mathpix?queue=mathpix_clean"}>Mathpix</a></p>
+            <p><a href={window.location.origin + "/annotate/mathpix?queue=limi_clean"}>Limi</a></p>
+          </div>
+          <hr />
+          <div>
+            <h3>Good sources of data</h3>
+            <p><a href={window.location.origin + "/user-data?property=!is_printed*is_not_math*!is_blank&fromDate=2019-08-16&sort=-datetime"}>Handwriting data (for triage)</a></p>
+            <p><a href={window.location.origin + "/user-data?property=!is_printed&fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned handwritten</a></p>
+            <p><a href={window.location.origin + "/user-data?fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned printed</a></p>
+          </div>
+          <hr />
+          <h3>Queues</h3>
           <table className="table">
             <thead>
               <tr>
@@ -61,12 +76,6 @@ var Root = React.createClass({
             </tbody>
           </table>
           <br />
-          <div>
-            <h3>Good sources of data</h3>
-            <p><a href={window.location.origin + "/user-data?property=!is_printed*is_not_math*!is_blank&fromDate=2019-08-16&sort=-datetime"}>Handwriting data (for triage)</a></p>
-            <p><a href={window.location.origin + "/user-data?property=!is_printed&fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned handwritten</a></p>
-            <p><a href={window.location.origin + "/user-data?fromDate=2019-03-04&latex=aligned&group=mathpix_snip"}>Aligned printed</a></p>
-          </div>
         </div>
       );
     }

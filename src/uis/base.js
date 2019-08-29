@@ -136,10 +136,10 @@ export default class BaseUIController {
 
   onSendCr(callback) {
     const that = this.component;
-
     const payload = {
       user_id_annotated: that.state.username,
       user_id_verified: that.state.verified_by,
+      session_id: this.sessionId,
       msg: that.state.crMessage,
       anno_url: window.location.href,
     };
