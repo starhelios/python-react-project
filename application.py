@@ -24,6 +24,7 @@ from io import BytesIO
 import urllib.request
 import glob
 import re
+import random
 
 file_list = glob.glob("src/uis/*_anno.json")
 ANNO_ID_LIST = []
@@ -399,8 +400,8 @@ def api_get_datasets():
 @application.route('/api/dequeue-json/<dataset>/<queue_id>', methods=['POST'])
 @requires_auth
 def dequeue_json(dataset, queue_id):
-    json_data = request.get_json(cache=False)
-    session_id_prev = json_data.get('session_id', None)
+    input_json_data = request.get_json(cache=False)
+    session_id_prev = input_json_data.get('session_id', None)
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
     # TODO: explore whether we can remove this hack
@@ -415,6 +416,23 @@ def dequeue_json(dataset, queue_id):
                     (True, username, session_id_prev))
         db.commit()
 
+    # TODO: make this code more general
+    application.logger.info(queue_id)
+    if queue_id in ['mathpix_clean', 'triage_clean', 'limi_clean']:
+        cur.execute("SELECT * FROM TrainingEquations WHERE dataset=%s AND is_good=true AND is_verified=false ORDER BY random() LIMIT 100", (dataset,))
+        rows = cur.fetchall()
+        if len(rows) == 0:
+            return json.dumps({'redirect_url': '/queues'})
+        row = random.choice(rows)
+        application.logger.info(row)
+        data_row = dict(row)
+        resp_json_data = {}
+        for key, val in iteritems(data_row):
+            resp_json_data[key] = data_row[key]
+        resp_json_data['queue_count'] = len(rows)
+        json_str = json.dumps(resp_json_data, default=str)
+        return json_str
+
     session_id, queue_count = session_id_pop(queue_id)
     if session_id is None:
         redis_db.delete(queue_id)
@@ -423,16 +441,16 @@ def dequeue_json(dataset, queue_id):
         return json.dumps({'redirect_url': '/queues'})
     cur.execute("SELECT * FROM TrainingEquations WHERE session_id=%s", (session_id,))
     rows = cur.fetchall()
-    json_data = {}
+    resp_json_data = {}
     if len(rows) != 0:
         data_row = dict(rows[0])
         for key, val in iteritems(data_row):
-            json_data[key] = data_row[key]
+            resp_json_data[key] = data_row[key]
     else:
         application.logger.info("Using predicted annotations.")
-        json_data = get_predicted_properties(session_id, dataset)
-    json_data['queue_count'] = queue_count
-    json_str = json.dumps(json_data, default=str)
+        resp_json_data = get_predicted_properties(session_id, dataset)
+    resp_json_data['queue_count'] = queue_count
+    json_str = json.dumps(resp_json_data, default=str)
     return json_str
 
 @application.route('/api/save-json', methods=['POST'])

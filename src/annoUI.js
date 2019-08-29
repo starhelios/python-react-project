@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { cloneDeep, get as _get, sum, findIndex } from 'lodash';
+import { forEach, cloneDeep, get as _get, sum } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
 import consts from './libs/consts';
@@ -61,6 +61,8 @@ class AnnotationUI extends Component {
     this.onTextFieldChange = this.onTextFieldChange.bind(this);
     this.onCrMessageChange = this.onCrMessageChange.bind(this);
     this.onSendCr = this.onSendCr.bind(this);
+    this.subCharSize = this.subCharSize.bind(this);
+    this.incCharSize = this.incCharSize.bind(this);
     this.textRenderTimeoutID = false;
   }
 
@@ -273,6 +275,20 @@ class AnnotationUI extends Component {
         }, ttl);
       }
     });
+  }
+
+  subCharSize() {
+    forEach(anno.getAnnotations(), (annotation) => {
+      annotation.charSize = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE);
+      this.onCharSizeMinus(annotation);
+    })
+  }
+
+  incCharSize() {
+    forEach(anno.getAnnotations(), (annotation) => {
+      annotation.charSize = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE);
+      this.onCharSizePlus(annotation);
+    })
   }
 
   onShowMarkers(event) {
@@ -640,6 +656,12 @@ class AnnotationUI extends Component {
 
         <div className="row">
           <div className="col-xs-6 col-xs-push-3 col-md-3 col-md-push-9 heading text-center">
+            <button type="button" className='btn btn-danger' onClick={this.subCharSize}>
+              Char Size -10%
+            </button>&nbsp;
+            <button type="button" className='btn btn-success' onClick={this.incCharSize}>
+              Char Size +10%
+            </button>
             <div className="checkbox">
               <label htmlFor="show-markers" >
                 <input type="checkbox" ref="show-markers" id="show-markers" checked={this.state["showMarkers"]}
