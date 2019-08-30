@@ -112,7 +112,7 @@ class AnnotationUI extends Component {
     });
   }
 
-  @keydown('ctrl+m', 'ctrl+k', 'ctrl+y', 'ctrl+u')
+  @keydown('ctrl+m', 'ctrl+k', 'ctrl+y', 'ctrl+u', 'ctrl+i')
   onKeyDown(event) {
     event.preventDefault();
     if (event.ctrlKey && event.key === 'y') {
@@ -127,6 +127,10 @@ class AnnotationUI extends Component {
       if (char_size) {
         this.setState({ char_size: parseFloat(char_size * 1.1) });
       }
+    }
+    if (event.ctrlKey && event.key === 'i') {
+      event.preventDefault();
+      this.showBtn.click();
     }
     // TODO: not sure this is even necessary here
     if (document.activeElement.id !== this.textEditId) {
@@ -664,7 +668,8 @@ class AnnotationUI extends Component {
             </button>
             <div className="checkbox">
               <label htmlFor="show-markers" >
-                <input type="checkbox" ref="show-markers" id="show-markers" checked={this.state["showMarkers"]}
+                <input type="checkbox" id="show-markers" checked={this.state["showMarkers"]}
+                       ref={input => this.showBtn = input}
                        title="Show 2x markers"
                        onChange={this.onShowMarkers.bind(this)} />
                 Show 2x markers
@@ -709,6 +714,9 @@ class AnnotationUI extends Component {
               </div>
               <div className="col-sm-7 col-md-12">
                 <b>CTRL+U</b>: Zoom out
+              </div>
+              <div className="col-sm-7 col-md-12">
+                <b>CTRL+I</b>: Show 2x markers
               </div>
             </div>
             <div className="row">
