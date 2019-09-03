@@ -63,6 +63,7 @@ class AnnotationUI extends Component {
     this.onSendCr = this.onSendCr.bind(this);
     this.subCharSize = this.subCharSize.bind(this);
     this.incCharSize = this.incCharSize.bind(this);
+    this.cancelPolygon = this.cancelPolygon.bind(this);
     this.textRenderTimeoutID = false;
   }
 
@@ -279,6 +280,10 @@ class AnnotationUI extends Component {
         }, ttl);
       }
     });
+  }
+
+  cancelPolygon() {
+    console.log('cancelPolygon')
   }
 
   subCharSize() {
@@ -660,6 +665,13 @@ class AnnotationUI extends Component {
 
         <div className="row">
           <div className="col-xs-6 col-xs-push-3 col-md-3 col-md-push-9 heading text-center">
+            <div className="actions row">
+              <div className="col-xs-4 col-md-12">
+                <button type="button" className='btn btn-primary' onClick={this.cancelPolygon}>
+                  Cancel Polygon
+                </button>
+              </div>
+            </div>
             <button type="button" className='btn btn-danger' onClick={this.subCharSize}>
               Char Size -10%
             </button>&nbsp;
