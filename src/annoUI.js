@@ -685,7 +685,7 @@ class AnnotationUI extends Component {
             <div className="actions row">
               <div className="col-xs-4 col-md-12" id="cancel-polygon-button" style={{ display: 'none' }}>
                 <button type="button" className='btn btn-primary' onClick={this.cancelPolygon}>
-                  Clear current annotation
+                  Clear selected annotation
                 </button>
               </div>
             </div>
