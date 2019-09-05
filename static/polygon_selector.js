@@ -150,6 +150,13 @@ annotorious.plugin.PolygonSelector.Selector.prototype._attachListeners = functio
     }
   };
 
+  this._closeShape = function() {
+    self._enabled = false;
+    refresh(self._anchor);
+    self._annotator.fireEvent('onSelectionCompleted',
+      { mouseEvent: null, shape: self.getShape(), viewportBounds: self.getViewportBounds() });
+  };
+
   this._canvas.addEventListener('mouseup', this._mouseUpListener);
 }
 
@@ -197,7 +204,7 @@ annotorious.plugin.PolygonSelector.Selector.prototype.startSelection = function(
   this._enabled = true;
   this._attachListeners();
   this._anchor = { x: x, y: y };
-  this._annotator.fireEvent('onSelectionStarted', { offsetX: x, offsetY: y });
+  this._annotator.fireEvent('onSelectionStarted', { offsetX: x, offsetY: y, annotator: this });
 
   // goog.style.setStyle(document.body, '-webkit-user-select', 'none');
 }
