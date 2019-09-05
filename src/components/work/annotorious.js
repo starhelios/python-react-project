@@ -75,7 +75,7 @@ export default class Annotorious extends Component {
   }
 
   onAnnoSelectionStarted(event) {
-    this.props.onStartSelection()
+    this.props.onStartSelection(event)
   }
 
   onAnnoSelectionCompleted(event) {
