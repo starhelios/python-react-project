@@ -88,7 +88,7 @@ export default class Annotorious extends Component {
 
   render() {
     const single = this.props.annoList.length === 1;
-    const margin = single ? 200 : 0;
+    const margin = single ? 50 : 0;
     const wrapperHeight = this.props.imageHeight + margin + WRAP_INCREASE;
 
     if (this.props.imageURL) {
