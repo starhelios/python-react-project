@@ -63,6 +63,9 @@ class AnnotationUI extends Component {
     this.onSendCr = this.onSendCr.bind(this);
     this.subCharSize = this.subCharSize.bind(this);
     this.incCharSize = this.incCharSize.bind(this);
+    this.cancelPolygon = this.cancelPolygon.bind(this);
+    this.onStartSelection = this.onStartSelection.bind(this);
+    this.onSelectionCompleted = this.onSelectionCompleted.bind(this);
     this.textRenderTimeoutID = false;
   }
 
@@ -279,6 +282,23 @@ class AnnotationUI extends Component {
         }, ttl);
       }
     });
+  }
+
+  cancelButtonVisible(status = true) {
+    const el = document.getElementById('cancel-polygon-button').style.display = status ? "block" : "none";
+  }
+
+  onStartSelection(obj) {
+    this.cancelButtonVisible();
+  }
+
+  onSelectionCompleted(obj) {
+    this.cancelButtonVisible(false);
+  }
+
+  cancelPolygon() {
+    this.cancelButtonVisible(false);
+    this.forceUpdate();
   }
 
   subCharSize() {
@@ -647,6 +667,8 @@ class AnnotationUI extends Component {
                 textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onCharSizeMinus={this.onCharSizeMinus}
+                onStartSelection={this.onStartSelection}
+                onSelectionCompleted={this.onSelectionCompleted}
                 hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size && this.state.showMarkers}
               />
             </div>
@@ -660,6 +682,13 @@ class AnnotationUI extends Component {
 
         <div className="row">
           <div className="col-xs-6 col-xs-push-3 col-md-3 col-md-push-9 heading text-center">
+            <div className="actions row">
+              <div className="col-xs-4 col-md-12" id="cancel-polygon-button" style={{ display: 'none' }}>
+                <button type="button" className='btn btn-primary' onClick={this.cancelPolygon}>
+                  Clear selected annotation
+                </button>
+              </div>
+            </div>
             <button type="button" className='btn btn-danger' onClick={this.subCharSize}>
               Char Size -10%
             </button>&nbsp;

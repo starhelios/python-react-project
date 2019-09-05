@@ -10,6 +10,7 @@ export default class Annotorious extends Component {
     super(...args);
     this.activePopup = null;
     this.onAnnoSelectionCompleted = this.onAnnoSelectionCompleted.bind(this);
+    this.onAnnoSelectionStarted = this.onAnnoSelectionStarted.bind(this);
     this.update = this.update.bind(this);
     this.onPopupShown = this.onPopupShown.bind(this);
     this.imageURL = '';
@@ -49,6 +50,7 @@ export default class Annotorious extends Component {
       anno.addHandler('onAnnotationCreated', this.props.onAnnoCreated);
       anno.addHandler('onAnnotationUpdated', this.props.onAnnoUpdated);
       anno.addHandler('onAnnotationRemoved', this.props.onAnnoRemoved);
+      anno.addHandler('onSelectionStarted', this.onAnnoSelectionStarted);
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
       anno.addHandler('onPopupShown', this.onPopupShown);
     }
@@ -72,7 +74,12 @@ export default class Annotorious extends Component {
     })
   }
 
+  onAnnoSelectionStarted(event) {
+    this.props.onStartSelection()
+  }
+
   onAnnoSelectionCompleted(event) {
+    this.props.onSelectionCompleted();
     if (this.props.boxUpdateMode) {
       document.getElementsByClassName('annotorious-editor-button-cancel')[0].click();
       if (this.props.updateBoxCoordinates) {
@@ -120,6 +127,8 @@ Annotorious.propTypes = {
   onAnnoCreated: PropTypes.func.isRequired,
   onAnnoUpdated: PropTypes.func.isRequired,
   onAnnoRemoved: PropTypes.func.isRequired,
+  onAnnoSelectionCompleted: PropTypes.func,
+  onStopSelection: PropTypes.func,
   updateBoxCoordinates: PropTypes.func,
   boxUpdateMode: PropTypes.bool,
   textAllowed: PropTypes.bool
