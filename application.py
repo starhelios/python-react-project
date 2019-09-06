@@ -572,6 +572,7 @@ def cr():
         query = "UPDATE TrainingEquations SET is_good = %s WHERE session_id = %s"
         cur.execute(query, (False, session_id))
         db.commit()
+    anno_url = anno_url.split("?")[0] + "?sessionID=" + session_id
     if anno_url is None:
         err = "Must provide annotation link!"
         json_str = json.dumps({"success": False, "error": err}, default=str)
@@ -921,7 +922,7 @@ def debug():
 def api_get_users():
     db = get_db()
     cur = db.cursor()
-    cur.execute("SELECT username FROM users")
+    cur.execute("SELECT distinct(username) FROM trainingequations")
     row_list = cur.fetchall()
     users = [row[0] for row in row_list]
     result = {

@@ -64,6 +64,7 @@ class AnnotationUI extends Component {
     this.subCharSize = this.subCharSize.bind(this);
     this.incCharSize = this.incCharSize.bind(this);
     this.cancelPolygon = this.cancelPolygon.bind(this);
+    this.finishLine = this.finishLine.bind(this);
     this.onStartSelection = this.onStartSelection.bind(this);
     this.onSelectionCompleted = this.onSelectionCompleted.bind(this);
     this.textRenderTimeoutID = false;
@@ -288,16 +289,32 @@ class AnnotationUI extends Component {
     const el = document.getElementById('cancel-polygon-button').style.display = status ? "block" : "none";
   }
 
-  onStartSelection(obj) {
-    this.cancelButtonVisible();
+  finishLineVisible(status = true) {
+    const el = document.getElementById('finish-line-button').style.display = status ? "block" : "none";
   }
 
-  onSelectionCompleted(obj) {
+  onStartSelection(obj) {
+    this.annotator = obj && obj.annotator;
+    this.cancelButtonVisible();
+    this.finishLineVisible();
+  }
+
+  onSelectionCompleted() {
     this.cancelButtonVisible(false);
+    this.finishLineVisible(false);
   }
 
   cancelPolygon() {
     this.cancelButtonVisible(false);
+    this.finishLineVisible(false);
+    this.forceUpdate();
+  }
+
+  finishLine() {
+    if (this.annotator && typeof this.annotator._closeShape === 'function') {
+      this.annotator._closeShape();
+    }
+    this.finishLineVisible(false);
     this.forceUpdate();
   }
 
@@ -686,6 +703,11 @@ class AnnotationUI extends Component {
               <div className="col-xs-4 col-md-12" id="cancel-polygon-button" style={{ display: 'none' }}>
                 <button type="button" className='btn btn-primary' onClick={this.cancelPolygon}>
                   Clear selected annotation
+                </button>
+              </div>
+              <div className="col-xs-4 col-md-12" id="finish-line-button" style={{ display: 'none' }}>
+                <button type="button" className='btn btn-success' onClick={this.finishLine}>
+                  Finish line
                 </button>
               </div>
             </div>
