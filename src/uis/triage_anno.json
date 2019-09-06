@@ -115,6 +115,17 @@
             "marker_width": "3",
             "has_char_size": true,
             "color": "#02b3ff"
+          },
+          {
+            "type":"bbox",
+            "geometry":"polygon",
+            "label":"Table line",
+            "id":"table_line",
+            "has_text":false,
+            "is_line": true,
+            "marker_width":"3",
+            "has_char_size":false,
+            "color":"#875F9A"
           }
         ]
       }
