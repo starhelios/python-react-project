@@ -50,6 +50,7 @@
     "info_properties": {
       "options": [
         { "value": "is_printed", "label": "Printed", "help": "Main information is not handwritten." },
+        { "value": "is_handwritten", "label": "Handwritten", "help": "Main information is not printed." },
         { "value": "is_inverted", "label": "Inverted", "help": "Light ink on dark background, eg. blackboards." }
       ],
       "default": []
