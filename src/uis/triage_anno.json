@@ -118,13 +118,42 @@
           },
           {
             "type":"bbox",
+            "geometry":"box",
+            "label":"Page number",
+            "id":"page_number",
+            "has_text":false,
+            "marker_width":"3",
+            "has_char_size":true,
+            "color":"#875F9A"
+          },
+          {
+            "type":"bbox",
             "geometry":"polygon",
             "label":"Table line",
             "id":"table_line",
-            "has_text":false,
-            "is_line": true,
+            "has_text": false,
             "marker_width":"3",
             "has_char_size":false,
+            "color":"#bf640f"
+          },   
+          {
+            "type":"bbox",
+            "geometry":"box",
+            "label":"Table cell line",
+            "id":"table_cell_line",
+            "has_text":false,
+            "marker_width":"3",
+            "has_char_size":true,
+            "color":"#875F9A"
+          },
+          {
+            "type":"bbox",
+            "geometry":"polygon",
+            "label":"Table cell line (polygon)",
+            "id":"table_cell_line_polygon",
+            "has_text":false,
+            "marker_width":"3",
+            "has_char_size":true,
             "color":"#875F9A"
           }
         ]

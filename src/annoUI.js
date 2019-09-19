@@ -16,7 +16,7 @@ require('./styles/annoUI.scss');
 
 import UIs from './uis';
 const DATASET = window.__DATASET__;
-const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'triage': 'triage_anno' };
+const dataset_to_ui = { 'mathpix': 'math_anno', 'limi': 'sheet_anno', 'triage': 'triage_anno', 'price': 'price_anno' };
 const UIID = dataset_to_ui[DATASET];
 const UIController = UIs[UIID] || UIs['default'];
 const DEFAULT_BOX_CHAR_SIZE = 20;
@@ -726,7 +726,7 @@ class AnnotationUI extends Component {
                 Show 2x markers
               </label>
             </div>
-            
+
             <div className="stats">
               <h4>Queue ({window.__QUEUE_NAME__}): {this.state.queue_count || '(loading...)'}</h4>
               <h4>Is verified: {String(this.state.is_verified || "false")}</h4>
