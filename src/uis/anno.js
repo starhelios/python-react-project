@@ -180,5 +180,6 @@ class UIController extends BaseUIController {
 module.exports = {
   'sheet_anno': UIController,
   'math_anno': UIController,
-  'triage_anno': UIController
+  'triage_anno': UIController,
+  'price_anno': UIController
 };
