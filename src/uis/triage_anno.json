@@ -128,33 +128,13 @@
           },
           {
             "type":"bbox",
-            "geometry":"polygon",
-            "label":"Table line",
-            "id":"table_line",
+            "geometry":"box",
+            "label":"Aligned equation",
+            "id":"aligned_equation",
             "has_text": false,
             "marker_width":"3",
             "has_char_size":false,
             "color":"#bf640f"
-          },   
-          {
-            "type":"bbox",
-            "geometry":"box",
-            "label":"Table cell line",
-            "id":"table_cell_line",
-            "has_text":false,
-            "marker_width":"3",
-            "has_char_size":true,
-            "color":"#875F9A"
-          },
-          {
-            "type":"bbox",
-            "geometry":"polygon",
-            "label":"Table cell line (polygon)",
-            "id":"table_cell_line_polygon",
-            "has_text":false,
-            "marker_width":"3",
-            "has_char_size":true,
-            "color":"#875F9A"
           }
         ]
       }
@@ -180,7 +160,8 @@
     },
     "info_properties": {
       "options": [
-        { "value": "is_printed", "label": "Printed", "help": "Main information is not handwritten." },
+        { "value": "is_printed", "label": "Contains printed", "help": "Contains printed content." },
+        { "value": "is_handwritten", "label": "Contains handwritten", "help": "Contains handwritten content." },
         { "value": "is_inverted", "label": "Inverted", "help": "Light ink on dark background, eg. blackboards." }
       ],
       "default": []
