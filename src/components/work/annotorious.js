@@ -61,9 +61,9 @@ export default class Annotorious extends Component {
       const shape = item.shapes[0];
       const object = data.shapes[0];
       let diff = [{ x: 1 }];
-      if (shape.type === object.type && object.type === 'polygon') {
+      if (object && shape && shape.type === object.type && object.type === 'polygon') {
         diff = item.shapes[0]['geometry']['points'] && data.shapes[0]['geometry']['points'] && differenceWith(item.shapes[0]['geometry']['points'], data.shapes[0]['geometry']['points'], isEqual)
-      } else if (shape.type === object.type && object.type === 'rect') {
+      } else if (object && shape && shape.type === object.type && object.type === 'rect') {
         diff = item.shapes[0]['geometry'] && data.shapes[0]['geometry'] && differenceWith([item.shapes[0]['geometry']], [data.shapes[0]['geometry']], isEqual)
       }
 
@@ -142,9 +142,11 @@ Annotorious.propTypes = {
 function drawAnnotations(annoList = [], activeIndex) {
   const annoCount = annoList.length;
   annoList.forEach((box, index) => {
-    anno.addAnnotation(Object.assign({}, box, {
-      src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-    }), undefined, index === activeIndex, annoCount);
+    if (box && box.shapes && box.shapes[0]) {
+      anno.addAnnotation(Object.assign({}, box, {
+        src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
+      }), undefined, index === activeIndex, annoCount);
+    }
   });
 }
 
