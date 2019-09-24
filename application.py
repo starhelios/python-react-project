@@ -26,6 +26,8 @@ import glob
 import re
 import random
 
+
+QUEUE_CLEAN_LIST = ['mathpix_clean', 'triage_clean', 'limi_clean']
 file_list = glob.glob("src/uis/*_anno.json")
 ANNO_ID_LIST = []
 for file_cur in file_list:
@@ -317,10 +319,12 @@ def api_get_queue():
     if 'dataset' not in data_request_params:
         return json.dumps({'success': False, 'error': 'Must specify dataset (cannot be all)'})
     queue = data_request_params['queue']
+    application.logger.info(queue)
     dataset = data_request_params['dataset']
     redis_db.delete(queue)
-    for row in cur.fetchall():
-        redis_db.rpush(queue, row[0])
+    application.logger.info("Inserting into redis...")
+    row_list = [r[0] for r in cur.fetchall()]
+    redis_db.rpush(queue, *row_list)
     redis_db.sadd('queues', queue)
     application.logger.info(dataset)
     redis_db.hset('queues_dataset', queue, dataset)
@@ -418,7 +422,7 @@ def dequeue_json(dataset, queue_id):
 
     # TODO: make this code more general
     application.logger.info(queue_id)
-    if queue_id in ['mathpix_clean', 'triage_clean', 'limi_clean']:
+    if queue_id in QUEUE_CLEAN_LIST:
         cur.execute("SELECT * FROM TrainingEquations WHERE dataset=%s AND is_good=true AND is_verified=false ORDER BY random() LIMIT 100", (dataset,))
         rows = cur.fetchall()
         if len(rows) == 0:
@@ -883,14 +887,30 @@ def annotate(dataset):
     if type(username) != str:
         username = username.decode('utf-8')
     application.logger.info("Index request with username: %s" % username)
-    # application.logger.info("JSON profile data: %s" % session['profile'])
     if session_id is None and queue_id is not None:
-        session_id, queue_count = session_id_pop(queue_id)
-        query_param = request.base_url + "?" + urlencode({
-            "sessionID": session_id,
-            "queue": queue_id})
-        return redirect(query_param)
-    queue_count = redis_db.llen(queue_id)
+        if queue_id in QUEUE_CLEAN_LIST:
+            db = get_db()
+            cur = db.cursor()
+            cur.execute("SELECT session_id FROM TrainingEquations WHERE dataset=%s AND is_good=true AND is_verified=false ORDER BY random() LIMIT 1", (dataset,))
+            rows = cur.fetchall()
+            if len(rows) == 0:
+                return redirect('/queues')
+            session_id = rows[0][0]
+            queue_count = 100
+            query_param = request.base_url + "?" + urlencode({
+                "sessionID": session_id,
+                "queue": queue_id})
+            return redirect(query_param)
+        else:
+            session_id, queue_count = session_id_pop(queue_id)
+            query_param = request.base_url + "?" + urlencode({
+                "sessionID": session_id,
+                "queue": queue_id})
+            return redirect(query_param)
+    if queue_id in QUEUE_CLEAN_LIST:
+        queue_count = 100
+    else:
+        queue_count = redis_db.llen(queue_id)
     return render_template('annoUI.html', username=username, queue_name=queue_id, queue_count=queue_count, dataset=dataset, timestamp=time.time())
 
 @application.route('/synthetic')
