@@ -27,7 +27,9 @@ export default class DataBody extends Component {
               dataset={item.dataset}
               imagePath={item.image_path}
               properties={item.properties}
-              char_size={item.char_size}
+              is_printed={item.is_printed}
+              is_handwritten={item.is_handwritten}
+              is_inverted={item.is_inverted}
               is_verified={item.is_verified}
               viewType={this.props.viewType}
               datetime={item.datetime}
