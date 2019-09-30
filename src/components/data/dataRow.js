@@ -13,7 +13,9 @@ export default class DataRow extends Component {
     dataset: PropTypes.string.isRequired,
     imagePath: PropTypes.string.isRequired,
     properties: PropTypes.object.isRequired,
-    char_size: PropTypes.number,
+    is_printed: PropTypes.bool,
+    is_handwritten: PropTypes.bool,
+    is_inverted: PropTypes.bool,
     datetime: PropTypes.string,
     is_verified: PropTypes.bool
   };
@@ -80,7 +82,7 @@ export default class DataRow extends Component {
 
   render() {
     const { viewType, annotator, text, imagePath, properties,
-      char_size, datetime, is_verified, dataset, annoList, latex_normalized, latex, session_id } = this.props;
+      datetime, is_verified, dataset, annoList, latex_normalized, latex, session_id, is_printed, is_handwritten, is_inverted } = this.props;
     const basePath = imagePath.split("/").slice(-1)[0];
     const textEditURL = "/annotate/" + dataset + "?sessionID=" + session_id;
     const imageURL = consts.S3BUCKET_URL + basePath;
@@ -93,8 +95,14 @@ export default class DataRow extends Component {
           propsStr += properties[key].description + "\n";
         }
       }
-      if (char_size !== null && char_size !== undefined) {
-        propsStr += 'char_size: ' + char_size + "\n";
+      if (is_printed !== null && is_printed !== undefined) {
+        propsStr += 'is_printed: ' + is_printed + "\n";
+      }
+      if (is_handwritten !== null && is_handwritten !== undefined) {
+        propsStr += 'is_handwritten: ' + is_handwritten + "\n";
+      }
+      if (is_inverted !== null && is_inverted !== undefined) {
+        propsStr += 'is_inverted: ' + is_inverted + "\n";
       }
       if (dataset !== null && dataset !== undefined) {
         propsStr += 'dataset: ' + dataset + "\n";

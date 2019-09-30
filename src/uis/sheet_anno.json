@@ -28,22 +28,22 @@
           },
           {
             "type": "bbox",
-            "geometry": "box",
-            "label": "Answer area",
-            "id": "answer",
-            "has_text": false,
-            "marker_width": "2",
-            "color": "#ed8404",
-            "has_char_size": true
-          },
-          {
-            "type": "bbox",
             "geometry": "polygon",
             "label": "Question area polygon",
             "id": "question_polygon",
             "has_text": false,
             "marker_width": "2",
             "color": "#ef07e0",
+            "has_char_size": true
+          },
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Answer area",
+            "id": "answer",
+            "has_text": false,
+            "marker_width": "2",
+            "color": "#ed8404",
             "has_char_size": true
           },
           {
@@ -59,21 +59,21 @@
           {
             "type": "bbox",
             "geometry": "box",
-            "label": "Printed size label",
-            "id": "printed_char_size",
-            "has_text": true,
+            "label": "Time ",
+            "id": "time",
+            "has_text": false,
             "marker_width": "2",
-            "color": "#009933",
+            "color": "#3cb44b",
             "has_char_size": true
           },
           {
             "type": "bbox",
-            "geometry": "box",
-            "label": "Handwritten bounding box",
-            "id": "handwritten_char_size",
-            "has_text": true,
+            "geometry": "polygon",
+            "label": "Time (polygon)",
+            "id": "time_polygon",
+            "has_text": false,
             "marker_width": "2",
-            "color": "#0000FF",
+            "color": "#3cb44b",
             "has_char_size": true
           }
         ]
