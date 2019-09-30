@@ -204,6 +204,7 @@ def get_query_params(data_request_params):
     sort = data_request_params.get('sort')
     page = data_request_params.get('page')  # 1, 2, 3, ...
     group = data_request_params.get('group')
+    verifier = data_request_params.get('verifier')
     is_verified = data_request_params.get('is_verified')
     is_good = data_request_params.get('is_good')
     perPage = data_request_params.get('perPage')
@@ -219,6 +220,10 @@ def get_query_params(data_request_params):
         application.logger.info(group)
         query_condition += " AND group_id = %s"
         filters += (group,)
+    if verifier is not None and verifier:
+        application.logger.info(verifier)
+        query_condition += " AND group_id = %s"
+        filters += (verifier,)
     if fromDate is not None and fromDate:
         query_condition += " AND datetime >= %s"
         filters += (fromDate,)
@@ -341,11 +346,12 @@ def api_get_data():
         db = get_db()
         cur = db.cursor(cursor_factory=DictCursor)
         count_query = "SELECT count(session_id) " + query_condition
-        application.logger.info("Counting...")
+        application.logger.info("Counting...", count_query)
         cur.execute(count_query, filters)
         total = cur.fetchone()[0]
         application.logger.info("Selecting...")
         select_query = "SELECT * " + query_condition + pagination_condition
+        application.logger.info("select_query...", select_query, filters)
         cur.execute(select_query, filters)
         row_list = cur.fetchall()
         data_list = get_data_list(row_list)
@@ -381,6 +387,22 @@ def api_get_groups():
     result = {
         'data': {
             'groups': group_list
+        }
+    }
+    return json.dumps(result)\
+
+@application.route('/api/verifiers', methods=['GET'])
+@requires_auth
+def api_get_verifiers():
+    db = get_db()
+    cur = db.cursor(cursor_factory=DictCursor)
+    cur.execute("SELECT DISTINCT verified_by as verified_by FROM TrainingEquations")
+    row_list = cur.fetchall()
+    verifier_list = [row['verified_by'] for row in row_list]
+    verifier_list = [g for g in verifier_list if g is not None and len(g.strip()) > 0]
+    result = {
+        'data': {
+            'verifiers': verifier_list
         }
     }
     return json.dumps(result)
@@ -696,7 +718,10 @@ def get_data_list(row_list):
                     'text': row['text'],
                     'text_normalized': row['text_normalized'],
                     'char_size': row['char_size'],
-                    'is_verified': row['is_verified']}
+                    'is_verified': row['is_verified'],
+                    'is_inverted': row['is_inverted'],
+                    'is_printed': row['is_printed'],
+                    'is_handwritten': row['is_handwritten'],}
         for prop, description in iteritems(DATA_PROPERTIES):
             if str(prop) in cur_data['properties']:
                 cur_data['properties'][str(prop)] = {'value': row[str(prop)],

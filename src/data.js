@@ -17,6 +17,8 @@ const LOAD_DATASETS_API_URL = '/api/datasets';
 const LOAD_DATASETS_API_METHOD = 'get';
 const LOAD_GROUPS_API_URL = '/api/groups';
 const LOAD_GROUPS_API_METHOD = 'get';
+const LOAD_VERIFIERS_API_URL = '/api/verifiers';
+const LOAD_VERIFIERS_API_METHOD = 'get';
 const LOAD_USERS_API_URL = '/api/users';
 const LOAD_USERS_API_METHOD = 'get';
 const LOAD_DATA_API_URL = '/api/data';
@@ -57,6 +59,7 @@ class Data extends Component {
       filterFromDate: '',
       filterToDate: '',
       filterGroup: '',
+      filterVerifier: '',
       searchString: '',
       search: '',
       search2: '',
@@ -73,7 +76,8 @@ class Data extends Component {
     this.loadIDList = this.loadIDList.bind(this);
     this.loadDatasets = this.loadDatasets.bind(this);
     this.loadGroups = this.loadGroups.bind(this);
-    this.loadData = this.loadData.bind(this);    
+    this.loadVerifiers = this.loadVerifiers.bind(this);
+    this.loadData = this.loadData.bind(this);
     this.onPropertyChange = this.onPropertyChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
@@ -99,6 +103,7 @@ class Data extends Component {
     this.loadDatasets();
     this.loadUsers();
     this.loadGroups();
+    this.loadVerifiers();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -160,6 +165,7 @@ class Data extends Component {
       filterFromDate: query.fromDate || '',
       filterToDate: query.toDate || '',
       filterGroup: query.group || '',
+      filterVerifier: query.verifier || '',
       search: query.search || '',
       search2: query.search2 || '',
       searchString: query.searchString || '',
@@ -314,6 +320,41 @@ class Data extends Component {
     });
   }
 
+  loadVerifiers() {
+    this.setState({ loadGroupsApiStatus: consts.API_LOADING }, () => {
+      callApi(LOAD_VERIFIERS_API_URL, LOAD_VERIFIERS_API_METHOD).then(
+        response => {
+          console.log('Load Verifiers API success', response);
+          if (response.data && Array.isArray(response.data.verifiers)) {
+            this.setState({
+              loadGroupsApiStatus: consts.API_LOADED_SUCCESS,
+              verifiers: response.data.verifiers.sort()
+            });
+          } else {
+            this.setState({
+              loadGroupsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Failed to fetch verifiers. Please try again.'
+            });
+          }
+        },
+        error => {
+          console.log('Load Verifiers API fail', error);
+          if (error.error && error.error.message) {
+            this.setState({
+              loadGroupsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Unable to fetch verifiers. ' + error.error.message
+            });
+          } else {
+            this.setState({
+              loadGroupsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Sorry, Failed to fetch verifiers. Please try again.'
+            });
+          }
+        }
+      );
+    });
+  }
+
   loadData(queryStr = '') {
     this.setState({ loadDataApiStatus: consts.API_LOADING }, () => {
       callApi(LOAD_DATA_API_URL + '?perPage=' + perPage + '&' + queryStr, LOAD_DATA_API_METHOD).then(
@@ -427,6 +468,9 @@ class Data extends Component {
       }
       if (this.state.filterGroup.length) {
         queryParams.push('group=' + encodeURIComponent(this.state.filterGroup));
+      }
+      if (this.state.filterVerifier.length) {
+        queryParams.push('verifier=' + encodeURIComponent(this.state.filterVerifier));
       }
       const propFilters = [];
       Object.keys(this.state.filterProperty).forEach(propKey => {
@@ -590,7 +634,9 @@ class Data extends Component {
           onDatasetChange={this.onDatasetChange}
           annotators={this.state.annotators} annotator={this.state.filterAnnotator}
           groups={this.state.groups}
+          verifiers={this.state.verifiers}
           group={this.state.filterGroup}
+          verifier={this.state.filterVerifier}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyChange}
           appId={this.state.filterAppId} onAppIdChange={this.onAppIdChange}
           fromDate={this.state.filterFromDate}
