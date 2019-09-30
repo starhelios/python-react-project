@@ -497,10 +497,11 @@ def save():
     json_data_copy['datetime'] = 'NOW()'
     json_data_copy['saved_at'] = 'NOW()'
     json_data_copy['saved'] = True
+    dataset = json_data_copy['dataset']
     queue_name = json_data.get('queue', MAIN_QUEUE) or MAIN_QUEUE
     # everything that is saved that's not synth must be checked!
     if json_data_copy.get('is_verified', False) is not True:
-        if '_clean' in queue_name or json_data_copy['group_id'] == 'synth':
+        if '_clean' in queue_name or (dataset == 'mathpix' and json_data_copy['group_id'] == 'synth'):
             json_data_copy['is_verified'] = True
         else:
             json_data_copy['is_verified'] = False
@@ -508,6 +509,7 @@ def save():
     if type(username) != str:
         username = username.decode('utf-8')
     json_data_copy['username'] = username
+    # if previously verified
     if json_data_copy.get('is_verified', False):
         json_data_copy['verified_by'] = json_data_copy['username']
         json_data_copy['verified_at'] = 'NOW()'
@@ -604,10 +606,10 @@ def cr():
         json_str = json.dumps({"success": False, "error": err}, default=str)
         return json_str
     username = None
-    if user_id_annotated is not None:
-        username = user_id_annotated
-    elif user_id_verified:
+    if user_id_verified is not None:
         username = user_id_verified
+    elif user_id_annotated is not None:
+        username = user_id_annotated
     footer = "Good work and keep it up!"
     if username is not None:
         db = get_db()

@@ -686,7 +686,7 @@ class AnnotationUI extends Component {
                 onCharSizeMinus={this.onCharSizeMinus}
                 onStartSelection={this.onStartSelection}
                 onSelectionCompleted={this.onSelectionCompleted}
-                hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size && this.state.showMarkers}
+                hasCharSize={this.state.showMarkers}
               />
             </div>
             : null
