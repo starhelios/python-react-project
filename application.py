@@ -416,7 +416,7 @@ def dequeue_json(dataset, queue_id):
             username = username.decode('utf-8')
         # don't update db row if already verified via save-json
         cur.execute("UPDATE TrainingEquations SET is_verified=%s, verified_by=%s, datetime=NOW(), " +
-                    "verified_at=NOW() WHERE session_id=%s AND is_good=true AND is_verified=false",
+                    "verified_at=NOW() WHERE session_id=%s",
                     (True, username, session_id_prev))
         db.commit()
 
@@ -477,20 +477,15 @@ def save():
     json_data_copy['saved'] = True
     dataset = json_data_copy['dataset']
     queue_name = json_data.get('queue', MAIN_QUEUE) or MAIN_QUEUE
-    # everything that is saved that's not synth must be checked!
-    if json_data_copy.get('is_verified', False) is not True:
-        if '_clean' in queue_name or (dataset == 'mathpix' and json_data_copy['group_id'] == 'synth'):
-            json_data_copy['is_verified'] = True
-        else:
-            json_data_copy['is_verified'] = False
     username = session['profile']['username']
     if type(username) != str:
         username = username.decode('utf-8')
     json_data_copy['username'] = username
-    # if previously verified
-    if json_data_copy.get('is_verified', False):
-        json_data_copy['verified_by'] = json_data_copy['username']
+    if username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin']:
+        json_data_copy['is_verified'] = True
         json_data_copy['verified_at'] = 'NOW()'
+    else:
+        json_data_copy['is_verified'] = False
     clean_queue_name = queue_name + "_clean"
     application.logger.info("Adding %s to %s" % (session_id, str(clean_queue_name)))
     redis_db.sadd('queues', clean_queue_name)
