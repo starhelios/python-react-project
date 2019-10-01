@@ -18,6 +18,7 @@ export default class DataFilters extends Component {
 
     const { dataset, annotator, onDatasetChange, onAnnotatorChange,
       group, onGroupChange, groups,
+      verifier, verifiers,
       property, onPropertyChange,
       fromDate, onFromDateChange,
       toDate, onToDateChange,
@@ -97,6 +98,18 @@ export default class DataFilters extends Component {
             }
             </DropdownContent>
             </Dropdown>
+          </div>
+          <div className="group-1">
+            <select className="form-control" name="filterVerifier" value={verifier} onChange={onInputChange}>
+              <option value="">All Verifiers</option>
+              {
+                this.props.verifiers && this.props.verifiers.sort(function (a, b) {
+                  return a.toLowerCase().localeCompare(b.toLowerCase());
+                }).map((_verifier, index) => (
+                  <option value={_verifier} key={index}>{_verifier}</option>
+                ))
+              }
+            </select>
           </div>
           <div className="property group-1">
             <Dropdown className="property-dropdown" ref="propertyDropdown">
@@ -192,6 +205,7 @@ DataFilters.propTypes = {
   datasets: PropTypes.array.isRequired,
   annotators: PropTypes.array.isRequired,
   groups: PropTypes.array.isRequired,
+  verifiers: PropTypes.array.isRequired,
   annotator: PropTypes.string.isRequired,
   group: PropTypes.string.isRequired,
   queue: PropTypes.string.isRequired,
