@@ -693,7 +693,8 @@ def get_data_list(row_list):
                     'text': row['text'],
                     'text_normalized': row['text_normalized'],
                     'char_size': row['char_size'],
-                    'is_verified': row['is_verified']}
+                    'is_verified': row['is_verified'],
+                    'queue': row['queue']}
         for prop, description in iteritems(DATA_PROPERTIES):
             if str(prop) in cur_data['properties']:
                 cur_data['properties'][str(prop)] = {'value': row[str(prop)],

@@ -49,6 +49,7 @@ class UIController extends BaseUIController {
     parsed.username = data.username;
     parsed.group_id = data.group_id;
     parsed.text_confidence = data.text_confidence;
+    parsed.queue = data.queue;
     parsed.queue_count = data.queue_count || window.__QUEUE_COUNT__;
     // this is a hack; used because text format is agnostic to center alignment
     let latex_nospace = data.latex || "";
