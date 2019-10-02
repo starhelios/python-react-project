@@ -718,7 +718,8 @@ def get_data_list(row_list):
                     'is_verified': row['is_verified'],
                     'is_inverted': row['is_inverted'],
                     'is_printed': row['is_printed'],
-                    'is_handwritten': row['is_handwritten'],}
+                    'is_handwritten': row['is_handwritten'],
+                    'queue': row['queue']}
         for prop, description in iteritems(DATA_PROPERTIES):
             if str(prop) in cur_data['properties']:
                 cur_data['properties'][str(prop)] = {'value': row[str(prop)],
