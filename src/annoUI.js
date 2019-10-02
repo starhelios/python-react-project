@@ -736,6 +736,11 @@ class AnnotationUI extends Component {
                   :
                   null
               }
+              {
+                this.state.queue
+                  ? <h4>Queue: {this.state.queue}</h4>
+                  : null
+              }
             </div>
 
             <div className="actions row">

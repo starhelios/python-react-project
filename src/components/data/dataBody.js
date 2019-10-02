@@ -31,6 +31,7 @@ export default class DataBody extends Component {
               is_handwritten={item.is_handwritten}
               is_inverted={item.is_inverted}
               is_verified={item.is_verified}
+              queue={item.queue}
               viewType={this.props.viewType}
               datetime={item.datetime}
               latex={item.latex || ''}

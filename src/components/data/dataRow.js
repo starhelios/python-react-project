@@ -82,7 +82,7 @@ export default class DataRow extends Component {
 
   render() {
     const { viewType, annotator, text, imagePath, properties,
-      datetime, is_verified, dataset, annoList, latex_normalized, latex, session_id, is_printed, is_handwritten, is_inverted } = this.props;
+      datetime, is_verified, dataset, annoList, latex_normalized, latex, session_id, is_printed, is_handwritten, is_inverted, queue } = this.props;
     const basePath = imagePath.split("/").slice(-1)[0];
     const textEditURL = "/annotate/" + dataset + "?sessionID=" + session_id;
     const imageURL = consts.S3BUCKET_URL + basePath;
@@ -106,6 +106,9 @@ export default class DataRow extends Component {
       }
       if (dataset !== null && dataset !== undefined) {
         propsStr += 'dataset: ' + dataset + "\n";
+      }
+      if (queue !== null && queue !== undefined) {
+        propsStr += 'queue: ' + queue + "\n";
       }
       if (text.length) {
         propsStr += "----------\n";
