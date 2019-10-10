@@ -505,9 +505,11 @@ def save():
     json_data_copy['username'] = username
     if username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin']:
         json_data_copy['is_verified'] = True
+        json_data_copy['verified_by'] = username
         json_data_copy['verified_at'] = 'NOW()'
     else:
         json_data_copy['is_verified'] = False
+        json_data_copy['verified_by'] = None
     clean_queue_name = queue_name + "_clean"
     application.logger.info("Adding %s to %s" % (session_id, str(clean_queue_name)))
     redis_db.sadd('queues', clean_queue_name)
@@ -592,7 +594,7 @@ def cr():
     if session_id is not None:
         db = get_db()
         cur = db.cursor(cursor_factory=DictCursor)
-        query = "UPDATE TrainingEquations SET is_good = %s WHERE session_id = %s"
+        query = "UPDATE TrainingEquations SET is_good=%s, verified_by=null, is_verified=false WHERE session_id = %s"
         cur.execute(query, (False, session_id))
         db.commit()
     anno_url = anno_url.split("?")[0] + "?sessionID=" + session_id
