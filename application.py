@@ -222,7 +222,7 @@ def get_query_params(data_request_params):
         filters += (group,)
     if verifier is not None and verifier:
         application.logger.info(verifier)
-        query_condition += " AND group_id = %s"
+        query_condition += " AND verified_by = %s"
         filters += (verifier,)
     if fromDate is not None and fromDate:
         query_condition += " AND datetime >= %s"
