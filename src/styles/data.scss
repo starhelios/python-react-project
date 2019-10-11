@@ -107,6 +107,9 @@ $filter-control-height: 34px;
       }
     }
 
+    tr:hover {
+      background: transparent;
+    }
     th,
     td {
       text-align: center;
