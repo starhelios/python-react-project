@@ -503,7 +503,13 @@ def save():
     if type(username) != str:
         username = username.decode('utf-8')
     json_data_copy['username'] = username
-    if username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin']:
+    if json_data_copy.get('is_good', False) is not True:
+        json_data_copy['is_good'] = False
+    if dataset == 'mathpix' and json_data_copy['group_id'] == 'synth' and json_data_copy['is_good'] == True:
+        json_data_copy['is_verified'] = True
+        json_data_copy['verified_by'] = username
+        json_data_copy['verified_at'] = 'NOW()'
+    elif username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin']:
         json_data_copy['is_verified'] = True
         json_data_copy['verified_by'] = username
         json_data_copy['verified_at'] = 'NOW()'
@@ -515,8 +521,6 @@ def save():
     redis_db.sadd('queues', clean_queue_name)
     redis_db.hset('queues_dataset', clean_queue_name, json_data_copy['dataset'])
     redis_db.lpush(clean_queue_name, session_id)
-    if json_data_copy.get('is_good', False) is not True:
-        json_data_copy['is_good'] = False
     # now filter keys
     keys = ['text', 'username', 'anno_list', 'dataset', 'datetime',
             'image_path', 'session_id', 'saved', 'is_good',
