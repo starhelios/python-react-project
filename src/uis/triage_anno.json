@@ -155,6 +155,16 @@
             "marker_width":"3",
             "has_char_size":false,
             "color":"#000000"
+          },          
+          {
+            "type":"bbox",
+            "geometry":"polygon",
+            "label":"Block mode (polygon)",
+            "id":"block_mode_polygon",
+            "has_text": false,
+            "marker_width":"3",
+            "has_char_size":false,
+            "color":"#000000"
           }
         ]
       }
