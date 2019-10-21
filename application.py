@@ -367,7 +367,6 @@ def api_get_data():
         total = cur.fetchone()[0]
         application.logger.info("Selecting...")
         select_query = "SELECT * " + query_condition + pagination_condition
-        application.logger.info("select_query...", select_query, filters)
         cur.execute(select_query, filters)
         row_list = cur.fetchall()
         data_list = get_data_list(row_list)
@@ -733,6 +732,8 @@ def get_data_list(row_list):
                     'session_id': row['session_id'],
                     'latex_normalized': row['latex_normalized'],
                     'properties': {'is_good': row['is_good']},
+                    'is_good': row['is_good'],
+                    'verified_by': row['verified_by'],
                     'dataset': row['dataset'],
                     'text': row['text'],
                     'text_normalized': row['text_normalized'],
