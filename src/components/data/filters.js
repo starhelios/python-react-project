@@ -123,8 +123,8 @@ export default class DataFilters extends Component {
                 <PropertyFilterCheckbox key={propKey}
                                         name={propKey}
                                         label={propKey}
-                                        counter={propKey === 'aligned_equation' || propKey === 'equation'}
-                                        appCount={appCount[propKey] || 0}
+                                        counter={appId[propKey]}
+                                        appCount={appCount[propKey] || 1}
                                         checked={appId[propKey] || 0}
                                         onChange={onAppIdChange}
                                         onAppCountChange={onAppCountChange} />

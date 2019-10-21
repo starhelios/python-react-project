@@ -22,11 +22,11 @@ export default class PropertyFilterCheckbox extends Component {
   }
 
   render() {
-    const { counter, appCount } = this.props;
+    const { counter, appCount, checked } = this.props;
     let checkerIcon = '';
-    if (this.props.checked === 1) {
+    if (checked === 1) {
       checkerIcon = 'glyphicon glyphicon-ok';
-    } else if (this.props.checked === -1) {
+    } else if (checked === -1) {
       checkerIcon = 'glyphicon glyphicon-remove';
     }
 
@@ -34,9 +34,9 @@ export default class PropertyFilterCheckbox extends Component {
       <div className="property-filter-checkbox" onClick={this.onCheckboxClick}>
         <i className={checkerIcon}></i>
         <span>{this.props.label}</span>
-        {counter
+        {counter && checked === 1
           ? [
-            <input key="1" type="number" value={appCount} name="counter" step="1" min="0" className="form-control" onClick={this.onInputClick} onChange={this.onInputChange} />,
+            <input key="1" type="number" value={appCount} name="counter" step="1" min="1" className="form-control" onClick={this.onInputClick} onChange={this.onInputChange} />,
             <div key="2" className="show-label">min</div>
           ]
           : null
