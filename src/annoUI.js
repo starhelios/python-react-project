@@ -363,6 +363,57 @@ class AnnotationUI extends Component {
     event.currentTarget.blur();
   }
 
+  /*
+  * copies current annotation details (link, img, latex) to clipboard.
+  return true if successful, false if not.*/
+  copyAnnotationToClipboard(mode){
+    let image_url = this.state[this.schema.imageId].url;
+    let anno_link = window.location.href;
+    let text ='';
+    if (mode === "slack") {
+      text =
+      `(${anno_link})
+      ${image_url}
+      \`${this.state[this.textEditId]}\`
+      `;
+    }else if (mode === "github") {
+      text =
+      `(${anno_link})
+      ![](${image_url})
+      \`${this.state[this.textEditId]}\`
+      `;
+    } else if (mode === "image_url") {
+      text=image_url;
+    } else {
+      console.log("Invalid mode")
+      return false
+    }
+    let copyTextArea = document.createElement('textarea');
+    copyTextArea.innerText = text;
+    document.body.appendChild(copyTextArea);
+    copyTextArea.select();
+    document.execCommand('copy');
+    copyTextArea.remove();
+    return true;
+  }
+
+  onCopySlackBtnClick = (e) => {
+    const copyOk = this.copyAnnotationToClipboard("slack")
+    if (copyOk)
+      this.showAlert( "copy-clipboard-success", "Copied annotation details to clipboard. Paste to slack to discuss.");
+  }
+
+  onCopyGithubBtnClick =(e) =>{
+    const copyOk = this.copyAnnotationToClipboard("github")
+    if (copyOk)
+      this.showAlert( "copy-clipboard-success", "Copied annotation details to clipboard. Paste to github to discuss.");
+  }
+
+  onCopyImageUrlClick =(e) =>{
+    const copyOk = this.copyAnnotationToClipboard("image_url")
+    if (copyOk)
+      this.showAlert( "copy-clipboard-success", "Copied image url to clipboard.");
+  }
   onTextFieldChange(e) {
     const that = this;
     this.setState({ [that.textEditId]: e.currentTarget.value, unsaved: true }, function () {
@@ -538,6 +589,23 @@ class AnnotationUI extends Component {
         </button>
       </div>
     );
+    fields.push(
+      <div className="dynamic-field col-sm-6 clipboard-copy-btn-group" key={1003}>
+        <button type="button" className='btn btn-info' style={{marginBottom:'1em'}}
+          onClick={this.onCopySlackBtnClick}>
+            Copy (to clipboard) for Slack
+        </button>
+        <button type="button" className='btn btn-info' style={{marginBottom:'1em'}}
+          onClick={this.onCopyGithubBtnClick}>
+            Copy (to clipboard) for Github
+        </button>
+        <button type="button" className='btn btn-info'
+          onClick={this.onCopyImageUrlClick}>
+            Copy Image URL (to clipboard) 
+        </button>
+      </div>
+    )
+
 
     return (
       <div className="row">
