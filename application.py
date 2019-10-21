@@ -255,10 +255,26 @@ def get_query_params(data_request_params):
     if boxId is not None:
         boxIdFilters = boxId.split('*')
         for prop in boxIdFilters:
-            if prop.startswith('!'):
-                query_condition += """ AND NOT (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (prop[1:], prop[1:])
+            res = re.findall('^(.*)\[([0-9]*)\]$', prop)
+            regexParam = False
+            if (res):
+                regexParam = [s for s in res[0]]
+            param = prop
+            paramCount = 0
+            if regexParam:
+                param = regexParam[0]
+                paramCount = int(regexParam[1])
+            if param.startswith('!'):
+                query_condition += """ AND NOT (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (param[1:], param[1:])
             else:
-                query_condition += """ AND (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (prop, prop)
+                query_condition += """ AND (anno_list @> '[{"boxId": "%s" }]' OR anno_list @> '[{"boxId": "%s_polygon" }]')""" % (param, param)
+                if (paramCount > 0):
+                    query_condition += """ AND row_id IN (
+                    SELECT row_id FROM (
+                        WITH A AS (SELECT row_id, jsonb_array_elements(anno_list) AS point FROM public.trainingequations ) 
+                        SELECT A.row_id, count(A.row_id) as cnt2 FROM A WHERE (point->>'boxId') = '%s' GROUP BY A.row_id) as B
+                    WHERE B.cnt2 >= %s
+                    )""" % (param, paramCount)
     # search
     errorFields = []
     try:
