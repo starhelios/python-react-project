@@ -237,6 +237,18 @@ $filter-control-height: 34px;
         span {
           vertical-align: middle;
         }
+        input {
+          width: 45px;
+          margin-left: 10px;
+          display: inline-block;
+          padding: 0 0 0 5px;
+          line-height: 25px;
+          height: 25px;
+        }
+        .show-label {
+          display: inline-block;
+          margin-left: 10px;
+        }
       }
     }
   }

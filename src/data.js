@@ -56,6 +56,7 @@ class Data extends Component {
       filterAnnotator: '',
       filterProperty: {},
       filterAppId: {},
+      filterAppCount: {},
       filterFromDate: '',
       filterToDate: '',
       filterGroup: '',
@@ -91,6 +92,7 @@ class Data extends Component {
     this.onInputChange = this.onInputChange.bind(this);
     this.onAppIdChange = this.onAppIdChange.bind(this);
 
+    this.onAppCountChange = this.onAppCountChange.bind(this);
   }
 
   componentWillMount() {
@@ -123,7 +125,9 @@ class Data extends Component {
     const propFilters = cloneDeep(consts.DATA_PROPERTIES);
     Object.keys(propFilters).forEach(propKey => propFilters[propKey] = 0);
     const filterAppId = {}
+    const filterAppCount = {}
     this.state.IDList.forEach(propKey => filterAppId[propKey] = 0);
+    this.state.IDList.forEach(propKey => filterAppCount[propKey] = 0);
 
     if (query.property) {
       const props = query.property.split('*');
@@ -142,15 +146,25 @@ class Data extends Component {
 
     if (query.boxId) {
       const props = query.boxId.split('*');
-
       props.forEach(prop => {
-        if (prop.startsWith('!')) {
-          if (indexOf(this.state.IDList, prop.substr(1) > -1)) {
-            filterAppId[prop.substr(1)] = -1;
+        const regexStr = /^(.*)\[([0-9]*)\]$/;
+        const regexParam = regexStr.exec(prop);
+        let param = prop;
+        let paramCount = 0;
+        if (regexParam) {
+          param = regexParam[1];
+          paramCount = regexParam[2];
+        }
+
+        if (param.startsWith('!')) {
+          if (indexOf(this.state.IDList, param.substr(1) > -1)) {
+            filterAppId[param.substr(1)] = -1;
+            filterAppCount[param.substr(1)] = paramCount;
           }
         } else {
-          if (indexOf(this.state.IDList, prop) > -1) {
-            filterAppId[prop] = 1;
+          if (indexOf(this.state.IDList, param) > -1) {
+            filterAppId[param] = 1;
+            filterAppCount[param] = paramCount;
           }
         }
       });
@@ -162,6 +176,7 @@ class Data extends Component {
       filterAnnotator: query.annotator || '',
       filterProperty: propFilters,
       filterAppId: filterAppId,
+      filterAppCount: filterAppCount,
       filterFromDate: query.fromDate || '',
       filterToDate: query.toDate || '',
       filterGroup: query.group || '',
@@ -453,6 +468,12 @@ class Data extends Component {
     this.setState({ filterAppId: changed });
   }
 
+  onAppCountChange(propKey, propValue) {
+    const changed = this.state.filterAppCount;
+    changed[propKey] = propValue;
+    this.setState({ filterAppCount: changed });
+  }
+
   makeQueryParamsForPageAndApi(filter_search = true, sort = false, page = false) {
     let queryParams = [];
 
@@ -492,7 +513,11 @@ class Data extends Component {
         }
       });
       if (appIdFilters.length) {
-        queryParams.push('boxId=' + encodeURIComponent(appIdFilters.join('*')));
+        const filtersWithCount = appIdFilters.map(item => {
+          const counter = this.state.filterAppCount[item] ? `[${this.state.filterAppCount[item]}]` : '';
+          return `${item}${counter}`;
+        });
+        queryParams.push('boxId=' + filtersWithCount.join('*'));
       }
       if (this.state.filterFromDate.length) {
         queryParams.push('fromDate=' + encodeURIComponent(this.state.filterFromDate));
@@ -639,6 +664,7 @@ class Data extends Component {
           verifier={this.state.filterVerifier}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyChange}
           appId={this.state.filterAppId} onAppIdChange={this.onAppIdChange}
+          appCount={this.state.filterAppCount} onAppCountChange={this.onAppCountChange}
           fromDate={this.state.filterFromDate}
           toDate={this.state.filterToDate}
           search={this.state.search}
