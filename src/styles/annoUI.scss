@@ -40,3 +40,15 @@
     }
   }
 }
+
+.clipboard-copy-btn-group {
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.alert-copy-clipboard-success {
+  background-color: #D5EACC;
+  color: green;
+}
