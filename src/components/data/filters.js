@@ -27,8 +27,8 @@ export default class DataFilters extends Component {
       search2, onSearchChange2,
       searchString, searchID, onSearchIDChange,
       queue, onQueueChange, queueUrl,
-      onCreateQueue, viewType, appId,
-      onInputChange, IDList, onAppIdChange,
+      onCreateQueue, viewType, appId, appCount,
+      onInputChange, IDList, onAppIdChange,onAppCountChange,
       onApplyFiltersAndSearchClick } = this.props;
 
     let activeFiltersCount = 0;
@@ -123,8 +123,11 @@ export default class DataFilters extends Component {
                 <PropertyFilterCheckbox key={propKey}
                                         name={propKey}
                                         label={propKey}
+                                        counter={propKey === 'aligned_equation' || propKey === 'equation'}
+                                        appCount={appCount[propKey] || 0}
                                         checked={appId[propKey] || 0}
-                                        onChange={onAppIdChange} />
+                                        onChange={onAppIdChange}
+                                        onAppCountChange={onAppCountChange} />
               ))
             }
             </DropdownContent>
