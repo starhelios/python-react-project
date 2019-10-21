@@ -82,7 +82,9 @@ export default class DataRow extends Component {
 
   render() {
     const { viewType, annotator, text, imagePath, properties,
-      datetime, is_verified, dataset, annoList, latex_normalized, latex, session_id, is_printed, is_handwritten, is_inverted, queue } = this.props;
+            datetime, is_good, is_verified, dataset, annoList, latex_normalized,
+            text_normalized, latex, session_id, is_printed,
+            is_handwritten, is_inverted, queue, verified_by } = this.props;
     const basePath = imagePath.split("/").slice(-1)[0];
     const textEditURL = "/annotate/" + dataset + "?sessionID=" + session_id;
     const imageURL = consts.S3BUCKET_URL + basePath;
@@ -119,7 +121,7 @@ export default class DataRow extends Component {
     }
 
     const textList = text.split("\n") || [];
-    const annoColor = is_verified == true ? "green" : "red";
+    const annoColor = (is_good == true && is_verified == true) ? "green" : "red";
 
     return (
       <tr>
@@ -153,7 +155,7 @@ export default class DataRow extends Component {
         { viewType === 'normalized'
           ? <td style={{textAlign: "left"}}>
             <MathpixLoader>
-              <MathpixMarkdown text={`\\[${latex_normalized}\\]`} isDisableFancy={true}/>
+              <MathpixMarkdown text={`${text_normalized}`} isDisableFancy={true}/>
             </MathpixLoader>
           </td>
           : null
@@ -161,12 +163,13 @@ export default class DataRow extends Component {
         { viewType === 'normalized'
           ? <td className="prop-col" style={{textAlign: "left"}}>
             <div className="code-wrap">
-              <pre>{latex_normalized}</pre>
+              <pre>{text_normalized}</pre>
             </div>
           </td>
           : null
         }
-        { viewType !== 'normalized' ? <td style={{ color: annoColor }}>{annotator}</td> : null }
+        { viewType !== 'normalized' && verified_by ? <td style={{ color: annoColor }}>{annotator} ({verified_by})</td> : null }
+        { viewType !== 'normalized' && !verified_by ? <td style={{ color: annoColor }}>{annotator}</td> : null }
         { viewType !== 'normalized' ? <td>{datetime && moment.utc(datetime).format('MMM D, YYYY')}</td> : null}
         <td className="action-col">
           <a target="_blank" href={textEditURL}>Link</a>
