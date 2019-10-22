@@ -271,7 +271,7 @@ def get_query_params(data_request_params):
                 if (paramCount > 0):
                     query_condition += """ AND row_id IN (
                     SELECT row_id FROM (
-                        WITH A AS (SELECT row_id, jsonb_array_elements(anno_list) AS point FROM public.trainingequations ) 
+                        WITH A AS (SELECT row_id, jsonb_array_elements(anno_list) AS point FROM public.trainingequations )
                         SELECT A.row_id, count(A.row_id) as cnt2 FROM A WHERE (point->>'boxId') = '%s' GROUP BY A.row_id) as B
                     WHERE B.cnt2 >= %s
                     )""" % (param, paramCount)
@@ -507,6 +507,8 @@ def save():
     anno_list = json_data_copy['anno_list']
     image_path_basename = os.path.basename(image_path)
     anno_list_new = [anno for anno in anno_list if image_path_basename in anno['src']]
+    # TODO: check Zenpix to see why we sometimes get bad data like this
+    anno_list_new = [anno for anno in anno_list_new if anno['shapes'][0] != None]
     json_data_copy['anno_list'] = json.dumps(anno_list_new)
     json_data_copy['metadata'] = json.dumps(json_data_copy['metadata'])
     json_data_copy['datetime'] = 'NOW()'

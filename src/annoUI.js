@@ -371,17 +371,9 @@ class AnnotationUI extends Component {
     let anno_link = window.location.href;
     let text ='';
     if (mode === "slack") {
-      text =
-      `(${anno_link})
-      ${image_url}
-      \`${this.state[this.textEditId]}\`
-      `;
-    }else if (mode === "github") {
-      text =
-      `(${anno_link})
-      ![](${image_url})
-      \`${this.state[this.textEditId]}\`
-      `;
+      text = `(${anno_link})` +"\n" + image_url + "\n" + `\`${this.state[this.textEditId]}\``;
+    } else if (mode === "github") {
+      text = `(${anno_link})` +"\n" + `![](${image_url})` + "\n" + `\`${this.state[this.textEditId]}\``;
     } else if (mode === "image_url") {
       text=image_url;
     } else {
@@ -389,7 +381,7 @@ class AnnotationUI extends Component {
       return false
     }
     let copyTextArea = document.createElement('textarea');
-    copyTextArea.innerText = text;
+    copyTextArea.innerHTML= text;
     document.body.appendChild(copyTextArea);
     copyTextArea.select();
     document.execCommand('copy');
@@ -601,7 +593,7 @@ class AnnotationUI extends Component {
         </button>
         <button type="button" className='btn btn-info'
           onClick={this.onCopyImageUrlClick}>
-            Copy Image URL (to clipboard) 
+            Copy Image URL (to clipboard)
         </button>
       </div>
     )
@@ -901,4 +893,3 @@ ReactDOM.render(
   routes,
   document.getElementById('main')
 );
-
