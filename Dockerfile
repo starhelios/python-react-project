@@ -13,7 +13,7 @@ RUN npm install
 RUN npm install -g webpack@1.14.0
 RUN NODE_ENV=production webpack --production
 
-FROM python:2.7
+FROM python:3
 RUN mkdir /app
 COPY --from=0 /app/static /app/static
 WORKDIR /app
