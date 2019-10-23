@@ -3,6 +3,8 @@ import { cloneDeep, forEach, differenceWith, isEqual, size, meanBy } from 'lodas
 
 let guidelinesActive = false;
 const WRAP_INCREASE = 85;
+const MIN_BOX_WIDTH = 12;
+const MIN_BOX_HEIGHT = 12;
 
 export default class Annotorious extends Component {
 
@@ -53,6 +55,10 @@ export default class Annotorious extends Component {
       anno.addHandler('onSelectionStarted', this.onAnnoSelectionStarted);
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
       anno.addHandler('onPopupShown', this.onPopupShown);
+      anno.setProperties({
+        min_box_width: MIN_BOX_WIDTH,
+        min_box_height: MIN_BOX_HEIGHT,
+      });
     }
   }
 
