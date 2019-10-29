@@ -179,10 +179,13 @@ class AnnotationUI extends Component {
 
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
-      annotation.shapes[0].style = {
-        outline: this.schema.bboxes[this.state.boxType].color,
-        outline_width: this.schema.bboxes[this.state.boxType].marker_width,
-      };
+      if (annotation.shapes && annotation.shapes[0]) {
+        annotation.shapes[0].style = {
+          outline: this.schema.bboxes[this.state.boxType].color,
+          outline_width: this.schema.bboxes[this.state.boxType].marker_width,
+        };
+      }
+
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
