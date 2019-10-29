@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown';
+import { forEach } from 'lodash';
 import moment from 'moment';
 import * as d3 from 'd3';
 
@@ -46,7 +47,7 @@ export default class DataRow extends Component {
 
     let u = d3.select(this.svgEl)
 
-    this.props.annoList.forEach(box => {
+    forEach(this.props.annoList, box => {
       const shape = box.shapes && box.shapes[0]
       if (shape) {
         if (shape.type === 'rect') {
