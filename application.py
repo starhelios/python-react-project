@@ -577,6 +577,20 @@ def get_queues():
     json_str = json.dumps(json_data, default=str)
     return json_str
 
+@application.route('/api/queues-items', methods=['GET'])
+@requires_auth
+def get_queues_items():
+    queue_list = redis_db.smembers('queues')
+    output_list = []
+    output_data = {}
+    # for queue in queue_list:
+    for queue in ['mathpix', 'triage']:
+        item_list = redis_db.lrange(queue, 0, -1)
+        item_list = [x.decode('utf-8') for x in item_list]
+        output_data[queue] = item_list
+    json_str = json.dumps(output_data, default=str)
+    return json_str
+
 @application.route('/api/queues/<queue>', methods=['DELETE'])
 @requires_auth
 def delete_queues(queue):
