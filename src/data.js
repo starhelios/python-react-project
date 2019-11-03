@@ -382,8 +382,6 @@ class Data extends Component {
               total: response.data.total,
               searchError: false,
               search2Error: false,
-            }, () => {
-              MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
           } else {
             this.setState({
@@ -574,8 +572,6 @@ class Data extends Component {
               loadQueueApiStatus: consts.API_LOADED_SUCCESS,
               creatingQueue: false,
               queueUrl: response.url
-            }, () => {
-              MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
           } else {
             this.setState({

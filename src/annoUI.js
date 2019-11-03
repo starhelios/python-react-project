@@ -1,14 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { forEach, cloneDeep, get as _get, sum } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
 import consts from './libs/consts';
-import { getURLParameterByName } from './libs/utils';
 import Annotorious from './components/work/annotorious';
-import AnnotationLogView from './components/work/annotation_log_view';
 import TextRenderBox from './components/work/text_render_box';
-import charSizeMap from 'char_size.json';
 import { Router, Route, browserHistory } from 'react-router';
 
 // import styles

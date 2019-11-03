@@ -19,9 +19,6 @@ function getSessionID() {
 }
 
 var RowData = React.createClass({
-    componentDidMount() {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    },
     render: function() {
         var basePath = this.props.data.ImagePath.split("/").slice(-1)[0];
         var link = "/?image=" + basePath;

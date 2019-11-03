@@ -146,8 +146,6 @@ class UserData extends Component {
             this.setState({
               loadUserDataApiStatus: consts.API_LOADED_SUCCESS,
               userData: response.data.list
-            }, () => {
-              MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
             });
           } else {
             this.setState({
