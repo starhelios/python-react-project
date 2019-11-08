@@ -22,8 +22,10 @@ from psycopg2.extras import register_json, DictCursor
 from future.utils import iteritems
 from io import BytesIO
 import urllib.request
+import boto3
 import glob
 import re
+import uuid
 import random
 
 
@@ -59,6 +61,9 @@ API_BASE_URL = os.environ['API_BASE_URL']
 ACCESS_TOKEN_URL = os.environ['ACCESS_TOKEN_URL']
 AUTHORIZE_URL = os.environ['AUTHORIZE_URL']
 MAIN_QUEUE = "mathpix"
+TYPESET_API_URL = os.environ.get("TYPESET_API_URL", "https://staging-typeset.mathpix.com/render/jpg")
+S3_BUCKET = "mpxdata"
+s3 = boto3.client('s3')
 auth0 = oauth.register(
     'auth0',
     client_id=CLIENT_ID,
@@ -1027,19 +1032,27 @@ def api_get_anno_id_list():
 @application.route('/api/text-to-s3', methods=['POST'])
 @requires_auth
 def latexToS3():
+    global TYPESET_API_URL, S3_BUCKET, s3
     json_data = request.get_json(cache=False)
-    text = json_data["text"]
+    text= json_data["text"]
+    # generate image by using typesetting api 
+    req = urllib.request.Request(url=TYPESET_API_URL, data=text.encode('utf-8'))
+    res = urllib.request.urlopen(req)
+    resBody = res.read()
+    image = Image.open(io.BytesIO(resBody))
+    col = image.width
+    row = image.height
+    image.close()
+    # generate session_id  (uuid v4)
+    session_id = "synth_{}".format(uuid.uuid4())
+    image_path = 'eqn_images/{}.jpg'.format(session_id)
+    s3.put_object(Bucket=S3_BUCKET, Key=image_path, Body=resBody, ContentType='image/jpeg')
+
+    # Get image height and width
     is_good = json_data.get("is_good", False)
     group_id = json_data.get("group_id", "synth")
     username = json_data.get("username", "synth")
-    text_api_response = requests.post(
-        LATEX_API_URL + '/text-to-s3',
-        headers={"api-key": LATEX_API_KEY, "Content-type": "application/json"},
-        data=json.dumps({"text": text})).json()
-    application.logger.info("Text API response: %s" % json.dumps(text_api_response))
-    image_path = text_api_response['image_path']
     application.logger.info("Image path: %s" % image_path)
-    session_id = image_path[:-4]
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
     query = (
@@ -1050,8 +1063,6 @@ def latexToS3():
        'image_height, contains_foreign_alphabet, is_full_page, dataset) ',
        'VALUES %s')
     query = "".join(query)
-    image_path = 'eqn_images/' + session_id + '.jpg'
-    col, row = get_image_dim(image_path)
     anno_list = json.dumps([
         {"src": image_path,
          "text": "",
