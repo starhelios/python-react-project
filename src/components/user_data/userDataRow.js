@@ -55,17 +55,23 @@ export default class UserDataRow extends Component {
     // const detectionMap = get(properties, 'detection_map');
     const confidence = image.confidence || 0.0;
     let latexEl = "";
-    if (image.result.text) {
+    if (image.result && image.result.text) {
       latexEl = image.result.text;
     } else {
-      const latex = image.internal.latex_anno;
-      latexEl = `$$${latex}$$`;
+      if (image.internal && image.internal.latex_anno) {
+        const latex = image.internal.latex_anno;
+        latexEl = `$$${latex}$$`;
+      }
     }
-    const latexErr = image.result.error ? <p style={{color: 'red', textAlign: 'center'}}>{image.result.error}</p> : null;
+    const latexErr = image.result && image.result.error ? <p style={{color: 'red', textAlign: 'center'}}>{image.result.error}</p> : null;
     const rowColor = (image.is_queued || image.is_queueing || this.state.queuing) ? '#ffc107' : 'white';
     let imageResult = JSON.parse(JSON.stringify(image.result));
-    delete imageResult.position;
-    delete imageResult.detection_map;
+    if (imageResult && imageResult.position) {
+      delete imageResult.position;
+    }
+    if (imageResult && imageResult.detection_map) {
+      delete imageResult.detection_map;
+    }
     let internal = JSON.parse(JSON.stringify(image.internal));
 
     return (
