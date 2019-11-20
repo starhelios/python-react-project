@@ -683,28 +683,30 @@ def cr():
 
 def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
-    db = get_db()
-    cur = db.cursor(cursor_factory=DictCursor)
-    cur.execute('SELECT result, request_args, internal, group_id, dataset FROM queues WHERE image_id=%s AND dataset=%s', (image_id, dataset))
-    item_list = cur.fetchone()
-    if not item_list:
-        return {}
-    result = item_list[0]
-    request_args = item_list[1]
-    internal = item_list[2]
-    group_id = item_list[3]
-    dataset = item_list[4]
+    request_url = proxy_address + "/predicted-properties/" + image_id.replace("_triage", "")
+    application.logger.info(request_url)
+    r = requests.get(request_url, headers=DB_API_HEADERS)
+    application.logger.info(r)
+    result_json = r.json()
+    if not result_json or result_json['success'] != True:
+        return None
+    predicted_data = result_json['data']
+    result = predicted_data['result']
+    request_args = predicted_data['request_args']
+    internal = predicted_data['internal']
+    group_id = predicted_data['group_id']
+    anno_list_db = predicted_data['anno_list']
     latex_anno = internal.get('latex_anno', '')
     text = result.get('text', None)
     if text is None:
         text = "\\[ %s \\]" % latex_anno
     image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
+    # TODO: compute global char_size here (?) or do it in production?
     char_size_predicted = internal.get('char_size', None)
     data = {
         'latex_confidence': result.get('latex_confidence', -1.),
         'latex': latex_anno,
         'text': text,
-        'anno_list': None,
         'image_path': image_path,
         'group_id': group_id,
         'session_id': image_id,
@@ -715,31 +717,35 @@ def get_predicted_properties(image_id, dataset):
     for detection in detection_list:
         data[detection] = True
     # get image coordinates
-    eqn_position = result.get('position', {})
     (cols, rows) = get_image_dim(image_path)
     data['image_width'] = cols
     data['image_height'] = rows
     data['metadata'] = request_args.get('metadata', {})
-    if 'top_left_x' in eqn_position:
-        x = eqn_position['top_left_x'] / float(cols)
-        y = eqn_position['top_left_y'] / float(rows)
-        w = eqn_position['width'] / float(cols)
-        h = eqn_position['height'] / float(rows)
-        if (x, y, w, h) != (0, 0, 0, 0):
+    eqn_position = result.get('position', None)
+    if eqn_position is None:
+        if dataset == 'mathpix':
             base_path = os.path.basename(image_path)
-            anno = create_anno(base_path, 'eqn', x, y, w, h)
+            anno = create_anno(base_path, '', 0, 0, 1, 1)
+            anno['boxId'] = 'equations'
+            anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
             data['anno_list'] = [anno]
-    anno_list = data.get('anno_list', [])
-    if anno_list is None:
-        anno_list = []
-    for elem in anno_list:
-        if dataset == "triage":
-            elem['boxId'] = 'equation'
-            elem['charSize'] = char_size_predicted
-        elif dataset == "mathpix":
-            elem['boxId'] = 'equations'
-        elem['text'] = ''
-        elem['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+        elif dataset == 'triage':
+            if anno_list_db:
+                data['anno_list'] = anno_list_db
+    else:
+        if 'top_left_x' in eqn_position:
+            x = eqn_position['top_left_x'] / float(cols)
+            y = eqn_position['top_left_y'] / float(rows)
+            w = eqn_position['width'] / float(cols)
+            h = eqn_position['height'] / float(rows)
+            if (x, y, w, h) != (0, 0, 0, 0):
+                base_path = os.path.basename(image_path)
+                anno = create_anno(base_path, '', x, y, w, h)
+                anno['boxId'] = 'equation'
+                anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                data['anno_list'] = [anno]
+                if dataset == 'triage':
+                    anno['charSize'] = char_size_predicted
     return data
 
 def get_data_list(row_list):
@@ -872,25 +878,7 @@ def queue_equation():
     group_id = image['group_id']
     db = get_db()
     cur = db.cursor()
-    # insert for mathpix dataset
-    dataset = 'mathpix'
-    queue = dataset
-    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id, dataset)'
-    query += ' VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
-    cur.execute(query, (image_id, json.dumps(result, default=str),
-                        json.dumps(request_args, default=str),
-                        json.dumps(internal, default=str),
-                        queue, group_id, dataset))
-    # duplicate for triage dataset
-    dataset = 'triage'
     image_id_triage = image_id + "_triage"
-    queue = dataset
-    query = 'INSERT INTO queues(image_id, result, request_args, internal, queue_id, group_id, dataset)'
-    query += ' VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT(image_id) DO NOTHING'
-    cur.execute(query, (image_id_triage, json.dumps(result, default=str),
-                        json.dumps(request_args, default=str),
-                        json.dumps(internal, default=str),
-                        queue, group_id, dataset))
     # insert into redis
     queue = dataset_original
     redis_db.sadd('queues', queue)
@@ -1035,7 +1023,7 @@ def latexToS3():
     global TYPESET_API_URL, S3_BUCKET, s3
     json_data = request.get_json(cache=False)
     text= json_data["text"]
-    # generate image by using typesetting api 
+    # generate image by using typesetting api
     req = urllib.request.Request(url=TYPESET_API_URL, data=text.encode('utf-8'))
     res = urllib.request.urlopen(req)
     resBody = res.read()
