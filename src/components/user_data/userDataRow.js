@@ -81,17 +81,15 @@ export default class UserDataRow extends Component {
           <img src={imageURL} />
           <p></p>
           {
-            image.is_queued ?
               <div>
-                <p>
-                  <a className="edit-link" target="_blank" href={mathpixEditURL}>Mathpix edit</a>
-                </p>
-                <p>
-                  <a className="edit-link" target="_blank" href={triageEditURL}>Triage edit</a>
-                </p>
-              </div>
-              :
-              <div>
+                <div>
+                  <p>
+                    <a className="edit-link" target="_blank" href={mathpixEditURL}>Mathpix edit</a>
+                  </p>
+                  <p>
+                    <a className="edit-link" target="_blank" href={triageEditURL}>Triage edit</a>
+                  </p>
+                </div>
                 <div>
                   <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('mathpix')}>
                     {
