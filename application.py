@@ -696,10 +696,14 @@ def get_predicted_properties(image_id, dataset):
     internal = predicted_data['internal']
     group_id = predicted_data['group_id']
     anno_list_db = predicted_data['anno_list']
+    text_anno = predicted_data['text_anno']
     latex_anno = internal.get('latex_anno', '')
-    text = result.get('text', None)
-    if text is None:
-        text = "\\[ %s \\]" % latex_anno
+    if text_anno:
+        text = text_anno
+    else:
+        text = result.get('text', None)
+        if text is None:
+            text = "\\[ %s \\]" % latex_anno
     image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
     # TODO: compute global char_size here (?) or do it in production?
     char_size_predicted = internal.get('char_size', None)

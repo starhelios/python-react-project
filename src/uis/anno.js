@@ -51,17 +51,8 @@ class UIController extends BaseUIController {
     parsed.text_confidence = data.text_confidence;
     parsed.queue = data.queue;
     parsed.queue_count = data.queue_count || window.__QUEUE_COUNT__;
-    // this is a hack; used because text format is agnostic to center alignment
-    let latex_nospace = data.latex || "";
     const text = data.text || "";
-    const isMathMode = text.startsWith("\\(");
     parsed.text = text;
-    latex_nospace = latex_nospace.replace(/ /g, "");
-    if (!parsed.is_good) {
-      if (latex_nospace.indexOf("begin{array}{c}") != -1 || latex_nospace.indexOf("begin{array}{r}") != -1 || isMathMode) {
-        parsed.text = "\\[ " + data.latex + " \\]";
-      }
-    }
     parsed.annoList = data.anno_list || [];
     parsed.metadata = data.metadata || [];
     return parsed;
