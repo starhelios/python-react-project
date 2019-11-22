@@ -32,6 +32,7 @@ class UserData extends Component {
       filterAnnotated: 0,
       filterQueued: 0,
       filterNullOcr: 0,
+      filterAnnoList: 0,
       filterProperty: {},
       filterFromDate: '',
       filterToDate: '',
@@ -50,6 +51,7 @@ class UserData extends Component {
     this.onAnnotatedFilterChange = this.onAnnotatedFilterChange.bind(this);
     this.onQueuedFilterChange = this.onQueuedFilterChange.bind(this);
     this.onNullOcrFilterChange = this.onNullOcrFilterChange.bind(this);
+    this.onAnnoListFilterChange = this.onAnnoListFilterChange.bind(this);
     this.onPropertyFilterChange = this.onPropertyFilterChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
@@ -122,6 +124,7 @@ class UserData extends Component {
       filterAnnotated: parseInt(query.annotated) || 0,
       filterQueued: parseInt(query.queued) || 0,
       filterNullOcr: parseInt(query.nullOcr) || 0,
+      filterAnnoList: parseInt(query.annoList) || 0,
       filterProperty: propFilters,
       filterFromDate: query.fromDate || d,
       filterToDate: query.toDate || '',
@@ -249,6 +252,10 @@ class UserData extends Component {
     this.setState({ filterNullOcr: value });
   }
 
+  onAnnoListFilterChange(name, value) {
+    this.setState({ filterAnnoList: value });
+  }
+
   onPropertyFilterChange(propKey, propValue) {
     const changed = this.state.filterProperty;
     changed[propKey] = propValue;
@@ -267,6 +274,9 @@ class UserData extends Component {
       }
       if (this.state.filterNullOcr !== 0) {
         queryParams.push('nullOcr=' + this.state.filterNullOcr);
+      }
+      if (this.state.filterAnnoList !== 0) {
+        queryParams.push('annoList=' + this.state.filterAnnoList);
       }
       const propFilters = [];
       Object.keys(this.state.filterProperty).forEach(propKey => {
@@ -374,6 +384,7 @@ class UserData extends Component {
           annotated={this.state.filterAnnotated} onAnnotatedChange={this.onAnnotatedFilterChange}
           queued={this.state.filterQueued} onQueuedChange={this.onQueuedFilterChange}
           nullOcr={this.state.filterNullOcr} onNullOcrChange={this.onNullOcrFilterChange}
+          annoList={this.state.filterAnnoList} onAnnoListChange={this.onAnnoListFilterChange}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyFilterChange}
           fromDate={this.state.filterFromDate} onFromDateChange={this.onFromDateChange}
           toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}
