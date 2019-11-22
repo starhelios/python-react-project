@@ -209,6 +209,7 @@ def get_query_params(data_request_params):
     sort = data_request_params.get('sort')
     page = data_request_params.get('page')  # 1, 2, 3, ...
     group = data_request_params.get('group')
+    queues = data_request_params.get('queues')
     verifier = data_request_params.get('verifier')
     is_verified = data_request_params.get('is_verified')
     is_good = data_request_params.get('is_good')
@@ -225,6 +226,10 @@ def get_query_params(data_request_params):
         application.logger.info(group)
         query_condition += " AND group_id = %s"
         filters += (group,)
+    if queues is not None and queues:
+        application.logger.info(queues)
+        query_condition += " AND queue = %s"
+        filters += (queues,)
     if verifier is not None and verifier:
         application.logger.info(verifier)
         query_condition += " AND verified_by = %s"
@@ -409,7 +414,23 @@ def api_get_groups():
             'groups': group_list
         }
     }
-    return json.dumps(result)\
+    return json.dumps(result)
+
+@application.route('/api/queues', methods=['GET'])
+@requires_auth
+def api_get_queues():
+    db = get_db()
+    cur = db.cursor(cursor_factory=DictCursor)
+    cur.execute("SELECT DISTINCT queue as queue FROM TrainingEquations")
+    row_list = cur.fetchall()
+    queue_list = [row['queue'] for row in row_list]
+    queue_list = [g for g in queue_list if g is not None and len(g.strip()) > 0]
+    result = {
+        'data': {
+            'queues': queue_list
+        }
+    }
+    return json.dumps(result)
 
 @application.route('/api/verifiers', methods=['GET'])
 @requires_auth
