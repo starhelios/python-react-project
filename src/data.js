@@ -25,6 +25,8 @@ const LOAD_DATA_API_URL = '/api/data';
 const LOAD_DATA_API_METHOD = 'get';
 const CREATE_QUEUE_API_URL = '/api/queue';
 const CREATE_QUEUE_API_METHOD = 'get';
+const LOAD_QUEUES_API_URL = '/api/queues';
+const LOAD_QUEUES_API_METHOD = 'get';
 const perPage = 50;
 const basePageUrl = '/data';
 
@@ -60,6 +62,7 @@ class Data extends Component {
       filterFromDate: '',
       filterToDate: '',
       filterGroup: '',
+      filterQueue: '',
       filterVerifier: '',
       searchString: '',
       search: '',
@@ -77,6 +80,7 @@ class Data extends Component {
     this.loadIDList = this.loadIDList.bind(this);
     this.loadDatasets = this.loadDatasets.bind(this);
     this.loadGroups = this.loadGroups.bind(this);
+    this.loadQueues = this.loadQueues.bind(this);
     this.loadVerifiers = this.loadVerifiers.bind(this);
     this.loadData = this.loadData.bind(this);
     this.onPropertyChange = this.onPropertyChange.bind(this);
@@ -105,6 +109,7 @@ class Data extends Component {
     this.loadDatasets();
     this.loadUsers();
     this.loadGroups();
+    this.loadQueues();
     this.loadVerifiers();
   }
 
@@ -180,6 +185,7 @@ class Data extends Component {
       filterFromDate: query.fromDate || '',
       filterToDate: query.toDate || '',
       filterGroup: query.group || '',
+      filterQueue: query.queues || '',
       filterVerifier: query.verifier || '',
       search: query.search || '',
       search2: query.search2 || '',
@@ -328,6 +334,41 @@ class Data extends Component {
             this.setState({
               loadGroupsApiStatus: consts.API_LOADED_ERROR,
               loadGroupsApiError: 'Sorry, Failed to fetch groups. Please try again.'
+            });
+          }
+        }
+      );
+    });
+  }
+
+  loadQueues() {
+    this.setState({ loadQueuesApiStatus: consts.API_LOADING }, () => {
+      callApi(LOAD_QUEUES_API_URL, LOAD_QUEUES_API_METHOD).then(
+        response => {
+          console.log('Load Queues API success', response);
+          if (response.data && Array.isArray(response.data.queues)) {
+            this.setState({
+              loadQueuesApiStatus: consts.API_LOADED_SUCCESS,
+              queues: response.data.queues.sort()
+            });
+          } else {
+            this.setState({
+              loadQueuesApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Failed to fetch queues. Please try again.'
+            });
+          }
+        },
+        error => {
+          console.log('Load queues API fail', error);
+          if (error.error && error.error.message) {
+            this.setState({
+              loadQueuesApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Unable to fetch queues. ' + error.error.message
+            });
+          } else {
+            this.setState({
+              loadQueuesApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Sorry, Failed to fetch queues. Please try again.'
             });
           }
         }
@@ -487,6 +528,9 @@ class Data extends Component {
       }
       if (this.state.filterGroup.length) {
         queryParams.push('group=' + encodeURIComponent(this.state.filterGroup));
+      }
+      if (this.state.filterQueue.length) {
+        queryParams.push('queues=' + encodeURIComponent(this.state.filterQueue));
       }
       if (this.state.filterVerifier.length) {
         queryParams.push('verifier=' + encodeURIComponent(this.state.filterVerifier));
@@ -655,6 +699,8 @@ class Data extends Component {
           onDatasetChange={this.onDatasetChange}
           annotators={this.state.annotators} annotator={this.state.filterAnnotator}
           groups={this.state.groups}
+          queues={this.state.queues}
+          queueFilter={this.state.filterQueue}
           verifiers={this.state.verifiers}
           group={this.state.filterGroup}
           verifier={this.state.filterVerifier}

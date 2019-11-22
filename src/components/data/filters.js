@@ -26,7 +26,7 @@ export default class DataFilters extends Component {
       searchError, search2Error,
       search2, onSearchChange2,
       searchString, searchID, onSearchIDChange,
-      queue, onQueueChange, queueUrl,
+      queue, onQueueChange, queueUrl, queueFilter, queues,
       onCreateQueue, viewType, appId, appCount,
       onInputChange, IDList, onAppIdChange,onAppCountChange,
       onApplyFiltersAndSearchClick } = this.props;
@@ -76,6 +76,18 @@ export default class DataFilters extends Component {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
               }).map((_group, index) => (
                 <option value={_group} key={index}>{_group}</option>
+              ))
+            }
+            </select>
+          </div>
+          <div className="group-1">
+            <select className="form-control" name="filterQueue" value={queueFilter} onChange={onInputChange}>
+            <option value="">Queue</option>
+            {
+              queues && queues.sort(function (a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+              }).map((_queue, index) => (
+                <option value={_queue} key={index}>{_queue}</option>
               ))
             }
             </select>
@@ -208,10 +220,12 @@ DataFilters.propTypes = {
   datasets: PropTypes.array.isRequired,
   annotators: PropTypes.array.isRequired,
   groups: PropTypes.array.isRequired,
+  queues: PropTypes.array.isRequired,
   verifiers: PropTypes.array.isRequired,
   annotator: PropTypes.string.isRequired,
   group: PropTypes.string.isRequired,
   queue: PropTypes.string.isRequired,
+  queueFilter: PropTypes.string.isRequired,
   queueUrl: PropTypes.string.isRequired,
   property: PropTypes.object.isRequired,
   onPropertyChange: PropTypes.func.isRequired,
