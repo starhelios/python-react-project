@@ -25,7 +25,7 @@ const LOAD_DATA_API_URL = '/api/data';
 const LOAD_DATA_API_METHOD = 'get';
 const CREATE_QUEUE_API_URL = '/api/queue';
 const CREATE_QUEUE_API_METHOD = 'get';
-const LOAD_QUEUES_API_URL = '/api/queues';
+const LOAD_QUEUES_API_URL = '/api/data-queues';
 const LOAD_QUEUES_API_METHOD = 'get';
 const perPage = 50;
 const basePageUrl = '/data';
@@ -713,7 +713,7 @@ class Data extends Component {
           search2={this.state.search2}
           searchString={this.state.searchString}
           searchError={this.state.searchError} search2Error={this.state.search2Error}
-          searchID={this.state.searchID} 
+          searchID={this.state.searchID}
           queue={this.state.queue}
           onCreateQueue={this.onCreateQueue} queueUrl={this.state.queueUrl} creatingQueue={this.state.creatingQueue}
           onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick}
