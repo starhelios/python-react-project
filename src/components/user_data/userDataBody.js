@@ -121,6 +121,7 @@ export default class UserDataBody extends Component {
             <UserDataRow
               key={index}
               image={item}
+              annoList={item.anno_list}
               queueImage={this.props.queueImage}
               isBlocked={isBlocked}
               // onGetBlockedUsers={() => this.getBlockedUsers(item.app_id)}
