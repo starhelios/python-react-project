@@ -416,7 +416,7 @@ def api_get_groups():
     }
     return json.dumps(result)
 
-@application.route('/api/queues', methods=['GET'])
+@application.route('/api/data-queues', methods=['GET'])
 @requires_auth
 def api_get_queues():
     db = get_db()
