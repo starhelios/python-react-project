@@ -22,6 +22,7 @@
     "is_inverted": "Inverted (white on black)",
     "char_size_null": "char_size is null",
     "is_full_page": "Is full page",
+    "is_synthetic": "Is synthetically generated", 
     "contains_foreign_alphabet": "Contains foreign alphabet"
   },
 

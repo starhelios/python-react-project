@@ -372,7 +372,7 @@ def api_get_data():
         db = get_db()
         cur = db.cursor(cursor_factory=DictCursor)
         count_query = "SELECT count(session_id) " + query_condition
-        application.logger.info("Counting...", count_query)
+        application.logger.info("Counting... {}".format(count_query))
         cur.execute(count_query, filters)
         total = cur.fetchone()[0]
         application.logger.info("Selecting...")
