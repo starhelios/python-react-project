@@ -717,17 +717,23 @@ def get_predicted_properties(image_id, dataset):
     anno_list_db = predicted_data['anno_list']
     text_anno = predicted_data['text_anno']
     latex_anno = internal.get('latex_anno', '')
-    if text_anno:
-        text = text_anno
+    # TODO: remove this hack!!!
+    latex_styled = result.get('latex_styled', None)
+    if text_anno is not None and 'tabular' in text_anno and latex_styled:
+        text = "\\[ %s \\]" % latex_styled
     else:
-        text = result.get('text', None)
-        if text is None:
-            text = "\\[ %s \\]" % latex_anno
+        if text_anno:
+            text = text_anno
+        else:
+            text = result.get('text', None)
+            if text is None:
+                text = "\\[ %s \\]" % latex_anno
     image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
     # TODO: compute global char_size here (?) or do it in production?
     char_size_predicted = internal.get('char_size', None)
     data = {
         'latex_confidence': result.get('latex_confidence', -1.),
+        'latex_styled': latex_styled,
         'latex': latex_anno,
         'text': text,
         'image_path': image_path,
