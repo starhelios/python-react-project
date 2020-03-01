@@ -7,7 +7,7 @@ import Annotorious from './components/work/annotorious';
 import AnnotationLogView from './components/work/annotation_log_view';
 import charSizeMap from 'char_size.json';
 import { Router, Route, browserHistory } from 'react-router';
-import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown';
+import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
 import axios from 'axios';
 
 const LATEX_RENDER_HEIGHT_DEFAULT = 80;

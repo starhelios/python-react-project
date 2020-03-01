@@ -5,7 +5,6 @@
 This repo depends on two other repos which are submodules:
 
 https://github.com/Mathpix/annotorious
-https://github.com/Mathpix/mathpix-markdown
 
 To clone the repo with all submodules, do:
 
@@ -100,7 +99,7 @@ $ ./import_redis.py
 
 Install javascript modules:
 ```
-$ npm install
+$ yarn install
 ```
 
 Compile javascript files:
@@ -110,7 +109,7 @@ $ webpack --production
 
 Run Flask app:
 ```
-$ ./run.py
+$ ./application.py --port 8080
 ```
 
 This will run the app on port 8000.  You can view the website in your web browser by navigating to: http://0.0.0.0:8000/

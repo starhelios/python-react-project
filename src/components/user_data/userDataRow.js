@@ -3,7 +3,7 @@ import consts from '../../libs/consts';
 import moment from 'moment';
 import * as d3 from 'd3';
 import { forEach } from 'lodash';
-import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown';
+import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
 
 export default class UserDataRow extends Component {
 

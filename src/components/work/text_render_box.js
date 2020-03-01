@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import keydown from 'react-keydown';
-import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown';
+import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
 const TEXT_RENDER_HEIGHT_DEFAULT = 80;
 
 export default class TextRenderBox extends Component {
