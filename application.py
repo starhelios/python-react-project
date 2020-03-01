@@ -89,8 +89,6 @@ if proxy_address:
     proxy_address += ":" + os.environ.get('DBAPI_PORT_8080_TCP_PORT')
 else:
     proxy_address = os.environ['PROXY_ADDRESS']
-LATEX_API_KEY = os.environ['LATEX_API_KEY']
-LATEX_API_URL = os.environ['LATEX_API_URL']
 DB_API_KEY = os.environ['DB_API_KEY']
 DB_API_HEADERS = {
     "Connection": "keep-alive",
