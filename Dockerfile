@@ -7,10 +7,9 @@ COPY src /app/src
 COPY package.json /app/
 COPY global_consts.json /app/
 COPY webpack.config.js /app/
-COPY mathpix-markdown /app/mathpix-markdown
 WORKDIR /app
-RUN npm install
-RUN npm install -g webpack@1.14.0
+RUN yarn install
+RUN yarn global add webpack@1.14.0
 RUN NODE_ENV=production webpack --production
 
 FROM python:3

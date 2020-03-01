@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown';
+import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
 import { forEach } from 'lodash';
 import moment from 'moment';
 import * as d3 from 'd3';
@@ -85,7 +85,7 @@ export default class DataRow extends Component {
     const { viewType, annotator, text, imagePath, properties,
             datetime, is_good, is_verified, dataset, annoList, latex_normalized,
             text_normalized, latex, session_id, is_printed,
-            is_handwritten, is_inverted, queue, verified_by } = this.props;
+            is_handwritten, is_inverted, queue, verified_by, group_id } = this.props;
     const basePath = imagePath.split("/").slice(-1)[0];
     const textEditURL = "/annotate/" + dataset + "?sessionID=" + session_id;
     const imageURL = consts.S3BUCKET_URL + basePath;
@@ -97,6 +97,9 @@ export default class DataRow extends Component {
         if (properties[key].value) {
           propsStr += properties[key].description + "\n";
         }
+      }
+      if (group_id !== null && group_id !== undefined) {
+        propsStr += 'group_id: ' + group_id + "\n";
       }
       if (is_printed !== null && is_printed !== undefined) {
         propsStr += 'is_printed: ' + is_printed + "\n";

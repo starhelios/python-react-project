@@ -747,14 +747,31 @@ def get_predicted_properties(image_id, dataset):
     eqn_position = result.get('position', None)
     if eqn_position is None:
         if dataset == 'mathpix':
-            base_path = os.path.basename(image_path)
-            anno = create_anno(base_path, '', 0, 0, 1, 1)
-            anno['boxId'] = 'equations'
-            anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
-            data['anno_list'] = [anno]
+            if anno_list_db:
+                anno_list_lines = [anno for anno in anno_list_db if anno['boxId'].startswith('line')]
+                if len(anno_list_lines) > 0:
+                    # hack to just look at first line
+                    anno = anno_list_lines[0]
+                    anno['boxId'] = 'equations'
+                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                    data['anno_list'] = [anno]
+                    if 'charSize' in anno:
+                        data['char_size'] = anno['charSize']
+                else:
+                    base_path = os.path.basename(image_path)
+                    anno = create_anno(base_path, '', 0, 0, 1, 1)
+                    anno['boxId'] = 'equations'
+                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                    data['anno_list'] = [anno]
+            else:
+                base_path = os.path.basename(image_path)
+                anno = create_anno(base_path, '', 0, 0, 1, 1)
+                anno['boxId'] = 'equations'
+                anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                data['anno_list'] = [anno]
         elif dataset == 'triage':
             if anno_list_db:
-                data['anno_list'] = anno_list_db
+                data['anno_list'] = [anno for anno in anno_list_db if not anno['boxId'].startswith('line')]
     else:
         if 'top_left_x' in eqn_position:
             x = eqn_position['top_left_x'] / float(cols)

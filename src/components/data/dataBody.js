@@ -36,6 +36,7 @@ export default class DataBody extends Component {
               queue={item.queue}
               viewType={this.props.viewType}
               datetime={item.datetime}
+              group_id={item.group_id}
               latex={item.latex || ''}
               text_normalized={item.text_normalized}
               latex_normalized={item.latex_normalized} />
