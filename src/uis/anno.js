@@ -1,3 +1,4 @@
+import { isEqual, uniqWith } from 'lodash';
 import { union as _union, without as _without } from 'lodash';
 import { getURLParameterByName } from '../libs/utils';
 import BaseUIController from './base';
@@ -116,6 +117,7 @@ class UIController extends BaseUIController {
   deparseState() {
     const that = this.component;
 
+    that.state.annoList = uniqWith(that.state.annoList, (a,b) => isEqual(a,b) || isEqual(a.shapes, b.shapes))
     const deparsed = {
       'session_id': this.sessionId,
       'queue': this.queue,
