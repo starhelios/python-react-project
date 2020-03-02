@@ -139,7 +139,7 @@ export default class UserDataRow extends Component {
       <tr style={{background: rowColor}}>
         <td></td>
         <td className="image-col">
-          <div style={{position: 'relative'}}>
+          <div style={{position: 'relative', overflowY: 'auto'}}>
             <img id="mainImage" ref="img" src={imageURL}
                  width={this.props.imageWidth} height={this.props.imageHeight} onLoad={this.update}/>
             <div style={{position: 'absolute', top: 0, left: 0, zIndex: 10, right: 0, bottom: 0}}>
