@@ -33,6 +33,9 @@ static/graph.js
 templates/mycounts.html
 tmp
 venv
+annotorious
+mathpix-markdown
+_env.sh
 
 # Elastic Beanstalk Files
 !.elasticbeanstalk/*
