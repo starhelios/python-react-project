@@ -131,7 +131,7 @@ export default class DataRow extends Component {
       <tr>
         { viewType !== 'normalized' ?
           <td className="text-center anno-board">
-            <div style={{position: 'relative'}}>
+            <div style={{position: 'relative', overflowY: 'auto'}}>
               <img id="mainImage" ref="img" src={imageURL}
                    width={this.props.imageWidth} height={this.props.imageHeight}
                    onLoad={this.update}/>
