@@ -1,0 +1,78 @@
+{
+  "ui-id": "ocr_anno",
+  "schema": {
+    "fields": [
+      { "type": "link", "label": "Source Image Link", "id": "image.url", "target": "_blank", "style": { "color": "#337ab7" }, "colspan": 6 },
+      { "type": "info", "label": "Previous annotator", "id": "username", "style": { "fontSize": 16 }, "colspan": 6 },
+      { "type": "info", "label": "Group", "id": "group_id", "colspan": 6 },
+      { "type": "info", "label": "Latex confidence", "id": "latexConfidence", "style": { "fontSize": 16 }, "colspan": 6 },
+      { "type": "checkbox", "label": "Is done", "id": "is_good", "style": { }, "colspan": 6, "help": "The annotation is complete." },
+      { "type": "text-edit", "label": "Text", "id": "text", "style": { "marginTop": "20px" }, "clear": "left", "colspan": 6 },
+      { "type": "text-render", "label": "Text preview", "id": "text", "style": { "marginTop": "20px" }, "colspan": 6 },
+      {
+        "type": "image",
+        "id": "image",
+        "label": "Image",
+        "fields": [
+          {
+            "type": "bbox",
+            "geometry": "box",
+            "label": "Line",
+            "id": "line",
+            "has_text": true,
+            "marker_width": "2",
+            "color": "#FF0000",
+            "has_char_size": true
+          },
+          {
+            "type": "bbox",
+            "geometry": "polygon",
+            "label": "Line (polygon)",
+            "id": "line_polygon",
+            "has_text": true,
+            "marker_width": "2",
+            "color": "#FF0000",
+            "has_char_size": true
+          }
+        ]
+      }
+    ]
+  },
+
+  "options": {
+    "image_type": {
+      "options": [
+        { "value": "math", "label": "Math" },
+        { "value": "text", "label": "Text" },
+        { "value": "landscape", "label": "Landscape" },
+        { "value": "portrait", "label": "portrait" }
+      ],
+      "default": "math"
+    },
+    "image_properties": {
+      "options": [
+      ],
+      "default": []
+    },
+    "info_properties": {
+      "options": [
+      ],
+      "default": []
+    }
+  },
+
+  "data": {
+    "image_name": "First equation",
+    "image_type": "math",
+    "is_good": true,
+    "image_properties": [],
+    "info_properties": ["is_printed"],
+    "image": { "url": "http://static4.businessinsider.com/image/587fbec3ee14b6c7148b892e-1495" },
+    "username": "George",
+    "latex": "x^{2} + x",
+    "chars": [{ "x": 0.1, "y": 0.2, "w": 0.1, "h": 0.2, "text": "x" }],
+    "equations": [{ "x": 0.01, "y": 0.3, "height": 0.25, "width": 0.95 }]
+  }
+}
+
+
