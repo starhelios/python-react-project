@@ -176,5 +176,6 @@ module.exports = {
   'math_anno': UIController,
   'triage_anno': UIController,
   'price_anno': UIController,
-  'lines_anno': UIController
+  'lines_anno': UIController,
+  'ocr_anno': UIController
 };
