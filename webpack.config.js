@@ -127,8 +127,8 @@ module.exports = {
 
   plugins: plugins,
 
+  watchOptions: {
+    poll: true
+  }
 };
 
-watchOptions: {
-  poll: true
-}
