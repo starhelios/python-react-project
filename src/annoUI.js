@@ -704,6 +704,7 @@ class AnnotationUI extends Component {
       }
     </div>;
 
+    console.log('annoList', this.state.annoList);
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
         <div className={'screen-lock' + (this.state.loadDataApiStatus === consts.API_LOADING ? '' : ' hidden')}>
@@ -763,6 +764,29 @@ class AnnotationUI extends Component {
           DATASET == "mathpix" ? bboxSelectors : null
         }
 
+        { DATASET == 'ocr' &&
+          <div className="anno-list-edit">
+            {this.state.annoList.map(item => {
+              const geom = item.shapes && item.shapes[0] && item.shapes[0].geometry;
+              return (<div className="anno-item">
+                <div className="image-wrap">
+                  <div style={{
+                    backgroundImage: `url(${item.src})`,
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPositionX: -1 * resizedImageWidth * geom.x,
+                    backgroundPositionY: -1 * resizedImageHeight * geom.y,
+                    width: resizedImageWidth * geom.width,
+                    height: resizedImageHeight * geom.height,
+                    margin: 'auto'
+                  }}/>
+                </div>
+                <h4>{item.text}</h4>
+                <textarea >{item.text}</textarea>
+              </div>)
+            })}
+          </div>
+        }
 
         <div className="row">
           <div className="col-xs-6 col-xs-push-3 col-md-3 col-md-push-9 heading text-center">
