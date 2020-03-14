@@ -791,12 +791,12 @@ class AnnotationUI extends Component {
                 <div className="anno-arrows">
                   <div>Text line {index + 1}</div>
                   {index > 0 && <div>
-                    <button type="button" className='btn btn-info' onClick={this.annoItemUp(item, index)}>
+                    <button type="button" className="btn btn-info" onClick={this.annoItemUp(item, index)}>
                       <i className="glyphicon glyphicon-arrow-up"></i>
                     </button>
                   </div>}
                   {index + 1 < this.state.annoList.length && <div>
-                    <button type="button" className='btn btn-info' onClick={this.annoItemDown(item, index)}>
+                    <button type="button" className="btn btn-info" onClick={this.annoItemDown(item, index)}>
                       <i className="glyphicon glyphicon-arrow-down"></i>
                     </button>
                   </div>}
