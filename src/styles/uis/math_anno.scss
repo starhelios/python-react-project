@@ -101,18 +101,26 @@
 
   .anno-list-edit {
     .anno-item {
-      width: 100%;
-      margin: 30px 0;
+      display: flex;
 
-      .image-wrap {
-        width: 100%;
-        text-align: center;
+      .anno-arrows {
+        width: 10%;
       }
-      textarea {
-        width: 100%;
-        height: 100px;
-        background: #000;
-        color: #fff;
+      .anno-item-content {
+        width: 90%;
+        margin: 30px 0;
+
+        .image-wrap {
+          width: 100%;
+          text-align: center;
+          position: relative;
+        }
+        textarea {
+          width: 100%;
+          height: 100px;
+          background: #000;
+          color: #fff;
+        }
       }
     }
   }
