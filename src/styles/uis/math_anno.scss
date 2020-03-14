@@ -105,6 +105,9 @@
 
       .anno-arrows {
         width: 10%;
+        & div {
+          margin-bottom: 5px;
+        }
       }
       .anno-item-content {
         width: 90%;
