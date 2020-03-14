@@ -429,6 +429,26 @@ class AnnotationUI extends Component {
     this.setState({crMessage: e.target.value});
   }
 
+  annoTextChange = (item, index) => (event, data) => {
+    const annoList = [...this.state.annoList];
+    annoList[index].text = event.target.value;
+    this.setState({annoList});
+  };
+
+  annoItemUp = (item, index) => (event, data) => {
+    const annoList = [...this.state.annoList];
+    const arr1 =  index-2 >= 0 ? annoList.slice(0, index-1) : [];
+    const arr2 = annoList.slice(index + 1);
+    this.setState({annoList: [...arr1, annoList[index], annoList[index - 1], ...arr2]});
+  };
+
+  annoItemDown = (item, index) => (event, data) => {
+    const annoList = [...this.state.annoList];
+    const arr1 = annoList.slice(0, index);
+    const arr2 = index + 2 < annoList.length ? annoList.slice(index + 2) : [];
+    this.setState({annoList: [...arr1, annoList[index + 1], annoList[index], ...arr2]});
+  };
+
   renderLatexUI(effScale) {
     const { char_size, char_size_predicted } = this.state;
     // includes multiplier constant to get sizes to line up!
@@ -704,7 +724,6 @@ class AnnotationUI extends Component {
       }
     </div>;
 
-    console.log('annoList', this.state.annoList);
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
         <div className={'screen-lock' + (this.state.loadDataApiStatus === consts.API_LOADING ? '' : ' hidden')}>
@@ -766,23 +785,47 @@ class AnnotationUI extends Component {
 
         { DATASET == 'ocr' &&
           <div className="anno-list-edit">
-            {this.state.annoList.map(item => {
+            {this.state.annoList.map((item, index) => {
               const geom = item.shapes && item.shapes[0] && item.shapes[0].geometry;
-              return (<div className="anno-item">
-                <div className="image-wrap">
-                  <div style={{
-                    backgroundImage: `url(${item.src})`,
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPositionX: -1 * resizedImageWidth * geom.x,
-                    backgroundPositionY: -1 * resizedImageHeight * geom.y,
-                    width: resizedImageWidth * geom.width,
-                    height: resizedImageHeight * geom.height,
-                    margin: 'auto'
-                  }}/>
+              return geom && (<div key={index} className="anno-item">
+                <div className="anno-arrows">
+                  <div>Text line {index + 1}</div>
+                  {index > 0 && <div>
+                    <button type="button" className='btn btn-info' onClick={this.annoItemUp(item, index)}>
+                      <i className="glyphicon glyphicon-arrow-up"></i>
+                    </button>
+                  </div>}
+                  {index + 1 < this.state.annoList.length && <div>
+                    <button type="button" className='btn btn-info' onClick={this.annoItemDown(item, index)}>
+                      <i className="glyphicon glyphicon-arrow-down"></i>
+                    </button>
+                  </div>}
                 </div>
-                <h4>{item.text}</h4>
-                <textarea >{item.text}</textarea>
+                <div className="anno-item-content">
+                  <div className="image-wrap">
+                    <div style={{
+                      position: 'relative',
+                      overflow: 'hidden',
+                      clip: `rect(${resizedImageWidth * geom.x}px ${resizedImageHeight * geom.y}px ${resizedImageWidth * geom.width}px ${resizedImageHeight * geom.height}px)`,
+                      width: resizedImageWidth * geom.width,
+                      height: resizedImageHeight * geom.height,
+                      margin: 'auto'
+                    }}>
+                      <img
+                        src={item.src}
+                        style={{
+                          position: 'absolute',
+                          left: -1 * resizedImageWidth * geom.x,
+                          top: -1 * resizedImageHeight * geom.y,
+                          width: resizedImageWidth,
+                          height: resizedImageHeight,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <h4>{item.originalText}</h4>
+                  <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
+                </div>
               </div>)
             })}
           </div>
