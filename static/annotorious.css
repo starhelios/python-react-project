@@ -91,6 +91,15 @@
   font-style:italic;
 }
 
+.annotorious-popup-text.ocr {
+  overflow: hidden;
+  width: 100%;
+  height: 15px;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .annotorious-popup-buttons {
   /*float:right;*/
   margin:6px 0px 0px 0px;
@@ -154,6 +163,10 @@
   height:16px;
   text-indent:100px;
   overflow:hidden;
+}
+
+.annotorious-popup-buttons.ocr .annotorious-popup-button-edit{
+  display: none;
 }
 
 .annotorious-popup-button-delete {
