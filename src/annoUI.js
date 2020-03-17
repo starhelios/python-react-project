@@ -430,9 +430,10 @@ class AnnotationUI extends Component {
   }
 
   annoTextChange = (item, index) => (event, data) => {
-    const annoList = [...this.state.annoList];
+    const annoList = cloneDeep(this.state.annoList);
+
     annoList[index].text = event.target.value;
-    this.setState({annoList});
+    this.setState({annoList, annoUpdateHash: this.state.annoUpdateHash + 1});
   };
 
   annoItemUp = (item, index) => (event, data) => {
