@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { forEach, cloneDeep, get as _get, sum } from 'lodash';
+import { forEach, cloneDeep, get as _get, sum, maxBy, minBy, map } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
 import consts from './libs/consts';
@@ -682,7 +682,7 @@ class AnnotationUI extends Component {
       resizedImageWidth = effScale * this.state.image_width;
       resizedImageHeight = effScale * this.state.image_height;
     }
-    console.log('effScale: ' + String(effScale));
+    // console.log('effScale: ' + String(effScale));
     const deparsed = {};
     this.options.info_properties.options.forEach(option => {
       if (this.state.info_properties) {
@@ -786,7 +786,38 @@ class AnnotationUI extends Component {
         { DATASET == 'ocr' &&
           <div className="anno-list-edit">
             {this.state.annoList.map((item, index) => {
-              const geom = item.shapes && item.shapes[0] && item.shapes[0].geometry;
+              const shape = item.shapes && item.shapes[0];
+              const geom = shape && shape.geometry;
+              const shapeStyle = {
+                position: 'relative',
+                overflow: 'hidden',
+                margin: 'auto'
+              };
+              const imgStyle = {
+                position: 'absolute',
+                width: resizedImageWidth + 'px',
+                height: resizedImageHeight + 'px',
+              };
+              if (shape.type === 'rect') {
+                shapeStyle.width = resizedImageWidth * geom.width + 'px';
+                shapeStyle.height = resizedImageHeight * geom.height + 'px';
+                shapeStyle.clip = `rect(${resizedImageWidth * geom.x}px ${resizedImageHeight * geom.y}px ${resizedImageWidth * geom.width}px ${resizedImageHeight * geom.height}px)`;
+                imgStyle.left = -1 * resizedImageWidth * geom.x + 'px';
+                imgStyle.top = -1 * resizedImageHeight * geom.y + 'px';
+              }
+              if (shape.type === 'polygon') {
+                const minX = minBy(geom.points, item => item.x);
+                const maxX = maxBy(geom.points, item => item.x);
+                const minY = minBy(geom.points, item => item.y);
+                const maxY = maxBy(geom.points, item => item.y);
+                const values = map(geom.points, point => `${point.x * resizedImageWidth}px ${point.y * resizedImageHeight}px`) || [];
+                shapeStyle.width = (maxX.x - minX.x) * resizedImageWidth + 'px';
+                shapeStyle.height = (maxY.y - minY.y) * resizedImageHeight + 'px';
+                imgStyle.clipPath = `polygon(${values.join(', ')})`;
+                imgStyle.left = -1 * resizedImageWidth * minX.x + 'px';
+                imgStyle.top = -1 * resizedImageHeight * minY.y + 'px';
+              }
+
               return geom && (<div key={index} className="anno-item">
                 <div className="anno-arrows">
                   <div>Text line {index + 1}</div>
@@ -803,23 +834,10 @@ class AnnotationUI extends Component {
                 </div>
                 <div className="anno-item-content">
                   <div className="image-wrap">
-                    <div style={{
-                      position: 'relative',
-                      overflow: 'hidden',
-                      clip: `rect(${resizedImageWidth * geom.x}px ${resizedImageHeight * geom.y}px ${resizedImageWidth * geom.width}px ${resizedImageHeight * geom.height}px)`,
-                      width: resizedImageWidth * geom.width,
-                      height: resizedImageHeight * geom.height,
-                      margin: 'auto'
-                    }}>
+                    <div style={shapeStyle}>
                       <img
                         src={item.src}
-                        style={{
-                          position: 'absolute',
-                          left: -1 * resizedImageWidth * geom.x,
-                          top: -1 * resizedImageHeight * geom.y,
-                          width: resizedImageWidth,
-                          height: resizedImageHeight,
-                        }}
+                        style={imgStyle}
                       />
                     </div>
                   </div>
