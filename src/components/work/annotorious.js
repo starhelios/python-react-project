@@ -147,11 +147,13 @@ Annotorious.propTypes = {
 
 function drawAnnotations(annoList = [], activeIndex) {
   const annoCount = annoList.length;
+  const prevList = anno.getAnnotations();
   annoList.forEach((box, index) => {
+    const replace = prevList[index] && prevList[index].text !== box.text ? prevList[index] : undefined;
     if (box && box.shapes && box.shapes[0]) {
       anno.addAnnotation(Object.assign({}, box, {
         src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-      }), undefined, index === activeIndex, annoCount);
+      }), replace, index === activeIndex, annoCount);
     }
   });
 }
