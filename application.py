@@ -755,7 +755,7 @@ def get_predicted_properties(image_id, dataset):
         if dataset == 'mathpix':
             anno_list_db = [anno for anno in anno_list_db if anno.get('text_anno', None)]
             if anno_list_db:
-                anno_list_tables = [anno for anno in anno_list_db if anno['boxId'].startswith('table')]
+                anno_list_tables = [anno for anno in anno_list_db if "tabular" in anno['text_anno']]
                 if len(anno_list_tables) > 0:
                     # hack to just look at first line
                     anno = anno_list_tables[0]
@@ -766,7 +766,8 @@ def get_predicted_properties(image_id, dataset):
                     anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
                     data['anno_list'] = [anno]
                     data['contains_table'] = True
-                    data['text'] = anno['text_anno']
+                    # can't do this because text_anno uses tabular syntax but we annotate w/ arrays...
+                    # data['text'] = anno['text_anno']
                 else:
                     anno = anno_list_db[0]
                     if 'charSize' in anno:
