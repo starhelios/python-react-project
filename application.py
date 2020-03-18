@@ -754,15 +754,17 @@ def get_predicted_properties(image_id, dataset):
     if eqn_position is None:
         if dataset == 'mathpix':
             if anno_list_db:
-                anno_list_lines = [anno for anno in anno_list_db if anno['boxId'].startswith('line')]
-                if len(anno_list_lines) > 0:
+                anno_list_tables = [anno for anno in anno_list_db if anno['boxId'].startswith('table')]
+                if len(anno_list_tables) > 0:
                     # hack to just look at first line
-                    anno = anno_list_lines[0]
+                    anno = anno_list_tables[0]
+                    if 'charSize' in anno:
+                        data['char_size'] = anno['charSize']
+                        anno.pop('charSize')
                     anno['boxId'] = 'equations'
                     anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
                     data['anno_list'] = [anno]
-                    if 'charSize' in anno:
-                        data['char_size'] = anno['charSize']
+                    data['contains_table'] = True
                 else:
                     base_path = os.path.basename(image_path)
                     anno = create_anno(base_path, '', 0, 0, 1, 1)
