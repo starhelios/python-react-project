@@ -92,12 +92,13 @@
 }
 
 .annotorious-popup-text.ocr {
-  overflow: hidden;
-  width: 100%;
-  height: 15px;
-  display: block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  /*overflow: hidden;*/
+  /*width: 100%;*/
+  /*height: 15px;*/
+  /*display: block;*/
+  /*white-space: nowrap;*/
+  /*text-overflow: ellipsis;*/
+  display: none;
 }
 
 .annotorious-popup-buttons {
@@ -117,6 +118,10 @@
   transition-property: opacity;
   transition-duration: 1s;
   transition-delay: 0s;
+}
+
+.annotorious-popup-buttons.ocr {
+  margin: 0;
 }
 
 .annotorious-popup-button {
