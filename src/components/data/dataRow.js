@@ -148,7 +148,7 @@ export default class DataRow extends Component {
         }
         <td style={{ textAlign: "left" }}>
           <MathpixLoader>
-            <MathpixMarkdown text={text} isDisableFancy={true} />
+            <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={text} isDisableFancy={true} />
           </MathpixLoader>
         </td>
         <td className="prop-col" style={{textAlign: "left"}}>

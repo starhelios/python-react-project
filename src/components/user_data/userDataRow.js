@@ -200,7 +200,7 @@ export default class UserDataRow extends Component {
           {
             latexErr == null ?
               <MathpixLoader>
-                <MathpixMarkdown text={latexEl || ""} isDisableFancy={true}/>
+                <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={latexEl || ""} isDisableFancy={true}/>
               </MathpixLoader>
               :
               latexErr

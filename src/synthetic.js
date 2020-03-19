@@ -25,7 +25,7 @@ export default class TextRenderBox extends Component {
     return (
       <div style={{ fontSize: this.props.fontSize + "px" }} >
         <MathpixLoader >
-            <MathpixMarkdown text={text} isDisableFancy={true}/>
+            <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={text} isDisableFancy={true} />
          </MathpixLoader>
       </div>
     );
