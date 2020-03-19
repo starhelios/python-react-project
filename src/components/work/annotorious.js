@@ -110,7 +110,9 @@ export default class Annotorious extends Component {
           <div className="wrapper-annotatable" style={{ height: wrapperHeight }}>
             <img id="mainImage" ref="mainImage" src={this.props.imageURL} className="annotatable"
               // style={{marginRight: margin, marginBottom: margin}}
-              width={this.props.imageWidth} height={this.props.imageHeight} data-count={this.props.annoList.length}
+              width={this.props.imageWidth} height={this.props.imageHeight}
+              data-count={this.props.annoList.length}
+              data-dataset={this.props.dataset}
               onLoad={() => console.log('onLoad')} />
           </div>
         </div>
