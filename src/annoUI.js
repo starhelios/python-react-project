@@ -775,6 +775,7 @@ class AnnotationUI extends Component {
                 onStartSelection={this.onStartSelection}
                 onSelectionCompleted={this.onSelectionCompleted}
                 hasCharSize={this.state.showMarkers}
+                dataset={DATASET}
               />
             </div>
             : null
