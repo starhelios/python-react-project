@@ -113,6 +113,7 @@ export default class Annotorious extends Component {
               width={this.props.imageWidth} height={this.props.imageHeight}
               data-count={this.props.annoList.length}
               data-dataset={this.props.dataset}
+              data-charsize={this.props.hasCharSize}
               onLoad={() => console.log('onLoad')} />
           </div>
         </div>
