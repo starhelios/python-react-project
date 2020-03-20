@@ -843,7 +843,7 @@ class AnnotationUI extends Component {
                       />
                     </div>
                   </div>
-                  <h4>{item.originalText}</h4>
+                  <h4>{item.text}</h4>
                   <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
                 </div>
               </div>)
