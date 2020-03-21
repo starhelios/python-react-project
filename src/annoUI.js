@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
 import { forEach, cloneDeep, get as _get, sum, maxBy, minBy, map } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
@@ -843,12 +844,16 @@ class AnnotationUI extends Component {
                       />
                     </div>
                   </div>
-                  <h4>{item.text}</h4>
+                  <div className="anno-item-label">
+                    <MathpixLoader>
+                      <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
+                    </MathpixLoader>
+                  </div>
                   <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
                 </div>
               </div>)
-            })}
-          </div>
+          })}
+        </div>
         }
 
         <div className="row">
