@@ -30,7 +30,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "mathjax-full": "git+https://78fca9c22d153469b3d57ca997a2f88c73a70b0f:x-oauth-basic@github.com/Mathpix/mathjax-v3.git",
-    "mathpix-markdown-it": "^1.0.14",
+    "mathpix-markdown-it": "^1.0.16",
     "moment": "^2.14.1",
     "normalizr": "^3.1.0",
     "react": "^0.14.3",
