@@ -190,7 +190,6 @@ class AnnotationUI extends Component {
           outline_width: this.schema.bboxes[this.state.boxType].marker_width,
         };
       }
-
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
@@ -432,23 +431,66 @@ class AnnotationUI extends Component {
 
   annoTextChange = (item, index) => (event, data) => {
     const annoList = cloneDeep(this.state.annoList);
+    let change_index = 0;
 
-    annoList[index].text = event.target.value;
+    annoList.map((item, a_index) => {
+      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+        change_index = a_index;
+      }
+    });
+
+    annoList[change_index].text = event.target.value;
     this.setState({annoList, annoUpdateHash: this.state.annoUpdateHash + 1});
   };
 
   annoItemUp = (item, index) => (event, data) => {
     const annoList = [...this.state.annoList];
-    const arr1 =  index-2 >= 0 ? annoList.slice(0, index-1) : [];
-    const arr2 = annoList.slice(index + 1);
-    this.setState({annoList: [...arr1, annoList[index], annoList[index - 1], ...arr2]});
+    let original_index = 0;
+    let change_index = 0;
+    let arr3 = [];
+
+    annoList.map((item, a_index) => {
+      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+        original_index = a_index;
+      }
+      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index - 1])) {
+        change_index = a_index;
+      }
+    });
+
+    const arr1 = change_index != 0 ? annoList.slice(0, change_index) : [];
+    const arr2 = original_index < annoList.length - 1 ? annoList.slice(original_index + 1) : [];
+
+    if(original_index != change_index + 1) {
+      arr3 = annoList.slice(change_index + 1, original_index);
+    }
+
+    this.setState({annoList: [...arr1, annoList[original_index], ...arr3, annoList[change_index], ...arr2]});
   };
 
   annoItemDown = (item, index) => (event, data) => {
     const annoList = [...this.state.annoList];
-    const arr1 = annoList.slice(0, index);
-    const arr2 = index + 2 < annoList.length ? annoList.slice(index + 2) : [];
-    this.setState({annoList: [...arr1, annoList[index + 1], annoList[index], ...arr2]});
+    let original_index = 0;
+    let change_index = 0;
+    let arr3 = [];
+
+    annoList.map((item, a_index) => {
+      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+        original_index = a_index;
+      }
+      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index + 1])) {
+        change_index = a_index;
+      }
+    });
+
+    const arr1 = annoList.slice(0, original_index);
+    const arr2 = change_index < annoList.length - 1 ? annoList.slice(change_index + 1) : [];
+
+    if(change_index != original_index + 1) {
+      arr3 = annoList.slice(original_index + 1, change_index);
+    }
+
+    this.setState({annoList: [...arr1, annoList[change_index], ...arr3, annoList[original_index], ...arr2]});
   };
 
   renderLatexUI(effScale) {
@@ -669,6 +711,15 @@ class AnnotationUI extends Component {
     var effScale;
     var resizedImageWidth;
     var resizedImageHeight;
+
+    this.annoList_hasText = [];
+
+    this.state.annoList.map(item => {
+      if(_get(this.schema, ['bboxes', item.boxId, 'has_text'])) {
+        this.annoList_hasText.push(item)
+      }
+    })
+    console.log(this.annoList_hasText)
     if (!char_size) {
       const maxHeight = 500;
       const maxWidth = 1500;
@@ -770,7 +821,7 @@ class AnnotationUI extends Component {
                 onAnnoCreated={this.onAnnoCreated}
                 geometry={boxGeometry}
                 onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
-                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
+                // textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onCharSizeMinus={this.onCharSizeMinus}
                 onStartSelection={this.onStartSelection}
@@ -788,7 +839,7 @@ class AnnotationUI extends Component {
 
         { DATASET == 'ocr' &&
           <div className="anno-list-edit">
-            {this.state.annoList.map((item, index) => {
+            {this.annoList_hasText.map((item, index) => {
               const shape = item.shapes && item.shapes[0];
               const geom = shape && shape.geometry;
               const shapeStyle = {
@@ -820,7 +871,6 @@ class AnnotationUI extends Component {
                 imgStyle.left = -1 * resizedImageWidth * minX.x + 'px';
                 imgStyle.top = -1 * resizedImageHeight * minY.y + 'px';
               }
-
               return geom && (<div key={index} className="anno-item">
                 <div className="anno-arrows">
                   <div>Text line {index + 1}</div>
@@ -829,7 +879,7 @@ class AnnotationUI extends Component {
                       <i className="glyphicon glyphicon-arrow-up"></i>
                     </button>
                   </div>}
-                  {index + 1 < this.state.annoList.length && <div>
+                  {index + 1 < this.annoList_hasText.length && <div>
                     <button type="button" className="btn btn-info" onClick={this.annoItemDown(item, index)}>
                       <i className="glyphicon glyphicon-arrow-down"></i>
                     </button>
