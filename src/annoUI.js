@@ -170,7 +170,7 @@ class AnnotationUI extends Component {
   };
 
   onAnnoChange(eventType, annotation) {
-    console.log('onAnnoChange', eventType, annotation, this.state.annoList, cloneDeep(anno.getAnnotations()))
+    // console.log('onAnnoChange', eventType, annotation, this.state.annoList, cloneDeep(anno.getAnnotations()))
     const boxes = {};
 
     this.state.annoList.forEach((i) => {
@@ -187,13 +187,11 @@ class AnnotationUI extends Component {
     if (!annotation.order) {
       const maxOrder = maxBy(this.state.annoList, item => item.order);
       annotation.order = (maxOrder ? maxOrder.order : 0) + 1;
-      console.log('maxOrder', maxOrder && maxOrder.id, annotation, this.state.annoList)
     }
 
     if (!annotation.id) {
       const maxID = maxBy(this.state.annoList, item => item.id);
       annotation.id = (maxID ? maxID.id : 0) + 1;
-      console.log('maxID', maxID && maxID.id, annotation, this.state.annoList)
     }
 
     if (eventType === 'Created' && this.state.boxType) {
@@ -732,7 +730,7 @@ class AnnotationUI extends Component {
     var resizedImageHeight;
 
     const annoList_hasText = this.getHasTextAnnoList();
-    
+
     if (!char_size) {
       const maxHeight = 500;
       const maxWidth = 1500;
