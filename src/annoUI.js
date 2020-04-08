@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
-import { forEach, cloneDeep, get as _get, sum, maxBy, minBy, map } from 'lodash';
+import { forEach, cloneDeep, get as _get, sum, maxBy, minBy, map, orderBy, filter, size } from 'lodash';
 import keydown from 'react-keydown';
 import ReactTooltip from 'react-tooltip';
 import consts from './libs/consts';
@@ -50,6 +50,7 @@ class AnnotationUI extends Component {
       showMarkers: true,
     };
     this.uiController = new UIController(this);
+    this.onOrderChanged = this.onAnnoChange.bind(this, 'OrderChanged');
     this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
     this.onCharSizeMinus = this.onAnnoChange.bind(this, 'CharSizeMinus');
     this.onAnnoCreated = this.onAnnoChange.bind(this, 'Created');
@@ -169,6 +170,7 @@ class AnnotationUI extends Component {
   };
 
   onAnnoChange(eventType, annotation) {
+    // console.log('onAnnoChange', eventType, annotation, this.state.annoList, cloneDeep(anno.getAnnotations()))
     const boxes = {};
 
     this.state.annoList.forEach((i) => {
@@ -181,6 +183,16 @@ class AnnotationUI extends Component {
     let char_size = null;
     annotation.isUpdated = true;
     annotation.text = annotation.text && annotation.text.trim();
+
+    if (!annotation.order) {
+      const maxOrder = maxBy(this.state.annoList, item => item.order);
+      annotation.order = (maxOrder ? maxOrder.order : 0) + 1;
+    }
+
+    if (!annotation.id) {
+      const maxID = maxBy(this.state.annoList, item => item.id);
+      annotation.id = (maxID ? maxID.id : 0) + 1;
+    }
 
     if (eventType === 'Created' && this.state.boxType) {
       annotation.boxId = this.state.boxType;
@@ -429,68 +441,73 @@ class AnnotationUI extends Component {
     this.setState({crMessage: e.target.value});
   }
 
+  getHasTextAnnoList = () => {
+    return orderBy(filter(this.state.annoList, item => _get(this.schema, ['bboxes', item.boxId, 'has_text'])), ['order'], ['asc']);
+  };
+
   annoTextChange = (item, index) => (event, data) => {
     const annoList = cloneDeep(this.state.annoList);
+    const annoListOrdered = this.getHasTextAnnoList();
     let change_index = 0;
 
     annoList.map((item, a_index) => {
-      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+      if(item.id === annoListOrdered[index].id) {
         change_index = a_index;
       }
     });
-
+    // console.log('annoTextChange', item, index, change_index)
     annoList[change_index].text = event.target.value;
     this.setState({annoList, annoUpdateHash: this.state.annoUpdateHash + 1});
   };
 
   annoItemUp = (item, index) => (event, data) => {
-    const annoList = [...this.state.annoList];
+    const annoList = cloneDeep(this.state.annoList);
+    const annoListOrdered = this.getHasTextAnnoList();
+    // console.log('annoItemUp start', item, index, annoList.map(i => i.order));
     let original_index = 0;
     let change_index = 0;
-    let arr3 = [];
 
-    annoList.map((item, a_index) => {
-      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+    annoList.forEach((item, a_index) => {
+      if (item.id === annoListOrdered[index].id) {
         original_index = a_index;
       }
-      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index - 1])) {
+
+      if (item.id === (annoListOrdered[index - 1] && annoListOrdered[index - 1].id)) {
         change_index = a_index;
       }
     });
 
-    const arr1 = change_index != 0 ? annoList.slice(0, change_index) : [];
-    const arr2 = original_index < annoList.length - 1 ? annoList.slice(original_index + 1) : [];
+    const temp = annoList[original_index].order;
+    annoList[original_index].order = annoList[change_index].order;
+    annoList[change_index].order = temp;
 
-    if(original_index != change_index + 1) {
-      arr3 = annoList.slice(change_index + 1, original_index);
-    }
-
-    this.setState({annoList: [...arr1, annoList[original_index], ...arr3, annoList[change_index], ...arr2]});
+    // console.log('annoItemUp end', temp, original_index, change_index, annoList.map(i => i.order));
+    this.setState({annoList, annoUpdateHash: this.state.annoUpdateHash + 1});
   };
 
   annoItemDown = (item, index) => (event, data) => {
-    const annoList = [...this.state.annoList];
+    const annoList = cloneDeep(this.state.annoList);
+    const annoListOrdered = this.getHasTextAnnoList();
+    // console.log('annoItemDown start', item, index, annoList.map(i => i.order));
     let original_index = 0;
     let change_index = 0;
-    let arr3 = [];
 
-    annoList.map((item, a_index) => {
-      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index])) {
+    annoList.forEach((item, a_index) => {
+      if (item.id === annoListOrdered[index].id) {
         original_index = a_index;
       }
-      if(JSON.stringify(item) == JSON.stringify(this.annoList_hasText[index + 1])) {
+
+      if (item.id === (annoListOrdered[index + 1] && annoListOrdered[index + 1].id)) {
         change_index = a_index;
       }
     });
 
-    const arr1 = annoList.slice(0, original_index);
-    const arr2 = change_index < annoList.length - 1 ? annoList.slice(change_index + 1) : [];
+    const temp = annoList[original_index].order;
+    annoList[original_index].order = annoList[change_index].order;
+    annoList[change_index].order = temp;
 
-    if(change_index != original_index + 1) {
-      arr3 = annoList.slice(original_index + 1, change_index);
-    }
-
-    this.setState({annoList: [...arr1, annoList[change_index], ...arr3, annoList[original_index], ...arr2]});
+    // console.log('annoItemDown end', temp, original_index, change_index, annoList.map(i => i.order));
+    this.setState({annoList, annoUpdateHash: this.state.annoUpdateHash + 1});
   };
 
   renderLatexUI(effScale) {
@@ -712,14 +729,8 @@ class AnnotationUI extends Component {
     var resizedImageWidth;
     var resizedImageHeight;
 
-    this.annoList_hasText = [];
+    const annoList_hasText = this.getHasTextAnnoList();
 
-    this.state.annoList.map(item => {
-      if(_get(this.schema, ['bboxes', item.boxId, 'has_text'])) {
-        this.annoList_hasText.push(item)
-      }
-    })
-    console.log(this.annoList_hasText)
     if (!char_size) {
       const maxHeight = 500;
       const maxWidth = 1500;
@@ -823,6 +834,7 @@ class AnnotationUI extends Component {
                 onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
                 // textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
+                onOrderChanged={this.onOrderChanged}
                 onCharSizeMinus={this.onCharSizeMinus}
                 onStartSelection={this.onStartSelection}
                 onSelectionCompleted={this.onSelectionCompleted}
@@ -839,7 +851,7 @@ class AnnotationUI extends Component {
 
         { DATASET == 'ocr' &&
           <div className="anno-list-edit">
-            {this.annoList_hasText.map((item, index) => {
+            {map(annoList_hasText, (item, index) => {
               const shape = item.shapes && item.shapes[0];
               const geom = shape && shape.geometry;
               const shapeStyle = {
@@ -879,7 +891,7 @@ class AnnotationUI extends Component {
                       <i className="glyphicon glyphicon-arrow-up"></i>
                     </button>
                   </div>}
-                  {index + 1 < this.annoList_hasText.length && <div>
+                  {index + 1 < size(annoList_hasText) && <div>
                     <button type="button" className="btn btn-info" onClick={this.annoItemDown(item, index)}>
                       <i className="glyphicon glyphicon-arrow-down"></i>
                     </button>

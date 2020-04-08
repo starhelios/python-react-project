@@ -77,7 +77,9 @@ export default class BaseUIController {
             window.location.href = response.redirect_url;
           }
           response.anno_list = uniqWith(response.anno_list, (a,b) => isEqual(a,b) || isEqual(a.shapes, b.shapes));
-          response.anno_list = response.anno_list.map(item => ({...item, originalText: item.text, dataset: response.dataset}));
+          response.anno_list = response.anno_list.map((item, index) => ({
+            ...item, originalText: item.text, dataset: response.dataset, order: item.order || index, id: index
+          }));
           that.setState(
             Object.assign(
               { loadDataApiStatus: consts.API_LOADED_SUCCESS },
