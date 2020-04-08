@@ -47,6 +47,7 @@ export default class Annotorious extends Component {
       anno.removeHandler('onAnnotationRemoved');
       anno.removeHandler('onSelectionCompleted');
       anno.removeHandler('onPopupShown');
+      anno.removeHandler('onOrderChanged');
       anno.addHandler('onCharSizePlus', this.props.onCharSizePlus);
       anno.addHandler('onCharSizeMinus', this.props.onCharSizeMinus);
       anno.addHandler('onAnnotationCreated', this.props.onAnnoCreated);
@@ -55,6 +56,7 @@ export default class Annotorious extends Component {
       anno.addHandler('onSelectionStarted', this.onAnnoSelectionStarted);
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
       anno.addHandler('onPopupShown', this.onPopupShown);
+      anno.addHandler('onOrderChanged', this.props.onOrderChanged);
       anno.setProperties({
         min_box_width: MIN_BOX_WIDTH,
         min_box_height: MIN_BOX_HEIGHT,
@@ -152,11 +154,11 @@ function drawAnnotations(annoList = [], activeIndex) {
   const annoCount = annoList.length;
   const prevList = anno.getAnnotations();
   annoList.forEach((box, index) => {
-    const replace = prevList[index] && prevList[index].text !== box.text ? prevList[index] : undefined;
+    const replace = prevList.find(item => item.id === box.id);
     if (box && box.shapes && box.shapes[0]) {
       anno.addAnnotation(Object.assign({}, box, {
         src: 'https://s3.amazonaws.com/mpxdata/eqn_images/' + box.src.split('/').slice(-1)[0]
-      }), replace, index === activeIndex, annoCount);
+      }), replace, index === activeIndex);
     }
   });
 }
