@@ -48,11 +48,13 @@ export default class Annotorious extends Component {
       anno.removeHandler('onSelectionCompleted');
       anno.removeHandler('onPopupShown');
       anno.removeHandler('onOrderChanged');
+      anno.removeHandler('onCheckBoxChanged');
       anno.addHandler('onCharSizePlus', this.props.onCharSizePlus);
       anno.addHandler('onCharSizeMinus', this.props.onCharSizeMinus);
       anno.addHandler('onAnnotationCreated', this.props.onAnnoCreated);
       anno.addHandler('onAnnotationUpdated', this.props.onAnnoUpdated);
       anno.addHandler('onAnnotationRemoved', this.props.onAnnoRemoved);
+      anno.addHandler('onCheckBoxChanged', this.props.onCheckBoxChanged)
       anno.addHandler('onSelectionStarted', this.onAnnoSelectionStarted);
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
       anno.addHandler('onPopupShown', this.onPopupShown);
@@ -140,6 +142,7 @@ Annotorious.propTypes = {
   onAnnoRemoved: PropTypes.func.isRequired,
   onAnnoSelectionCompleted: PropTypes.func,
   onStopSelection: PropTypes.func,
+  onCheckBoxChanged: PropTypes.func,
   updateBoxCoordinates: PropTypes.func,
   boxUpdateMode: PropTypes.bool,
   textAllowed: PropTypes.bool

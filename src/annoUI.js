@@ -56,6 +56,7 @@ class AnnotationUI extends Component {
     this.onAnnoCreated = this.onAnnoChange.bind(this, 'Created');
     this.onAnnoUpdated = this.onAnnoChange.bind(this, 'Updated');
     this.onAnnoRemoved = this.onAnnoChange.bind(this, 'Removed');
+    this.onCheckBoxChanged = this.onAnnoChange.bind(this, 'CheckBoxChanged')
     this.setBoxType = this.setBoxType.bind(this);
     this.onClear = this.onClear.bind(this);
     this.onSave = this.onSave.bind(this);
@@ -74,6 +75,7 @@ class AnnotationUI extends Component {
     this.onStartSelection = this.onStartSelection.bind(this);
     this.onSelectionCompleted = this.onSelectionCompleted.bind(this);
     this.textRenderTimeoutID = false;
+    this.checkBoxIds = [];
   }
 
   componentWillMount() {
@@ -89,6 +91,24 @@ class AnnotationUI extends Component {
   componentDidMount() {
     window.onbeforeunload = this.onBeforeLeave;
     this.bindShortcutKeys();
+  }
+
+  onBboxChecked(type) {
+    Object.keys(this.schema.bboxes).map(boxType => {
+      if(type == boxType) {
+        if(this.checkBoxIds[this.schema.bboxes[type].id] == 'undefined') {
+          this.checkBoxIds[this.schema.bboxes[type].id] = true;
+        } else {
+          this.checkBoxIds[this.schema.bboxes[type].id] = !this.checkBoxIds[this.schema.bboxes[type].id];
+        }
+      } else {
+        this.checkBoxIds[this.schema.bboxes[boxType].id] = false;
+      }
+    })
+
+    forEach(anno.getAnnotations(), (annotation) => {
+      this.onCheckBoxChanged(annotation);
+    })
   }
 
   onBeforeLeave(e) {
@@ -224,6 +244,17 @@ class AnnotationUI extends Component {
     if (eventType === 'CharSizeMinus') {
       char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 0.83;
       eventTypeFinal = 'Updated';
+    }
+
+    if (eventType === 'CheckBoxChanged') {
+      /*
+        To make functions `showAnnotation` and `hideAnnotation`
+      */
+      if(this.checkBoxIds[annotation.boxId]) {
+        // anno.showAnnotation(annotation)
+      } else {
+        // anno.hideAnnotation(annotation)
+      }
     }
 
     annotation.charSize = char_size;
@@ -704,7 +735,6 @@ class AnnotationUI extends Component {
   // }
 
   render() {
-
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
@@ -774,16 +804,28 @@ class AnnotationUI extends Component {
 
     var bboxSelectors = <div className="bounding-box-type-selectors">
       {
-        Object.keys(this.schema.bboxes).map(boxType =>
-          <button type="button" className={'btn' + (boxType === this.state.boxType ? ' active' : '')}
-            style={{
-              borderColor: this.schema.bboxes[boxType].color,
-              color: boxType === this.state.boxType ? '#fff' : this.schema.bboxes[boxType].color,
-              backgroundColor: boxType === this.state.boxType ? this.schema.bboxes[boxType].color : 'transparent'
-            }}
-            onClick={this.setBoxType.bind(this, boxType)} key={boxType}>
-            {this.schema.bboxes[boxType].label}
-          </button>
+        Object.keys(this.schema.bboxes).map(boxType => 
+          <div className="button-container">
+            <div className="row">
+              <button type="button" className={'btn' + (boxType === this.state.boxType ? ' active' : '')}
+                style={{
+                  borderColor: this.schema.bboxes[boxType].color,
+                  color: boxType === this.state.boxType ? '#fff' : this.schema.bboxes[boxType].color,
+                  backgroundColor: boxType === this.state.boxType ? this.schema.bboxes[boxType].color : 'transparent'
+                }}
+                onClick={this.setBoxType.bind(this, boxType)} key={boxType}>
+                {this.schema.bboxes[boxType].label}
+              </button>
+            </div>
+            <div className="row checkbox">
+              <label>
+                <input type="checkbox" id="checked_boxid" checked={this.checkBoxIds[this.schema.bboxes[boxType].id] == 'undefined'? false : this.checkBoxIds[this.schema.bboxes[boxType].id]}
+                      title="Isolate"
+                      onChange={this.onBboxChecked.bind(this, boxType)} />
+                I
+              </label>
+            </div>
+          </div>
         )
       }
     </div>;
@@ -840,6 +882,7 @@ class AnnotationUI extends Component {
                 onSelectionCompleted={this.onSelectionCompleted}
                 hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size && this.state.showMarkers}
                 dataset={DATASET}
+                onCheckBoxChanged={this.onCheckBoxChanged}
               />
             </div>
             : null
