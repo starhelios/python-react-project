@@ -76,7 +76,6 @@ class AnnotationUI extends Component {
     this.onStartSelection = this.onStartSelection.bind(this);
     this.onSelectionCompleted = this.onSelectionCompleted.bind(this);
     this.textRenderTimeoutID = false;
-    this.checkBoxIds = [];
   }
 
   componentWillMount() {
@@ -104,22 +103,6 @@ class AnnotationUI extends Component {
     this.setState({boxTypeFilter: this.state.boxTypeFilter === type ? null : type}, () => {
       this.updateVisibility();
     });
-
-    // Object.keys(this.schema.bboxes).map(boxType => {
-    //   if(type == boxType) {
-    //     if(this.checkBoxIds[this.schema.bboxes[type].id] == 'undefined') {
-    //       this.checkBoxIds[this.schema.bboxes[type].id] = true;
-    //     } else {
-    //       this.checkBoxIds[this.schema.bboxes[type].id] = !this.checkBoxIds[this.schema.bboxes[type].id];
-    //     }
-    //   } else {
-    //     this.checkBoxIds[this.schema.bboxes[boxType].id] = false;
-    //   }
-    // })
-    //
-    // forEach(anno.getAnnotations(), (annotation) => {
-    //   this.onCheckBoxChanged(annotation);
-    // })
   }
 
   onBeforeLeave(e) {
@@ -257,17 +240,6 @@ class AnnotationUI extends Component {
     if (eventType === 'CharSizeMinus') {
       char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 0.83;
       eventTypeFinal = 'Updated';
-    }
-
-    if (eventType === 'CheckBoxChanged') {
-      /*
-        To make functions `showAnnotation` and `hideAnnotation`
-      */
-      if(this.checkBoxIds[annotation.boxId]) {
-        // anno.showAnnotation(annotation)
-      } else {
-        // anno.hideAnnotation(annotation)
-      }
     }
 
     annotation.charSize = char_size;
