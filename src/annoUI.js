@@ -96,12 +96,12 @@ class AnnotationUI extends Component {
 
   updateVisibility = () => {
     const { boxTypeFilter } = this.state;
-    const annoList = this.state.annoList.map(item => ({ ...item, visible: !!(boxTypeFilter && item.boxId === boxTypeFilter) }));
+    const annoList = this.state.annoList.map(item => ({ ...item, visible: boxTypeFilter ? item.boxId === boxTypeFilter : true }));
     this.setState({ annoList });
   };
 
   onBboxChecked(type) {
-    this.setState({boxTypeFilter: type}, () => {
+    this.setState({boxTypeFilter: this.state.boxTypeFilter === type ? null : type}, () => {
       this.updateVisibility();
     });
 
@@ -236,7 +236,9 @@ class AnnotationUI extends Component {
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
+      annotation.visible = !!(this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
     }
+
     let eventTypeFinal = eventType;
 
     if (boxes[annotation.boxId]) {
