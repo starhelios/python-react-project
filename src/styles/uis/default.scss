@@ -101,6 +101,7 @@
     text-align: center;
     justify-content: center;
     display: flex;
+    flex-flow: wrap;
 
     .button-container {
       float: left;
