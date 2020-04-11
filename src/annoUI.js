@@ -48,6 +48,7 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
       isChangedSize: false,
       showMarkers: true,
+      boxTypeFilter: null
     };
     this.uiController = new UIController(this);
     this.onOrderChanged = this.onAnnoChange.bind(this, 'OrderChanged');
@@ -75,7 +76,6 @@ class AnnotationUI extends Component {
     this.onStartSelection = this.onStartSelection.bind(this);
     this.onSelectionCompleted = this.onSelectionCompleted.bind(this);
     this.textRenderTimeoutID = false;
-    this.checkBoxIds = [];
   }
 
   componentWillMount() {
@@ -93,22 +93,16 @@ class AnnotationUI extends Component {
     this.bindShortcutKeys();
   }
 
-  onBboxChecked(type) {
-    Object.keys(this.schema.bboxes).map(boxType => {
-      if(type == boxType) {
-        if(this.checkBoxIds[this.schema.bboxes[type].id] == 'undefined') {
-          this.checkBoxIds[this.schema.bboxes[type].id] = true;
-        } else {
-          this.checkBoxIds[this.schema.bboxes[type].id] = !this.checkBoxIds[this.schema.bboxes[type].id];
-        }
-      } else {
-        this.checkBoxIds[this.schema.bboxes[boxType].id] = false;
-      }
-    })
+  updateVisibility = () => {
+    const { boxTypeFilter } = this.state;
+    const annoList = this.state.annoList.map(item => ({ ...item, visible: boxTypeFilter ? item.boxId === boxTypeFilter : true }));
+    this.setState({ annoList });
+  };
 
-    forEach(anno.getAnnotations(), (annotation) => {
-      this.onCheckBoxChanged(annotation);
-    })
+  onBboxChecked(type) {
+    this.setState({boxTypeFilter: this.state.boxTypeFilter === type ? null : type}, () => {
+      this.updateVisibility();
+    });
   }
 
   onBeforeLeave(e) {
@@ -225,7 +219,9 @@ class AnnotationUI extends Component {
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
+      annotation.visible = !!(this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
     }
+
     let eventTypeFinal = eventType;
 
     if (boxes[annotation.boxId]) {
@@ -244,17 +240,6 @@ class AnnotationUI extends Component {
     if (eventType === 'CharSizeMinus') {
       char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 0.83;
       eventTypeFinal = 'Updated';
-    }
-
-    if (eventType === 'CheckBoxChanged') {
-      /*
-        To make functions `showAnnotation` and `hideAnnotation`
-      */
-      if(this.checkBoxIds[annotation.boxId]) {
-        // anno.showAnnotation(annotation)
-      } else {
-        // anno.hideAnnotation(annotation)
-      }
     }
 
     annotation.charSize = char_size;
@@ -804,8 +789,8 @@ class AnnotationUI extends Component {
 
     var bboxSelectors = <div className="bounding-box-type-selectors">
       {
-        Object.keys(this.schema.bboxes).map(boxType => 
-          <div className="button-container">
+        Object.keys(this.schema.bboxes).map((boxType, index) =>
+          <div key={index} className="button-container">
             <div className="row">
               <button type="button" className={'btn' + (boxType === this.state.boxType ? ' active' : '')}
                 style={{
@@ -819,7 +804,7 @@ class AnnotationUI extends Component {
             </div>
             <div className="row checkbox">
               <label>
-                <input type="checkbox" id="checked_boxid" checked={this.checkBoxIds[this.schema.bboxes[boxType].id] == 'undefined'? false : this.checkBoxIds[this.schema.bboxes[boxType].id]}
+                <input type="checkbox" id="checked_boxid" checked={this.state.boxTypeFilter === boxType}
                       title="Isolate"
                       onChange={this.onBboxChecked.bind(this, boxType)} />
                 I

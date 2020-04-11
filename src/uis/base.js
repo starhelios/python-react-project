@@ -78,7 +78,8 @@ export default class BaseUIController {
           }
           response.anno_list = uniqWith(response.anno_list, (a,b) => isEqual(a,b) || isEqual(a.shapes, b.shapes));
           response.anno_list = response.anno_list.map((item, index) => ({
-            ...item, originalText: item.text, dataset: response.dataset, order: item.order || index, id: index
+            ...item, originalText: item.text, dataset: response.dataset, order: item.order || index,
+            id: index, visible: true
           }));
           that.setState(
             Object.assign(
