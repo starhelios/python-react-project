@@ -22,7 +22,8 @@
             "has_text": true,
             "marker_width": "2",
             "color": "#FF0000",
-            "has_char_size": true
+            "has_char_size": true,
+            "tags": ["printed", "handwritten", "blockmode", "inline"]
           },
           {
             "type": "bbox",
