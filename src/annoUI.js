@@ -221,6 +221,7 @@ class AnnotationUI extends Component {
       }
       annotation.visible = !!(this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
       annotation.hasText = this.schema.bboxes[this.state.boxType].has_text;
+      annotation.tags = this.schema.bboxes[this.state.boxType].tags;
     }
 
     let eventTypeFinal = eventType;
@@ -721,8 +722,11 @@ class AnnotationUI extends Component {
   // }
 
   render() {
-
-    const annoList = this.state.annoList.map(item => ({ ...item, hasText: this.schema.bboxes[item.boxId].has_text}));
+    const annoList = this.state.annoList.map(item => ({
+      ...item,
+      hasText: this.schema.bboxes[item.boxId].has_text,
+      tags: this.schema.bboxes[item.boxId].tags,
+    }));
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
