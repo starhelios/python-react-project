@@ -219,7 +219,8 @@ class AnnotationUI extends Component {
       if (!this.schema.bboxes[this.state.boxType].has_text) {
         annotation.text = '';
       }
-      annotation.visible = !!(this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
+      annotation.visible = !this.state.boxTypeFilter
+        || (this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
     }
 
     let eventTypeFinal = eventType;
