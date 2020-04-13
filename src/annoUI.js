@@ -220,6 +220,7 @@ class AnnotationUI extends Component {
         annotation.text = '';
       }
       annotation.visible = !!(this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
+      annotation.hasText = this.schema.bboxes[this.state.boxType].has_text;
     }
 
     let eventTypeFinal = eventType;
@@ -720,6 +721,8 @@ class AnnotationUI extends Component {
   // }
 
   render() {
+
+    const annoList = this.state.annoList.map(item => ({ ...item, hasText: this.schema.bboxes[item.boxId].has_text}));
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
@@ -853,13 +856,13 @@ class AnnotationUI extends Component {
             <div className="all-width-wrapper">
               <Annotorious ref="annotorious"
                 effScale={effScale}
-                imageURL={this.state[this.schema.imageId].url} annoList={this.state.annoList}
+                imageURL={this.state[this.schema.imageId].url} annoList={annoList}
                 imageWidth={resizedImageWidth} imageHeight={resizedImageHeight}
                 resetHash={this.state.annoResetHash} updateHash={this.state.annoUpdateHash}
                 onAnnoCreated={this.onAnnoCreated}
                 geometry={boxGeometry}
                 onAnnoUpdated={this.onAnnoUpdated} onAnnoRemoved={this.onAnnoRemoved}
-                // textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
+                textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onOrderChanged={this.onOrderChanged}
                 onCharSizeMinus={this.onCharSizeMinus}
