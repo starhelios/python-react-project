@@ -105,7 +105,10 @@
   /*float:right;*/
   margin:6px 0px 0px 0px;
   height:16px;
-  padding:
+  padding:0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   -moz-transition-property: opacity;
   -moz-transition-duration: 1s;
   -moz-transition-delay: 0s;
@@ -122,6 +125,36 @@
 
 .annotorious-popup-buttons.ocr, .annotorious-popup-buttons.no-text {
   margin: 0;
+}
+
+.annotorious-popup-buttons .tags-selected {
+  width: auto;
+  display: flex;
+}
+
+.annotorious-popup-buttons .tags, .annotorious-popup-buttons .tags-selected .tag{
+  margin-left: 5px;
+}
+.annotorious-popup-buttons .tags-selected .btn-wrapper {
+  margin-left: 1px;
+  border: 1px solid #aaa;
+  padding: 0 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.annotorious-popup-buttons .tags-selected .tag{
+  border: 1px solid #aaa;
+  padding: 0 3px;
+}
+
+.annotorious-popup-buttons .tags-selected .delete-btn{
+  border: 1px solid #aaa;
+  margin-left: 1px;
+}
+
+.annotorious-popup-buttons.no-tags .tags, .annotorious-popup-buttons.no-tags .tags-selected{
+  display: none;
 }
 
 .annotorious-popup-button {
@@ -210,6 +243,15 @@
   font-size: 40px;
   font-weight: 700;
   color: #000;
+}
+
+.annotorious-popup-button-delete-tag {
+  background:url(delete.png);
+  width:14px;
+  height:14px;
+  overflow:hidden;
+  background-size: contain;
+  text-indent:100px;
 }
 
 .annotorious-popup-field {
