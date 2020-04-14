@@ -51,6 +51,7 @@ class AnnotationUI extends Component {
       boxTypeFilter: null
     };
     this.uiController = new UIController(this);
+    this.onTagsChanged = this.onAnnoChange.bind(this, 'TagsChanged');
     this.onOrderChanged = this.onAnnoChange.bind(this, 'OrderChanged');
     this.onCharSizePlus = this.onAnnoChange.bind(this, 'CharSizePlus');
     this.onCharSizeMinus = this.onAnnoChange.bind(this, 'CharSizeMinus');
@@ -223,6 +224,7 @@ class AnnotationUI extends Component {
       annotation.visible = !this.state.boxTypeFilter
         || (this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
       annotation.hasText = this.schema.bboxes[this.state.boxType].has_text;
+      annotation.tags = this.schema.bboxes[this.state.boxType].tags;
     }
 
     let eventTypeFinal = eventType;
@@ -243,6 +245,10 @@ class AnnotationUI extends Component {
     if (eventType === 'CharSizeMinus') {
       char_size = (annotation.charSize || annotation.charSizeTmp || DEFAULT_BOX_CHAR_SIZE) * 0.83;
       eventTypeFinal = 'Updated';
+    }
+
+    if (eventType === 'TagsChanged') {
+      // TODO tag changed event
     }
 
     annotation.charSize = char_size;
@@ -723,8 +729,12 @@ class AnnotationUI extends Component {
   // }
 
   render() {
+    const annoList = this.state.annoList.map(item => ({
+      ...item,
+      hasText: this.schema.bboxes[item.boxId].has_text,
+      tags: this.schema.bboxes[item.boxId].tags,
+    }));
 
-    const annoList = this.state.annoList.map(item => ({ ...item, hasText: this.schema.bboxes[item.boxId].has_text}));
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
@@ -867,6 +877,7 @@ class AnnotationUI extends Component {
                 textAllowed={_get(this.schema, ['bboxes', this.state.boxType, 'has_text'])}
                 onCharSizePlus={this.onCharSizePlus}
                 onOrderChanged={this.onOrderChanged}
+                onTagsChanged={this.onTagsChanged}
                 onCharSizeMinus={this.onCharSizeMinus}
                 onStartSelection={this.onStartSelection}
                 onSelectionCompleted={this.onSelectionCompleted}

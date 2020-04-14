@@ -48,6 +48,7 @@ export default class Annotorious extends Component {
       anno.removeHandler('onSelectionCompleted');
       anno.removeHandler('onPopupShown');
       anno.removeHandler('onOrderChanged');
+      anno.removeHandler('onTagsChanged');
       anno.removeHandler('onCheckBoxChanged');
       anno.addHandler('onCharSizePlus', this.props.onCharSizePlus);
       anno.addHandler('onCharSizeMinus', this.props.onCharSizeMinus);
@@ -59,6 +60,7 @@ export default class Annotorious extends Component {
       anno.addHandler('onSelectionCompleted', this.onAnnoSelectionCompleted);
       anno.addHandler('onPopupShown', this.onPopupShown);
       anno.addHandler('onOrderChanged', this.props.onOrderChanged);
+      anno.addHandler('onTagsChanged', this.props.onTagsChanged);
       anno.setProperties({
         min_box_width: MIN_BOX_WIDTH,
         min_box_height: MIN_BOX_HEIGHT,
