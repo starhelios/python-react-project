@@ -12,6 +12,7 @@ export default class UserDataFilters extends Component {
       nullOcr, onNullOcrChange,
       annoList, onAnnoListChange,
       property, onPropertyChange,
+      alphabet, onAlphabetChange,
       fromDate,
       latex, toDate,
       minConfidence,
@@ -29,6 +30,14 @@ export default class UserDataFilters extends Component {
       }
     });
     activeFiltersCount += (annotated ? 1 : 0) + (queued ? 1 : 0) + (nullOcr ? 1 : 0) + (annoList ? 1 : 0);
+
+    let activeAlphabetsCount = 0;
+    Object.keys(alphabet).forEach(propKey => {
+      if (alphabet[propKey] !== 0) {
+        activeAlphabetsCount ++;
+      }
+    });
+    activeAlphabetsCount += (annotated ? 1 : 0) + (queued ? 1 : 0) + (nullOcr ? 1 : 0) + (annoList ? 1 : 0);
 
     return (
       <div className="filters">
@@ -76,7 +85,25 @@ export default class UserDataFilters extends Component {
             </Dropdown>
           </div>
 
-          <div className="date col-sm-12 col-lg-5">
+          <div className="property col-sm-6 col-lg-2">
+            <Dropdown className="property-dropdown" ref="propertyDropdown">
+              <DropdownTrigger className="form-control">
+                Alphabets ({activeAlphabetsCount})
+              </DropdownTrigger>
+              <DropdownContent>
+                {
+                  Object.keys(consts.ALPHABETS).map(propKey => (
+                    <PropertyFilterCheckbox key={propKey}
+                                            name={propKey}
+                                            label={consts.ALPHABETS[propKey]}
+                                            checked={alphabet[propKey]}
+                                            onChange={onAlphabetChange} />
+                  ))
+                }
+              </DropdownContent>
+            </Dropdown>
+          </div>
+          <div className="date col-sm-12 col-lg-4">
             <label className="control-label" htmlFor="fromDate">From</label>
             <input type="date" name="filterFromDate" className="form-control" id="fromDate" value={fromDate} onChange={onInputChange} />
             <label className="control-label" htmlFor="toDate">To</label>
@@ -119,7 +146,9 @@ UserDataFilters.propTypes = {
   onQueuedChange: PropTypes.func.isRequired,
   onNullOcrChange: PropTypes.func.isRequired,
   property: PropTypes.object.isRequired,
+  alphabet: PropTypes.object.isRequired,
   onPropertyChange: PropTypes.func.isRequired,
+  onAlphabetChange: PropTypes.func.isRequired,
   fromDate: PropTypes.string.isRequired,
   toDate: PropTypes.string.isRequired,
   latex: PropTypes.string.isRequired,
