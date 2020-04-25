@@ -34,5 +34,13 @@
     "contains_table": "Contains table"
   },
 
+  "ALPHABETS": {
+    "en": "English",
+    "hi": "Hindi Devenagari",
+    "zh": "Chinese",
+    "ja": "Kana Hiragana or Katakana",
+    "ko": "Hangul Jamo"
+  },
+
   "ANNOTATION_LOG_BASE_URL": "https://s3.amazonaws.com/mpxdata/logs/"
 }
