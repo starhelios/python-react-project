@@ -34,6 +34,7 @@ class UserData extends Component {
       filterNullOcr: 0,
       filterAnnoList: 0,
       filterProperty: {},
+      alphabetProperty: {},
       filterFromDate: '',
       filterToDate: '',
       searchLatex: '',
@@ -53,6 +54,7 @@ class UserData extends Component {
     this.onNullOcrFilterChange = this.onNullOcrFilterChange.bind(this);
     this.onAnnoListFilterChange = this.onAnnoListFilterChange.bind(this);
     this.onPropertyFilterChange = this.onPropertyFilterChange.bind(this);
+    this.onAlphabetFilterChange = this.onAlphabetFilterChange.bind(this);
     this.makeQueryParamsForPageAndApi = this.makeQueryParamsForPageAndApi.bind(this);
     this.onApplyFiltersAndSearchClick = this.onApplyFiltersAndSearchClick.bind(this);
     this.sortByDatetime = this.onSortClick.bind(this, 'datetime');
@@ -107,6 +109,24 @@ class UserData extends Component {
       });
     }
 
+    const alphabetFilters = cloneDeep(consts.ALPHABETS);
+    Object.keys(alphabetFilters).forEach(propKey => alphabetFilters[propKey] = 0);
+
+    if (query.alphabets) {
+      const alphabets = query.alphabets.split('*');
+      alphabets.forEach(prop => {
+        if (prop.startsWith('!')) {
+          if (consts.ALPHABETS[prop.substr(1)]) {
+            alphabetFilters[prop.substr(1)] = -1;
+          }
+        } else {
+          if (consts.ALPHABETS[prop]) {
+            alphabetFilters[prop] = 1;
+          }
+        }
+      });
+    }
+
 		var d = new Date();
     d.setDate(d.getDate() - 10);
 		var dd = d.getDate();
@@ -126,6 +146,7 @@ class UserData extends Component {
       filterNullOcr: parseInt(query.nullOcr) || 0,
       filterAnnoList: parseInt(query.annoList) || 0,
       filterProperty: propFilters,
+      filterAlphabet: alphabetFilters,
       filterFromDate: query.fromDate || d,
       filterToDate: query.toDate || '',
       searchMinConfidence: query.minConfidence || '',
@@ -262,6 +283,15 @@ class UserData extends Component {
     this.setState({ filterProperty: changed });
   }
 
+  onAlphabetFilterChange(propKey, propValue) {
+    const changed = this.state.filterAlphabet;
+    Object.keys(changed).forEach(key => {
+      changed[key] = 0;
+    });
+    changed[propKey] = propValue > 0 ? 1 : 0;
+    this.setState({ filterAlphabet: changed });
+  }
+
   makeQueryParamsForPageAndApi(filter_search = true, sort = false, page = false) {
     let queryParams = [];
 
@@ -288,6 +318,17 @@ class UserData extends Component {
       });
       if (propFilters.length) {
         queryParams.push('property=' + encodeURIComponent(propFilters.join('*')));
+      }
+      const alphabetFilters = [];
+      Object.keys(this.state.filterAlphabet).forEach(propKey => {
+        if (this.state.filterAlphabet[propKey] === 1) {
+          alphabetFilters.push(propKey);
+        } else if (this.state.filterAlphabet[propKey] === -1) {
+          alphabetFilters.push('!' + propKey);
+        }
+      });
+      if (alphabetFilters.length) {
+        queryParams.push('alphabets=' + encodeURIComponent(alphabetFilters.join('*')));
       }
       if (this.state.filterFromDate.length) {
         queryParams.push('fromDate=' + encodeURIComponent(this.state.filterFromDate));
@@ -386,6 +427,7 @@ class UserData extends Component {
           nullOcr={this.state.filterNullOcr} onNullOcrChange={this.onNullOcrFilterChange}
           annoList={this.state.filterAnnoList} onAnnoListChange={this.onAnnoListFilterChange}
           property={this.state.filterProperty} onPropertyChange={this.onPropertyFilterChange}
+          alphabet={this.state.filterAlphabet} onAlphabetChange={this.onAlphabetFilterChange}
           fromDate={this.state.filterFromDate} onFromDateChange={this.onFromDateChange}
           toDate={this.state.filterToDate} onToDateChange={this.onToDateChange}
           latex={this.state.searchLatex}
