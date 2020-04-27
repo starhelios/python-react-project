@@ -801,7 +801,7 @@ def get_predicted_properties(image_id, dataset):
             if (x, y, w, h) != (0, 0, 0, 0):
                 base_path = os.path.basename(image_path)
                 anno = create_anno(base_path, '', x, y, w, h)
-                anno['boxId'] = 'equation'
+                anno['boxId'] = 'equations'
                 anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
                 data['anno_list'] = [anno]
                 if dataset == 'triage':
