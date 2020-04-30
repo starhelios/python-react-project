@@ -574,6 +574,15 @@ def save():
         if key not in keys:
             continue
         json_data_final[key] = val
+    # override text value in the database for "ocr" annotations
+    if dataset == "ocr":
+        anno_list = anno_list_new
+        anno_list = sorted(anno_list, key=lambda x: x["order"])
+        text_list = [anno["text"] for anno in anno_list]
+        text = "\n".join(text_list)
+        json_data_final["text"] = text
+    elif dataset == "triage":
+        json_data_final["text"] = ""
     # construct sql query
     columns = ', '.join(json_data_final.keys())
     placeholders = ('%s, ' * len(json_data_final))[:-2]
