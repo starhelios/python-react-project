@@ -25,6 +25,7 @@ const dataset_to_ui = {
 const UIID = dataset_to_ui[DATASET];
 const UIController = UIs[UIID] || UIs['default'];
 const DEFAULT_BOX_CHAR_SIZE = 20;
+const GLOBAL_RENDERED_TEXT_FONT_SIZE = 37.5;
 
 class AnnotationUI extends Component {
   constructor(...args) {
@@ -143,15 +144,19 @@ class AnnotationUI extends Component {
     if (event.ctrlKey && event.key === 'y') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        this.setState({ char_size: parseFloat(char_size * 0.9) });
+        var char_size_new = parseFloat(char_size * 0.9)
+        this.setState({ char_size: char_size_new });
       }
+      console.log("Char size new: " + String(char_size));
     }
 
     if (event.ctrlKey && event.key === 'u') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        this.setState({ char_size: parseFloat(char_size * 1.1) });
+        var char_size_new = parseFloat(char_size * 1.1)
+        this.setState({ char_size: char_size_new });
       }
+      console.log("Char size new: " + String(char_size));
     }
     if (event.ctrlKey && event.key === 'i') {
       event.preventDefault();
@@ -539,7 +544,9 @@ class AnnotationUI extends Component {
     const { char_size, char_size_predicted } = this.state;
     // includes multiplier constant to get sizes to line up!
     const charSize = char_size || char_size_predicted || 20;
-    const fontSize = 1.5 * effScale * charSize;
+    // const fontSize = 1.5 * effScale * charSize;
+    const fontSize = GLOBAL_RENDERED_TEXT_FONT_SIZE;
+    // Note: in general, effScale = 25 / char_size
     const fields = [];
     this.schema.fields.forEach((field, fieldNo) => {
       let element = null;
@@ -775,6 +782,9 @@ class AnnotationUI extends Component {
       effScale = 25 / char_size;
       resizedImageWidth = effScale * this.state.image_width;
       resizedImageHeight = effScale * this.state.image_height;
+      console.log('effScale: ' + String(effScale));
+      console.log('resizedImageWidth: ' + String(resizedImageWidth));
+      console.log('resizedImageHeight: ' + String(resizedImageHeight));
     }
     // console.log('effScale: ' + String(effScale));
     const deparsed = {};
@@ -951,9 +961,11 @@ class AnnotationUI extends Component {
                     </div>
                   </div>
                   <div className="anno-item-label">
-                    <MathpixLoader>
-                      <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
-                    </MathpixLoader>
+                    <span style={{ fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
+                      <MathpixLoader>
+                        <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
+                      </MathpixLoader>
+                    </span>
                   </div>
                   <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
                 </div>

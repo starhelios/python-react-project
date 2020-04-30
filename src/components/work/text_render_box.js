@@ -50,6 +50,7 @@ export default class TextRenderBox extends Component {
 
   render() {
     const { textRenderField, text, secondLabel, fontSize } = this.props;
+    console.log("fontSize: " + String(fontSize));
     return (
       <div className="latex-render-parent" style={{ minWidth: this.state.defaultWidth }}>
         <span className="latex-render" ref="textRenderArea" title={textRenderField.help}
