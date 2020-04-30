@@ -2,6 +2,8 @@
   "ui-id": "ocr_anno",
   "schema": {
     "fields": [
+      { "type": "multi-choice", "label": "Image properties", "id": "image_properties", "colspan": 6 },
+      { "type": "multi-choice", "label": "Main information properties", "id": "info_properties", "colspan": 6 },
       { "type": "link", "label": "Source Image Link", "id": "image.url", "target": "_blank", "style": { "color": "#337ab7" }, "colspan": 6 },
       { "type": "info", "label": "Previous annotator", "id": "username", "style": { "fontSize": 16 }, "colspan": 6 },
       { "type": "info", "label": "Group", "id": "group_id", "colspan": 6 },
@@ -21,7 +23,7 @@
             "id": "line",
             "has_text": true,
             "marker_width": "2",
-            "color": "#FF0000",
+            "color": "#01452c",
             "has_char_size": true
           },
           {
@@ -31,7 +33,7 @@
             "id": "line_polygon",
             "has_text": true,
             "marker_width": "2",
-            "color": "#FF0000",
+            "color": "#01452c",
             "has_char_size": true
           }
         ]

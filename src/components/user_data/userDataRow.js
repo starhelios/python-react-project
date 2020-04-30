@@ -111,6 +111,7 @@ export default class UserDataRow extends Component {
     //         is_queued, group, user_id, is_queueing } = this.props.image_data;
     const image = this.props.image;
     const mathpixEditURL = "/annotate/mathpix?sessionID=" + image.image_id;
+    const ocrEditURL = "/annotate/ocr?sessionID=" + image.image_id;
     const triageEditURL = "/annotate/triage?sessionID=" + image.image_id + "_triage";
     const imageURL = consts.S3BUCKET_URL + image.image_id + '.jpg';
     // const detectionMap = get(properties, 'detection_map');
@@ -155,7 +156,10 @@ export default class UserDataRow extends Component {
               <div>
                 <div>
                   <p>
-                    <a className="edit-link" target="_blank" href={mathpixEditURL}>Mathpix edit</a>
+                    <a className="edit-link" target="_blank" href={mathpixEditURL}>Mathpix edit (legacy)</a>
+                  </p>
+                  <p>
+                    <a className="edit-link" target="_blank" href={ocrEditURL}>OCR edit</a>
                   </p>
                   <p>
                     <a className="edit-link" target="_blank" href={triageEditURL}>Triage edit</a>
@@ -184,15 +188,16 @@ export default class UserDataRow extends Component {
                 </div>
                 <br />
                 <div>
-                  <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('all')}>
+                  <button type="button" className="btn btn-info btn-queue" onClick={this.onQueueClick('ocr')}>
                     {
                       this.state.queuing || image.is_queueing ?
                         <img src="/static/img/spinner-sm.gif" />
                         :
-                        'Queue All'
+                        'Queue OCR'
                     }
                   </button>
                 </div>
+                <br />
               </div>
           }
         </td>
