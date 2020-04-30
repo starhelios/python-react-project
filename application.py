@@ -703,7 +703,6 @@ def cr():
 def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
     request_url = proxy_address + "/predicted-properties/" + image_id.replace("_triage", "")
-    application.logger.info(request_url)
     r = requests.get(request_url, headers=DB_API_HEADERS)
     application.logger.info(r)
     result_json = r.json()
@@ -792,6 +791,12 @@ def get_predicted_properties(image_id, dataset):
         elif dataset == 'triage':
             if anno_list_db:
                 data['anno_list'] = [anno for anno in anno_list_db if not anno['boxId'].startswith('line')]
+        elif dataset == "ocr":
+            anno_list = [anno for anno in anno_list_db if anno['boxId'].startswith('line')]
+            for anno in anno_list:
+                if 'text_anno' in anno:
+                    anno['text'] = anno['text_anno']
+            data['anno_list'] = anno_list
     else:
         if 'top_left_x' in eqn_position:
             x = eqn_position['top_left_x'] / float(cols)
