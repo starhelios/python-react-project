@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from consts import DATA_PROPERTIES, PREDICTED_PROPERTIES
 
+import statistics
 import argparse
 import os
 import json
@@ -805,7 +806,9 @@ def get_predicted_properties(image_id, dataset):
             for anno in anno_list:
                 if 'text_anno' in anno:
                     anno['text'] = anno['text_anno']
+            char_size_list = [anno['charSize'] for anno in anno_list]
             data['anno_list'] = anno_list
+            data['char_size_predicted'] = statistics.median(char_size_list)
     else:
         if 'top_left_x' in eqn_position:
             x = eqn_position['top_left_x'] / float(cols)
@@ -815,11 +818,19 @@ def get_predicted_properties(image_id, dataset):
             if (x, y, w, h) != (0, 0, 0, 0):
                 base_path = os.path.basename(image_path)
                 anno = create_anno(base_path, '', x, y, w, h)
-                if dataset == 'mathpix':
-                    anno['boxId'] = 'equations'
-                else:
+                if dataset == 'triage':
                     anno['boxId'] = 'equation'
-                anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                elif dataset == 'ocr':
+                    anno['boxId'] = 'line'
+                    anno['shapes'][0]['style'] = {"outline": "#01452c", "outline_width": 2}
+                    anno['text'] = text
+                    anno['charSize'] = char_size_predicted
+                    if "https" not in anno['src']:
+                        anno['src'] = "https://s3.amazonaws.com/mpxdata/eqn_images/" + anno['src']
+                else:
+                    anno['boxId'] = 'equations'
+                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
                 data['anno_list'] = [anno]
                 if dataset == 'triage':
                     anno['charSize'] = char_size_predicted
