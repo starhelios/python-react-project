@@ -111,7 +111,7 @@ export default class UserDataRow extends Component {
     //         is_queued, group, user_id, is_queueing } = this.props.image_data;
     const image = this.props.image;
     const mathpixEditURL = "/annotate/mathpix?sessionID=" + image.image_id;
-    const ocrEditURL = "/annotate/ocr?sessionID=" + image.image_id;
+    const ocrEditURL = "/annotate/ocr?sessionID=" + image.image_id + "_ocr";
     const triageEditURL = "/annotate/triage?sessionID=" + image.image_id + "_triage";
     const imageURL = consts.S3BUCKET_URL + image.image_id + '.jpg';
     // const detectionMap = get(properties, 'detection_map');

@@ -712,7 +712,7 @@ def cr():
 
 def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
-    request_url = proxy_address + "/predicted-properties/" + image_id.replace("_triage", "")
+    request_url = proxy_address + "/predicted-properties/" + image_id.replace("_triage", "").replace("_ocr", "")
     r = requests.get(request_url, headers=DB_API_HEADERS)
     application.logger.info(r)
     result_json = r.json()
@@ -737,7 +737,7 @@ def get_predicted_properties(image_id, dataset):
             text = result.get('text', None)
             if text is None:
                 text = "\\[ %s \\]" % latex_anno
-    image_path = 'eqn_images/' + image_id.replace('_triage', '') + '.jpg'
+    image_path = 'eqn_images/' + image_id.replace('_triage', '').replace('_ocr', '') + '.jpg'
     # TODO: compute global char_size here (?) or do it in production?
     char_size_predicted = internal.get('char_size', None)
     data = {

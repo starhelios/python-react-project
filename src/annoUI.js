@@ -144,7 +144,7 @@ class AnnotationUI extends Component {
     if (event.ctrlKey && event.key === 'y') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        var char_size_new = parseFloat(char_size * 0.9)
+        var char_size_new = parseFloat(char_size * 0.94)
         this.setState({ char_size: char_size_new });
       }
       console.log("Char size new: " + String(char_size));
@@ -153,7 +153,7 @@ class AnnotationUI extends Component {
     if (event.ctrlKey && event.key === 'u') {
       var char_size = this.state.char_size || this.state.char_size_predicted || 10.;
       if (char_size) {
-        var char_size_new = parseFloat(char_size * 1.1)
+        var char_size_new = parseFloat(char_size * 1.06)
         this.setState({ char_size: char_size_new });
       }
       console.log("Char size new: " + String(char_size));
