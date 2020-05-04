@@ -183,7 +183,7 @@ class AnnotationUI extends Component {
   averageCharSize(list) {
     const sizes = list.filter(i => i.charSize).map(i => i.charSize);
     if (sizes.length == 0) {
-      return DEFAULT_BOX_CHAR_SIZE;
+      return null;
     }
     const avg = sum(sizes) / list.length;
     return avg;
@@ -237,9 +237,9 @@ class AnnotationUI extends Component {
     if (boxes[annotation.boxId]) {
       const isCharSizeChanged = boxes[annotation.boxId].findIndex(({charSize}) => charSize !== null);
       if(isCharSizeChanged !== -1)
-        char_size = this.averageCharSize(boxes[annotation.boxId]);
+        char_size = this.averageCharSize(boxes[annotation.boxId]) || DEFAULT_BOX_CHAR_SIZE;
     } else {
-      char_size = this.averageCharSize(this.state.annoList);
+      char_size = this.averageCharSize(this.state.annoList) || DEFAULT_BOX_CHAR_SIZE;
     }
 
     if (eventType === 'CharSizePlus') {
@@ -840,6 +840,18 @@ class AnnotationUI extends Component {
       }
     </div>;
 
+    var globalCharSize = "none";
+    if (this.state.char_size) {
+      globalCharSize = this.state.char_size.toFixed(5);
+    }
+    var annoAvgCharSize = "none"
+    if (this.state.annoList) {
+      var annoAvg = this.averageCharSize(this.state.annoList);
+      if (annoAvg) {
+        annoAvgCharSize = annoAvg.toFixed(5);
+      }
+    }
+
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
         <div className={'screen-lock' + (this.state.loadDataApiStatus === consts.API_LOADING ? '' : ' hidden')}>
@@ -1004,25 +1016,28 @@ class AnnotationUI extends Component {
               </label>
             </div>
 
-            <div className="stats">
-              <h4>Queue ({window.__QUEUE_NAME__}): {this.state.queue_count || '(loading...)'}</h4>
-              <h4>Is verified: {String(this.state.is_verified || "false")}</h4>
+            <div style={{textAlign: "left"}} className="stats">
+              <h4>queue: {window.__QUEUE_NAME__ || '(loading...)'}</h4>
+              <h4>queue_count: {this.state.queue_count || '(loading...)'}</h4>
+              <h4>is_verified: {String(this.state.is_verified || "false")}</h4>
               {
                 this.state.verified_by && this.state.is_verified ?
-                  <h4>Verified by: {String(this.state.verified_by)}</h4>
+                  <h4>verified_by: {String(this.state.verified_by)}</h4>
                   :
                   null
               }
               {
                 this.state.queue
-                  ? <h4>Queue: {this.state.queue}</h4>
+                  ? <h4>queue: {this.state.queue}</h4>
                   : null
               }
               {
                 this.state.annoList
-                  ? <h4>Anno count: {this.state.annoList.length}</h4>
+                  ? <h4>annoList.length: {this.state.annoList.length}</h4>
                   : null
               }
+              <h4>char_size_global: {globalCharSize}</h4>
+              <h4>char_size_anno_avg: {annoAvgCharSize}</h4>
             </div>
 
             <div className="actions row">
