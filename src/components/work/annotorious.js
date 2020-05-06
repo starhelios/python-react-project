@@ -25,14 +25,19 @@ export default class Annotorious extends Component {
     } else if (this.props.geometry == "transform") {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('TransformSelector', { activate: true });
+      anno.addPlugin('TransformPolygonSelector', { activate: false });
+      anno.addPlugin('PolygonSelector', { activate: false });
     } else if (this.props.geometry == "transform_polygon") {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('TransformPolygonSelector', { activate: true });
+      anno.addPlugin('TransformSelector', { activate: false });
+      anno.addPlugin('PolygonSelector', { activate: false });
     } else {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
+      anno.addPlugin('TransformPolygonSelector', { activate: false });
+      anno.addPlugin('TransformSelector', { activate: false });
     }
-    console.log('active_plugin', window['active_plugin'])
     let nn = 0
     let meanCharSize = 0;
     this.props.annoList.forEach((box) => { if (box.charSize) { meanCharSize += parseFloat(box.charSize); nn++}});
