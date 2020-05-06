@@ -201,7 +201,7 @@ export default class UserDataRow extends Component {
               </div>
           }
         </td>
-        <td>
+        <td style={{ fontFamily: 'serif', textAlign: "left" }}>
           {
             latexErr == null ?
               <MathpixLoader>

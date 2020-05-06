@@ -146,7 +146,7 @@ export default class DataRow extends Component {
           </td>
           : null
         }
-        <td style={{ textAlign: "left" }}>
+        <td style={{ fontFamily: 'serif', textAlign: "left" }}>
           <MathpixLoader>
             <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={text} isDisableFancy={true} />
           </MathpixLoader>
