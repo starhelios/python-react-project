@@ -165,6 +165,16 @@
             "marker_width":"3",
             "has_char_size":false,
             "color":"#000000"
+          },
+          {
+            "type":"bbox",
+            "geometry":"box",
+            "label":"Column",
+            "id":"column",
+            "has_text": false,
+            "marker_width":"3",
+            "has_char_size":false,
+            "color":"#f59e42"
           }
         ]
       }
