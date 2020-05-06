@@ -35,6 +35,26 @@
             "marker_width": "2",
             "color": "#01452c",
             "has_char_size": true
+          },
+          {
+            "type": "bbox",
+            "geometry": "transform",
+            "label": "Edit Box",
+            "id": "edit_line",
+            "has_text": true,
+            "marker_width": "2",
+            "color": "#01452c",
+            "has_char_size": true
+          },
+          {
+            "type": "bbox",
+            "geometry": "transform",
+            "label": "Edit Box (polygon)",
+            "id": "edit_line_polygon",
+            "has_text": true,
+            "marker_width": "2",
+            "color": "#01452c",
+            "has_char_size": true
           }
         ]
       }
