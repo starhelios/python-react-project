@@ -175,6 +175,16 @@
             "marker_width":"3",
             "has_char_size":false,
             "color":"#f59e42"
+          },
+          {
+            "type":"bbox",
+            "geometry":"box",
+            "label":"Other",
+            "id":"other",
+            "has_text": false,
+            "marker_width":"3",
+            "has_char_size":false,
+            "color":"#05f5cd"
           }
         ]
       }
