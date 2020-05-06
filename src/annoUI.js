@@ -973,7 +973,7 @@ class AnnotationUI extends Component {
                     </div>
                   </div>
                   <div className="anno-item-label">
-                    <span style={{ fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
+                    <span style={{ fontFamily: 'serif', fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
                       <MathpixLoader>
                         <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
                       </MathpixLoader>

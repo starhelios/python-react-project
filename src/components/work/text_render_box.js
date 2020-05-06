@@ -54,7 +54,7 @@ export default class TextRenderBox extends Component {
     return (
       <div className="latex-render-parent" style={{ minWidth: this.state.defaultWidth }}>
         <span className="latex-render" ref="textRenderArea" title={textRenderField.help}
-          style={{ fontSize: fontSize + 'px', whiteSpace: "nowrap" }}>
+          style={{ fontSize: fontSize + 'px', whiteSpace: "nowrap", fontFamily: 'serif' }}>
           <MathpixLoader>
             <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={text} isDisableFancy={true} />
           </MathpixLoader>
