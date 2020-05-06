@@ -48,7 +48,7 @@
           },
           {
             "type": "bbox",
-            "geometry": "transform",
+            "geometry": "transform_polygon",
             "label": "Edit Box (polygon)",
             "id": "edit_line_polygon",
             "has_text": true,

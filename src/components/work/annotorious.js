@@ -27,7 +27,7 @@ export default class Annotorious extends Component {
       anno.addPlugin('TransformSelector', { activate: true });
     } else if (this.props.geometry == "transform_polygon") {
       anno.$_modules$[0].$_plugins$ = [];
-      anno.addPlugin('TransformSelector', { activate: true });
+      anno.addPlugin('TransformPolygonSelector', { activate: true });
     } else {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });

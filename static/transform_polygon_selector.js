@@ -3,7 +3,7 @@
  * @param {Object} config_opts configuration options
  * @constructor
  */
-annotorious.plugin.TransformSelector = function(config_opts) {
+annotorious.plugin.TransformPolygonSelector = function(config_opts) {
   if (config_opts)
     this._activate = config_opts.activate;
 }
@@ -11,8 +11,8 @@ annotorious.plugin.TransformSelector = function(config_opts) {
 /**
  * Attach a new selector onInitAnnotator.
  */
-annotorious.plugin.TransformSelector.prototype.onInitAnnotator = function(annotator) {
-  annotator.addSelector(new annotorious.plugin.TransformSelector.Selector());
+annotorious.plugin.TransformPolygonSelector.prototype.onInitAnnotator = function(annotator) {
+  annotator.addSelector(new annotorious.plugin.TransformPolygonSelector.Selector());
   if (this._activate)
     annotator.setCurrentSelector('transform');
 }
@@ -21,9 +21,9 @@ annotorious.plugin.TransformSelector.prototype.onInitAnnotator = function(annota
  * A transform selector.
  * @constructor
  */
-annotorious.plugin.TransformSelector.Selector = function() { }
+annotorious.plugin.TransformPolygonSelector.Selector = function() { }
 
-annotorious.plugin.TransformSelector.Selector.prototype.init = function(annotator, canvas) {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.init = function(annotator, canvas) {
   /** @private **/
   this._annotator = annotator;
 
@@ -58,9 +58,6 @@ annotorious.plugin.TransformSelector.Selector.prototype.init = function(annotato
   this._closeEnough = 10;
 
   /** @private **/
-  this._dragPoint = null;
-
-  /** @private **/
   this._pointIndex = -1;
 
   /** @private **/
@@ -71,40 +68,32 @@ annotorious.plugin.TransformSelector.Selector.prototype.init = function(annotato
  * Attaches MOUSEUP and MOUSEMOVE listeners to the editing canvas.
  * @private
  */
-annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = function() {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype._attachListeners = function() {
   var self = this;
 
   var refresh = function(last, highlight_last) {
     self._g2d.clearRect(0, 0, self._canvas.width, self._canvas.height);
 
-    var shape = self._annotator.toCanvasCoordinates(self._points);
+
     // Outer line
     self._g2d.lineWidth = 2.5;
     self._g2d.strokeStyle = '#000000';
-    self._g2d.lineJoin = "round";
-    self._g2d.lineCap = "round"
-    self._g2d.lineJoin = "round"
     self._g2d.beginPath();
-    // self._g2d.beginPath();
-    // // self._g2d.moveTo(self._anchor.x, self._anchor.y);
-    // var item = self._annotator.toCanvasCoordinates(self._points[0]);
-    // self._g2d.moveTo(item.x, item.y);
-    //
-    // // TODO replace with goog.array.forEach
-    // for (var i=1; i<self._points.length; i++) {
-    //   var item = self._annotator.toCanvasCoordinates(self._points[i]);
-    //   self._g2d.lineTo(item.x, item.y);
-    //   // self._g2d.lineTo(self._points[i].x, self._points[i].y);
-    // };
-    //
-    // // self._g2d.lineTo(last.x, last.y);
-    // self._g2d.closePath();
+    // self._g2d.moveTo(self._anchor.x, self._anchor.y);
+    var item = self._annotator.toCanvasCoordinates(self._points[0]);
+    self._g2d.moveTo(item.x, item.y);
 
-    self._g2d.rect(shape.x,
-      shape.y,
-      shape.width,
-      shape.height);
+    // TODO replace with goog.array.forEach
+    for (var i=1; i<self._points.length; i++) {
+      var item = self._annotator.toCanvasCoordinates(self._points[i]);
+      self._g2d.lineTo(item.x, item.y);
+      // self._g2d.lineTo(self._points[i].x, self._points[i].y);
+    };
+
+    // self._g2d.lineTo(last.x, last.y);
+    self._g2d.closePath();
     self._g2d.stroke();
+
   };
 
   this._mouseMoveListener = function(event) {
@@ -116,9 +105,7 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
 
       self._mouse = { x: event.offsetX, y: event.offsetY };
 
-      // self._points[self._pointIndex] = self._annotator.toItemCoordinates(self._mouse);
-
-      self._setPoint(self._annotator.toItemCoordinates(self._mouse));
+      self._points[self._pointIndex] = self._annotator.toItemCoordinates(self._mouse);
 
       refresh(self._mouse);
     }
@@ -133,7 +120,6 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
     }
 
     self.setCursor();
-    self._dragPoint = null;
 
     self._enabled = false;
     refresh(self._anchor);
@@ -148,7 +134,7 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
  * Detaches MOUSEUP and MOUSEMOVE listeners from the editing canvas.
  * @private
  */
-annotorious.plugin.TransformSelector.Selector.prototype._detachListeners = function() {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype._detachListeners = function() {
   var self = this;
   if (this._mouseMoveListener) {
      this._canvas.removeEventListener("mousemove", self._mouseMoveListener);
@@ -163,7 +149,7 @@ annotorious.plugin.TransformSelector.Selector.prototype._detachListeners = funct
  * Selector API method: returns the selector name.
  * @returns the selector name
  */
-annotorious.plugin.TransformSelector.Selector.prototype.getName = function() {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.getName = function() {
   return 'transform';
 }
 
@@ -174,8 +160,8 @@ annotorious.plugin.TransformSelector.Selector.prototype.getName = function() {
  *
  * @return the supported shape type
  */
-annotorious.plugin.TransformSelector.Selector.prototype.getSupportedShapeType = function() {
-  return 'rect';
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.getSupportedShapeType = function() {
+  return 'polygon';
 }
 
 
@@ -184,9 +170,10 @@ annotorious.plugin.TransformSelector.Selector.prototype.getSupportedShapeType = 
  * @param {number} x the X coordinate
  * @param {number} y the Y coordinate
  */
-annotorious.plugin.TransformSelector.Selector.prototype.startSelection = function(x, y, annotation, pointIndex) {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.startSelection = function(x, y, annotation, pointIndex) {
   this._dragAnnotation = annotation;
-  this._points = (annotation.shapes && annotation.shapes[0] && annotation.shapes[0].geometry) || {};
+  this._points = (annotation.shapes && annotation.shapes[0] && annotation.shapes[0].geometry
+    && annotation.shapes[0].geometry.points) || [];
   this._pointIndex = pointIndex;
   this._enabled = true;
   this._attachListeners();
@@ -194,18 +181,18 @@ annotorious.plugin.TransformSelector.Selector.prototype.startSelection = functio
   this.setCursor('move');
   // this._annotator.fireEvent('onSelectionStarted', { offsetX: x, offsetY: y, annotator: this });
 
-  this._setPoint(this._annotator.toItemCoordinates(this._anchor))
+  this._points[this._pointIndex] = this._annotator.toItemCoordinates(this._anchor)
 
-  console.log('startSelection transform rect', x, y, pointIndex, this._points[pointIndex], this._points, annotation);
+  console.log('startSelection transform polygon', x, y, pointIndex, this._points[pointIndex], this._points, annotation);
   // goog.style.setStyle(document.body, '-webkit-user-select', 'none');
 }
 
 /**
  * Selector API method: stops the selection.
  */
-annotorious.plugin.TransformSelector.Selector.prototype.stopSelection = function() {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.stopSelection = function() {
   console.log('stopSelection plugin')
-  this._points = {};
+  this._points = [];
   this._detachListeners();
   this._g2d.clearRect(0, 0, this._canvas.width, this._canvas.height);
   // goog.style.setStyle(document.body, '-webkit-user-select', 'auto');
@@ -215,15 +202,24 @@ annotorious.plugin.TransformSelector.Selector.prototype.stopSelection = function
  * Selector API method: returns the currently edited shape.
  * @returns {annotorious.shape.Shape} the shape
  */
-annotorious.plugin.TransformSelector.Selector.prototype.getShape = function() {
-  return { type: 'rect', geometry: this._points};
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.getShape = function() {
+  var points = [];
+  // points.push(this._annotator.toItemCoordinates(this._anchor));
+
+  var self = this;
+  // goog.array.forEach(this._points, function(pt) {
+  for (var i=0; i<this._points.length; i++) {
+    points.push(self._annotator.toItemCoordinates(this._points[i]));
+  }
+
+  return { type: 'polygon', geometry: { points: this._points } };
 }
 
 /**
  * Selector API method: returns the bounds of the selected shape, in viewport (= pixel) coordinates.
  * @returns {object} the shape viewport bounds
  */
-annotorious.plugin.TransformSelector.Selector.prototype.getViewportBounds = function() {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.getViewportBounds = function() {
   var right = this._anchor.x;
   var left = this._anchor.x;
   var top = this._anchor.y;
@@ -252,7 +248,7 @@ annotorious.plugin.TransformSelector.Selector.prototype.getViewportBounds = func
 /**
  * TODO not sure if this is really the best way/architecture to handle viewer shape drawing
  */
-annotorious.plugin.TransformSelector.Selector.prototype.drawShape = function(g2d, shape, highlight) {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.drawShape = function(g2d, shape, highlight) {
   // console.log('drawShape', shape)
   var color;
   if (highlight) {
@@ -263,31 +259,23 @@ annotorious.plugin.TransformSelector.Selector.prototype.drawShape = function(g2d
 
   // TODO check if it's really a polyogn
 
-  var points = this._annotator.toCanvasCoordinates(shape.geometry);
   // Inner line
   g2d.lineWidth = shape.style.outline_width;
   g2d.strokeStyle = color;
-  g2d.lineJoin = "round";
-  g2d.lineCap = "round"
-  g2d.lineJoin = "round"
-  g2d.beginPath();
 
+  var points = shape.geometry.points;
   // console.log('drawShape', points)
-  // g2d.beginPath();
-  // g2d.moveTo(points[0].x, points[0].y);
-  // for (var i=1; i<points.length; i++) {
-  //   g2d.lineTo(points[i].x, points[i].y);
-  // }
+  g2d.beginPath();
+  g2d.moveTo(points[0].x, points[0].y);
+  for (var i=1; i<points.length; i++) {
+    g2d.lineTo(points[i].x, points[i].y);
+  }
   // g2d.lineTo(points[0].x, points[0].y);
-  // g2d.closePath();
-  g2d.rect(points.x,
-    points.y,
-    points.width,
-    points.height);
+  g2d.closePath();
   g2d.stroke();
 }
 
-annotorious.plugin.TransformSelector.Selector.prototype.setCursor = function(type) {
+annotorious.plugin.TransformPolygonSelector.Selector.prototype.setCursor = function(type) {
   if (type) {
     this._cursor = this._canvas.style.cursor;
     this._canvas.style.cursor = type;
@@ -295,35 +283,4 @@ annotorious.plugin.TransformSelector.Selector.prototype.setCursor = function(typ
     this._canvas.style.cursor = this._cursor;
   }
 
-}
-
-annotorious.plugin.TransformSelector.Selector.prototype._setPoint = function(point) {
-  console.log('_setPoint', point, this._pointIndex, this._points);
-  var shape = this._points;
-
-  switch (this._pointIndex) {
-    case 0:
-      shape.width = shape.width - point.x + shape.x > 0 ? shape.width - point.x + shape.x : 0;
-      shape.height = shape.height - point.y + shape.y > 0 ? shape.height - point.y + shape.y : 0;
-      shape.x = point.x;
-      shape.y = point.y;
-      break;
-    case 1:
-      shape.width = point.x - shape.x > 0 ? point.x - shape.x : shape.x;
-      shape.height = shape.height - point.y + shape.y > 0 ? shape.height - point.y + shape.y : 0;
-      shape.y = point.y;
-      break;
-    case 2:
-      shape.width = shape.width - point.x + shape.x > 0 ? shape.width - point.x + shape.x : 0;
-      shape.height = point.y - shape.y > 0 ? point.y - shape.y : shape.y;
-      shape.x = point.x;
-      break;
-    case 3:
-      shape.width = point.x - shape.x > 0 ? point.x - shape.x : shape.x;
-      shape.height = point.y - shape.y > 0 ? point.y - shape.y : shape.y;
-      break;
-    default:
-  }
-
-  this._points = shape;
 }
