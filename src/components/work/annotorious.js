@@ -19,12 +19,20 @@ export default class Annotorious extends Component {
   }
 
   update() {
+    window['active_plugin'] = undefined;
     if (this.props.geometry == "polygon") {
       anno.addPlugin('PolygonSelector', { activate: true });
+    } else if (this.props.geometry == "transform") {
+      anno.$_modules$[0].$_plugins$ = [];
+      anno.addPlugin('TransformSelector', { activate: true });
+    } else if (this.props.geometry == "transform_polygon") {
+      anno.$_modules$[0].$_plugins$ = [];
+      anno.addPlugin('TransformSelector', { activate: true });
     } else {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
     }
+    console.log('active_plugin', window['active_plugin'])
     let nn = 0
     let meanCharSize = 0;
     this.props.annoList.forEach((box) => { if (box.charSize) { meanCharSize += parseFloat(box.charSize); nn++}});
@@ -159,6 +167,7 @@ function drawAnnotations(annoList = [], activeIndex) {
   const annoCount = annoList.length;
   const prevList = anno.getAnnotations();
   annoList.forEach((box, index) => {
+    // console.log('drawAnnotations', box);
     const replace = prevList.find(item => item.id === box.id);
     if (box && box.shapes && box.shapes[0]) {
       anno.addAnnotation(Object.assign({}, box, {
