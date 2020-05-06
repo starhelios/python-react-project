@@ -58,9 +58,6 @@ annotorious.plugin.TransformSelector.Selector.prototype.init = function(annotato
   this._closeEnough = 10;
 
   /** @private **/
-  this._dragPoint = null;
-
-  /** @private **/
   this._pointIndex = -1;
 
   /** @private **/
@@ -85,20 +82,6 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
     self._g2d.lineCap = "round"
     self._g2d.lineJoin = "round"
     self._g2d.beginPath();
-    // self._g2d.beginPath();
-    // // self._g2d.moveTo(self._anchor.x, self._anchor.y);
-    // var item = self._annotator.toCanvasCoordinates(self._points[0]);
-    // self._g2d.moveTo(item.x, item.y);
-    //
-    // // TODO replace with goog.array.forEach
-    // for (var i=1; i<self._points.length; i++) {
-    //   var item = self._annotator.toCanvasCoordinates(self._points[i]);
-    //   self._g2d.lineTo(item.x, item.y);
-    //   // self._g2d.lineTo(self._points[i].x, self._points[i].y);
-    // };
-    //
-    // // self._g2d.lineTo(last.x, last.y);
-    // self._g2d.closePath();
 
     self._g2d.rect(shape.x,
       shape.y,
@@ -116,8 +99,6 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
 
       self._mouse = { x: event.offsetX, y: event.offsetY };
 
-      // self._points[self._pointIndex] = self._annotator.toItemCoordinates(self._mouse);
-
       self._setPoint(self._annotator.toItemCoordinates(self._mouse));
 
       refresh(self._mouse);
@@ -133,7 +114,6 @@ annotorious.plugin.TransformSelector.Selector.prototype._attachListeners = funct
     }
 
     self.setCursor();
-    self._dragPoint = null;
 
     self._enabled = false;
     refresh(self._anchor);
@@ -192,11 +172,8 @@ annotorious.plugin.TransformSelector.Selector.prototype.startSelection = functio
   this._attachListeners();
   this._anchor = { x: x, y: y };
   this.setCursor('move');
-  // this._annotator.fireEvent('onSelectionStarted', { offsetX: x, offsetY: y, annotator: this });
 
   this._setPoint(this._annotator.toItemCoordinates(this._anchor))
-
-  console.log('startSelection transform rect', x, y, pointIndex, this._points[pointIndex], this._points, annotation);
   // goog.style.setStyle(document.body, '-webkit-user-select', 'none');
 }
 
@@ -253,7 +230,6 @@ annotorious.plugin.TransformSelector.Selector.prototype.getViewportBounds = func
  * TODO not sure if this is really the best way/architecture to handle viewer shape drawing
  */
 annotorious.plugin.TransformSelector.Selector.prototype.drawShape = function(g2d, shape, highlight) {
-  // console.log('drawShape', shape)
   var color;
   if (highlight) {
     color = '#fff000';
@@ -272,14 +248,6 @@ annotorious.plugin.TransformSelector.Selector.prototype.drawShape = function(g2d
   g2d.lineJoin = "round"
   g2d.beginPath();
 
-  // console.log('drawShape', points)
-  // g2d.beginPath();
-  // g2d.moveTo(points[0].x, points[0].y);
-  // for (var i=1; i<points.length; i++) {
-  //   g2d.lineTo(points[i].x, points[i].y);
-  // }
-  // g2d.lineTo(points[0].x, points[0].y);
-  // g2d.closePath();
   g2d.rect(points.x,
     points.y,
     points.width,
@@ -298,7 +266,6 @@ annotorious.plugin.TransformSelector.Selector.prototype.setCursor = function(typ
 }
 
 annotorious.plugin.TransformSelector.Selector.prototype._setPoint = function(point) {
-  console.log('_setPoint', point, this._pointIndex, this._points);
   var shape = this._points;
 
   switch (this._pointIndex) {

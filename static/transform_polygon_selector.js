@@ -74,12 +74,10 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype._attachListeners 
   var refresh = function(last, highlight_last) {
     self._g2d.clearRect(0, 0, self._canvas.width, self._canvas.height);
 
-
     // Outer line
     self._g2d.lineWidth = 2.5;
     self._g2d.strokeStyle = '#000000';
     self._g2d.beginPath();
-    // self._g2d.moveTo(self._anchor.x, self._anchor.y);
     var item = self._annotator.toCanvasCoordinates(self._points[0]);
     self._g2d.moveTo(item.x, item.y);
 
@@ -87,10 +85,8 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype._attachListeners 
     for (var i=1; i<self._points.length; i++) {
       var item = self._annotator.toCanvasCoordinates(self._points[i]);
       self._g2d.lineTo(item.x, item.y);
-      // self._g2d.lineTo(self._points[i].x, self._points[i].y);
     };
 
-    // self._g2d.lineTo(last.x, last.y);
     self._g2d.closePath();
     self._g2d.stroke();
 
@@ -179,11 +175,9 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype.startSelection = 
   this._attachListeners();
   this._anchor = { x: x, y: y };
   this.setCursor('move');
-  // this._annotator.fireEvent('onSelectionStarted', { offsetX: x, offsetY: y, annotator: this });
 
   this._points[this._pointIndex] = this._annotator.toItemCoordinates(this._anchor)
 
-  console.log('startSelection transform polygon', x, y, pointIndex, this._points[pointIndex], this._points, annotation);
   // goog.style.setStyle(document.body, '-webkit-user-select', 'none');
 }
 
@@ -191,7 +185,6 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype.startSelection = 
  * Selector API method: stops the selection.
  */
 annotorious.plugin.TransformPolygonSelector.Selector.prototype.stopSelection = function() {
-  console.log('stopSelection plugin')
   this._points = [];
   this._detachListeners();
   this._g2d.clearRect(0, 0, this._canvas.width, this._canvas.height);
@@ -249,7 +242,6 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype.getViewportBounds
  * TODO not sure if this is really the best way/architecture to handle viewer shape drawing
  */
 annotorious.plugin.TransformPolygonSelector.Selector.prototype.drawShape = function(g2d, shape, highlight) {
-  // console.log('drawShape', shape)
   var color;
   if (highlight) {
     color = '#fff000';
@@ -264,13 +256,11 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype.drawShape = funct
   g2d.strokeStyle = color;
 
   var points = shape.geometry.points;
-  // console.log('drawShape', points)
   g2d.beginPath();
   g2d.moveTo(points[0].x, points[0].y);
   for (var i=1; i<points.length; i++) {
     g2d.lineTo(points[i].x, points[i].y);
   }
-  // g2d.lineTo(points[0].x, points[0].y);
   g2d.closePath();
   g2d.stroke();
 }
