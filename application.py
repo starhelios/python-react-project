@@ -362,6 +362,32 @@ def api_get_queue():
     return json.dumps({'success': True, 'error': '', 'url': url})
 
 
+# TODO: funky that this is a GET request
+@application.route('/api/user-data/queue', methods=['GET'])
+@requires_auth
+def api_get_user_data_queue():
+    request_url = proxy_address + "/user-data/session-id-list?" + request.query_string.decode('utf-8')
+    r = requests.get(request_url, headers=DB_API_HEADERS)
+    result_json = r.json()
+    application.logger.info(result_json)
+    if not result_json or result_json['success'] != True:
+        return json.dumps({'success': False, 'error': 'Invalid DB API response.'})
+    session_id_list = result_json['data']['session_id_list']
+    user_data_request_params = request.args.to_dict()
+    dataset = user_data_request_params['dataset']
+    if dataset=="ocr":
+        session_id_list = [session_id + "_ocr" for session_id in session_id_list]
+    elif dataset=="triage":
+        session_id_list = [session_id + "_triage" for session_id in session_id_list]
+    queue = user_data_request_params['queue']
+    redis_db.rpush(queue, *session_id_list)
+    redis_db.sadd('queues', queue)
+    application.logger.info(dataset)
+    redis_db.hset('queues_dataset', queue, dataset)
+    url = 'annotate/' + dataset +  '?queue=' + queue
+    return json.dumps({'success': True, 'error': '', 'url': url})
+
+
 @application.route('/api/data', methods=['GET'])
 @requires_auth
 def api_get_data():
@@ -966,13 +992,16 @@ def queue_equation():
     group_id = image['group_id']
     db = get_db()
     cur = db.cursor()
-    image_id_triage = image_id + "_triage"
     # insert into redis
     queue = dataset_original
     redis_db.sadd('queues', queue)
     redis_db.hset('queues_dataset', queue, dataset_original)
     if dataset_original == "triage":
+        image_id_triage = image_id + "_triage"
         redis_db.rpush(queue, image_id_triage)
+    elif dataset_original == "ocr":
+        image_id_ocr = image_id + "_ocr"
+        redis_db.rpush(queue, image_id_ocr)
     else:
         redis_db.rpush(queue, image_id)
     # commit to db, return response
