@@ -100,9 +100,7 @@ annotorious.plugin.TransformPolygonSelector.Selector.prototype._attachListeners 
       }
 
       self._mouse = { x: event.offsetX, y: event.offsetY };
-
       self._points[self._pointIndex] = self._annotator.toItemCoordinates(self._mouse);
-
       refresh(self._mouse);
     }
   };
