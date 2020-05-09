@@ -767,6 +767,10 @@ class AnnotationUI extends Component {
     var resizedImageHeight;
 
     const annoList_hasText = this.getHasTextAnnoList();
+    var text_anno = "";
+    for (var idx=0; idx<annoList_hasText.length; idx++) {
+      text_anno = text_anno + annoList_hasText[idx].text + "\n";
+    }
 
     if (!char_size) {
       const maxHeight = 500;
@@ -913,6 +917,15 @@ class AnnotationUI extends Component {
 
         {
           DATASET == "mathpix" ? bboxSelectors : null
+        }
+
+        {
+          DATASET == 'ocr' &&
+            <div style={{ fontFamily: 'serif', fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
+              <MathpixLoader>
+                <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={text_anno} isDisableFancy={true} />
+              </MathpixLoader>
+            </div>
         }
 
         { DATASET == 'ocr' &&
