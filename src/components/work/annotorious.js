@@ -22,21 +22,9 @@ export default class Annotorious extends Component {
     window['active_plugin'] = undefined;
     if (this.props.geometry == "polygon") {
       anno.addPlugin('PolygonSelector', { activate: true });
-    } else if (this.props.geometry == "transform") {
-      anno.$_modules$[0].$_plugins$ = [];
-      anno.addPlugin('TransformSelector', { activate: true });
-      anno.addPlugin('TransformPolygonSelector', { activate: false });
-      anno.addPlugin('PolygonSelector', { activate: false });
-    } else if (this.props.geometry == "transform_polygon") {
-      anno.$_modules$[0].$_plugins$ = [];
-      anno.addPlugin('TransformPolygonSelector', { activate: true });
-      anno.addPlugin('TransformSelector', { activate: false });
-      anno.addPlugin('PolygonSelector', { activate: false });
     } else {
       anno.$_modules$[0].$_plugins$ = [];
       anno.addPlugin('PolygonSelector', { activate: false });
-      anno.addPlugin('TransformPolygonSelector', { activate: false });
-      anno.addPlugin('TransformSelector', { activate: false });
     }
     let nn = 0
     let meanCharSize = 0;
