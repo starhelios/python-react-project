@@ -14,6 +14,10 @@ body{
   float: right;
 }
 
+img {
+  image-orientation: none;
+}
+
 .navbar-brand, a.navbar-brand:hover {
   font-family: 'Oswald';
   font-weight: 800;
