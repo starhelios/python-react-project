@@ -1025,7 +1025,8 @@ def queue_image_list():
     redis_db.hset('queues_dataset', queue, dataset)
     for image_id in image_id_list:
         redis_db.rpush(queue, image_id)
-    return json.dumps({'success': True})
+    url = "https://admin2.zenpix.io/annotate/" + dataset + "?queue=" + queue
+    return json.dumps({'success': True, 'url': url})
 
 def session_id_pop(queue_id):
     queue_count = redis_db.llen(queue_id)

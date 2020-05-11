@@ -116,13 +116,12 @@ export default class UserDataRow extends Component {
     const imageURL = consts.S3BUCKET_URL + image.image_id + '.jpg';
     // const detectionMap = get(properties, 'detection_map');
     const confidence = image.confidence || 0.0;
-    let latexEl = "";
+    let textEl = "";
     if (image.result && image.result.text) {
-      latexEl = image.result.text;
+      textEl = image.result.text;
     } else {
-      if (image.internal && image.internal.latex_anno) {
-        const latex = image.internal.latex_anno;
-        latexEl = `$$${latex}$$`;
+      if (image.internal && image.internal.text_anno) {
+        textEl = image.internal.text_anno;
       }
     }
     const latexErr = image.result && image.result.error ? <p style={{color: 'red', textAlign: 'center'}}>{image.result.error}</p> : null;
@@ -205,7 +204,7 @@ export default class UserDataRow extends Component {
           {
             latexErr == null ?
               <MathpixLoader>
-                <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={latexEl || ""} isDisableFancy={true}/>
+                <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={textEl || ""} isDisableFancy={true}/>
               </MathpixLoader>
               :
               latexErr
