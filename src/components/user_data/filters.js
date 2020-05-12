@@ -5,9 +5,27 @@ require('react-simple-dropdown/styles/Dropdown.css');
 import PropertyFilterCheckbox from './property_filter_checkbox';
 
 export default class UserDataFilters extends Component {
+  onCopyImageUrlClick =(e) =>{
+    const copyOk = this.copyAnnotationToClipboard("image_url")
+    if (copyOk)
+      this.showAlert( "copy-clipboard-success", "Copied image url to clipboard.");
+  }
+  copyAnnotationToClipboard = () => {
+    const { queueUrl } = this.props;
+    let copyTextArea = document.createElement('textarea');
+    copyTextArea.innerHTML= queueUrl;
+    document.body.appendChild(copyTextArea);
+    copyTextArea.select();
+    document.execCommand('copy');
+    copyTextArea.remove();
+    return true;
+  }
 
   render() {
     const { annotated, onAnnotatedChange,
+      dataset,
+      filterQueue,
+      filterLimit, onQueueLimitChange,
       queued, onQueuedChange,
       nullOcr, onNullOcrChange,
       annoList, onAnnoListChange,
@@ -21,7 +39,7 @@ export default class UserDataFilters extends Component {
       maxSeqLen,
       user, onInputChange,
       group,
-      onApplyFiltersAndSearchClick } = this.props;
+      onApplyFiltersAndSearchClick, onCreateQuery, queueUrl } = this.props;
 
     let activeFiltersCount = 0;
     Object.keys(property).forEach(propKey => {
@@ -130,6 +148,44 @@ export default class UserDataFilters extends Component {
           </div>
 
         </div>
+        <div className="row">
+          <div className="search-latex col-sm-6 col-lg-1">
+            <input type="text" name="filterQueue" className="form-control" value={filterQueue} placeholder="Queue name" onChange={onInputChange} />
+          </div>
+          <div className="search-latex col-sm-6 col-lg-2">
+            <div className="group-1">
+              <select className="form-control" name="filterDataset" value={dataset} onChange={onInputChange}>
+                <option value="">All Datasets</option>
+                {
+                  this.props.datasets && this.props.datasets.map((_dataset, index) => (
+                    <option value={_dataset} key={index}>{_dataset}</option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
+          <div className="search-latex col-sm-6 col-lg-1">
+            <input type="number" name="filterLimit" className="form-control" value={filterLimit} placeholder="Limit (integer)" onChange={onQueueLimitChange} />
+          </div>
+          <div className="col-sm-6 col-lg-1">
+            <button className="btn btn-primary" onClick={onCreateQuery}>
+              {
+                this.props.creatingQueue ?
+                  <img src="/static/img/spinner-sm.gif" width="10" />
+                  :
+                  'Create queue'
+              }
+            </button>
+          </div>
+          {queueUrl ? <div className="search-latex col-sm-6 col-lg-4">
+            <span>Queue URL:</span>
+            <input type="text" className="form-control" value={queueUrl} readOnly style={{ margin: '0 10px', display: 'inline-block', width: 'auto' }} />
+            <a href="javascript:void(0);" onClick={this.copyAnnotationToClipboard}>
+              <i className="glyphicon glyphicon-duplicate" style={{fontSize: '1.5em', top: 5, margin: '0 15px'}}> </i>
+            </a>
+            <a href={queueUrl} target="_blank"><i style={{fontSize: '1.5em', top: 5, margin: '0 15px'}} className="glyphicon glyphicon-new-window"> </i></a>
+          </div> : null }
+        </div>
       </div>
     );
 
@@ -138,6 +194,13 @@ export default class UserDataFilters extends Component {
 }
 
 UserDataFilters.propTypes = {
+  queueUrl: PropTypes.string,
+  filterQueue: PropTypes.string,
+  filterLimit: PropTypes.number,
+  onQueueLimitChange: PropTypes.func.isRequired,
+  dataset: PropTypes.string.isRequired,
+  datasets: PropTypes.array.isRequired,
+  onCreateQuery: PropTypes.func.isRequired,
   annotated: PropTypes.number.isRequired,
   onAnnotatedChange: PropTypes.func.isRequired,
   queued: PropTypes.number.isRequired,
