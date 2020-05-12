@@ -11,8 +11,12 @@ import UserDataBody from "./components/user_data/userDataBody";
 // import styles
 require('./styles/user_data.scss');
 
+const LOAD_DATASETS_API_URL = '/api/datasets';
+const LOAD_DATASETS_API_METHOD = 'get';
 const LOAD_USER_DATA_API_URL = '/api/user-data';
 const LOAD_USER_DATA_API_METHOD = 'get';
+const CREATE_QUEUE_API_URL = '/api/user-data/queue';
+const CREATE_QUEUE_API_METHOD = 'get';
 const QUEUE_IMAGE_API_URL = '/api/queue-image';
 const QUEUE_IMAGE_API_METHOD = 'post';
 const perPage = 100;
@@ -24,11 +28,14 @@ class UserData extends Component {
     super(...args);
 
     this.state = {
+      loadDatasetsApiStatus: consts.API_NOT_LOADED,
+      loadGroupsApiError: '',
       loadUserDataApiStatus: consts.API_NOT_LOADED,
       loadUserDataApiError: '',
       queueEquationApiStatus: consts.API_NOT_LOADED,
       queueEquationApiError: '',
       userData: [],
+      datasets: [],
       filterAnnotated: 0,
       filterQueued: 0,
       filterNullOcr: 0,
@@ -37,6 +44,9 @@ class UserData extends Component {
       alphabetProperty: {},
       filterFromDate: '',
       filterToDate: '',
+      filterDataset: '',
+      filterLimit: 0,
+      filterQueue: '',
       searchLatex: '',
       searchMinConfidence: '',
       searchMaxConfidence: '',
@@ -44,11 +54,14 @@ class UserData extends Component {
       searchMaxSeqLen: '',
       searchUser: '',
       sort: '-datetime',
-      page: 1
+      page: 1,
+      queueUrl: ''
     };
 
     this.loadUserData = this.loadUserData.bind(this);
     this.queueImage = this.queueImage.bind(this);
+    this.loadDatasets = this.loadDatasets.bind(this);
+    this.onQueueLimitFilterChange = this.onQueueLimitFilterChange.bind(this);
     this.onAnnotatedFilterChange = this.onAnnotatedFilterChange.bind(this);
     this.onQueuedFilterChange = this.onQueuedFilterChange.bind(this);
     this.onNullOcrFilterChange = this.onNullOcrFilterChange.bind(this);
@@ -67,6 +80,7 @@ class UserData extends Component {
     this.setStateByLocationQuery = this.setStateByLocationQuery.bind(this);
     this.bindShortcutKeys = this.bindShortcutKeys.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
+    this.onCreateQuery = this.onCreateQuery.bind(this);
   }
 
   componentWillMount() {
@@ -74,6 +88,7 @@ class UserData extends Component {
       const queryParams = this.makeQueryParamsForPageAndApi(true, true, true);
       this.loadUserData(queryParams.join('&'));
     }.bind(this));
+    this.loadDatasets();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -161,6 +176,41 @@ class UserData extends Component {
     }, callback);
   }
 
+  loadDatasets() {
+    this.setState({ loadDatasetsApiStatus: consts.API_LOADING }, () => {
+      callApi(LOAD_DATASETS_API_URL, LOAD_DATASETS_API_METHOD).then(
+        response => {
+          console.log('Load Datasets API success', response);
+          if (response.data && Array.isArray(response.data.datasets)) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_SUCCESS,
+              datasets: response.data.datasets.sort()
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Failed to fetch groups. Please try again.'
+            });
+          }
+        },
+        error => {
+          console.log('Load Groups API fail', error);
+          if (error.error && error.error.message) {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Unable to fetch groups. ' + error.error.message
+            });
+          } else {
+            this.setState({
+              loadDatasetsApiStatus: consts.API_LOADED_ERROR,
+              loadGroupsApiError: 'Sorry, Failed to fetch groups. Please try again.'
+            });
+          }
+        }
+      );
+    });
+  }
+
   loadUserData(queryStr = '') {
     this.setState({ loadUserDataApiStatus: consts.API_LOADING }, () => {
       callApi(LOAD_USER_DATA_API_URL + '?perPage=' + perPage + '&' + queryStr, LOAD_USER_DATA_API_METHOD).then(
@@ -238,6 +288,37 @@ class UserData extends Component {
     });
   }
 
+  createQueue(queryStr = '', callback) {
+    this.setState({ queueEquationApiStatus: consts.API_LOADING }, () => {
+      callApi(CREATE_QUEUE_API_URL + '?' + queryStr, CREATE_QUEUE_API_METHOD).then(
+        response => {
+          console.log('Create Queue API success', response);
+          if (response.success) {
+            this.setState({
+              queueEquationApiStatus: consts.API_LOADED_SUCCESS,
+              queueUrl: response.url
+            });
+            callback && callback(null, response);
+          } else {
+            this.setState({
+              queueEquationApiStatus: consts.API_LOADED_ERROR,
+              queueEquationApiError: 'Failed to create queue.'
+            });
+            callback && callback(null, response);
+          }
+        },
+        error => {
+          console.log('Create Queue API fail', error);
+          this.setState({
+            queueEquationApiStatus: consts.API_LOADED_ERROR,
+            queueEquationApiError: 'Unable to create queue.'
+          });
+          callback && callback(error);
+        }
+      );
+    });
+  }
+
   bindShortcutKeys() {
     const that = this;
 
@@ -259,6 +340,19 @@ class UserData extends Component {
     this.setState({
       [e.target.name]: e.target.value
     })
+  }
+
+  onCreateQuery() {
+    const { filterQueue, filterLimit, filterDataset } = this.state;
+    const queryParams = this.makeQueryParamsForPageAndApi(true, false, false);
+    queryParams.push(`limit=${filterLimit}`);
+    queryParams.push(`dataset=${filterDataset}`);
+    queryParams.push(`queue=${filterQueue}`);
+    this.createQueue(queryParams.join('&'));
+  }
+
+  onQueueLimitFilterChange(e) {
+    this.setState({ filterLimit: parseInt(e.target.value) });
   }
 
   onAnnotatedFilterChange(name, value) {
@@ -422,6 +516,10 @@ class UserData extends Component {
     return (
       <div id="page-user-data">
         <UserDataFilters
+          datasets={this.state.datasets}
+          filterQueue={this.state.filterQueue}
+          filterLimit={this.state.filterLimit} onQueueLimitChange={this.onQueueLimitFilterChange}
+          dataset={this.state.filterDataset}
           annotated={this.state.filterAnnotated} onAnnotatedChange={this.onAnnotatedFilterChange}
           queued={this.state.filterQueued} onQueuedChange={this.onQueuedFilterChange}
           nullOcr={this.state.filterNullOcr} onNullOcrChange={this.onNullOcrFilterChange}
@@ -438,6 +536,8 @@ class UserData extends Component {
           group={this.state.searchGroup}
           onApplyFiltersAndSearchClick={this.onApplyFiltersAndSearchClick}
           onInputChange={this.onInputChange}
+          onCreateQuery={this.onCreateQuery}
+          queueUrl={this.state.queueUrl}
           />
         {
           loadUserDataApiStatus === consts.API_LOADED_SUCCESS ?
