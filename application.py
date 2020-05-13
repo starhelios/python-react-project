@@ -740,7 +740,6 @@ def get_predicted_properties(image_id, dataset):
     application.logger.info("querying sql")
     request_url = proxy_address + "/predicted-properties/" + image_id.replace("_triage", "").replace("_ocr", "")
     r = requests.get(request_url, headers=DB_API_HEADERS)
-    application.logger.info(r)
     result_json = r.json()
     if not result_json or result_json['success'] != True:
         return None
@@ -750,6 +749,8 @@ def get_predicted_properties(image_id, dataset):
     internal = predicted_data['internal']
     group_id = predicted_data['group_id']
     anno_list_db = predicted_data['anno_list']
+    if anno_list_db is None:
+        anno_list_db = []
     text_anno = predicted_data['text_anno']
     latex_anno = internal.get('latex_anno', '')
     # TODO: remove this hack!!!
