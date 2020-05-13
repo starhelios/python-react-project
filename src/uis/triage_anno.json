@@ -26,7 +26,7 @@
             "has_char_size": true,
             "color": "#e6194B",
             "tags": ["continues_line"],
-            "tag_colors": { "continues_line": "#f55d2f"}
+            "tagged_color": "#f55d2f"
           },
           {
             "type": "bbox",
@@ -38,7 +38,7 @@
             "has_char_size": true,
             "color": "#e6194B",
             "tags": ["continues_line"],
-            "tag_colors": { "continues_line": "#f55d2f"}
+            "tagged_color": "#f55d2f"
           },
           {
             "type": "bbox",
@@ -70,7 +70,7 @@
             "has_char_size": true,
             "color": "#3cb44b",
             "tags": ["continues_line"],
-            "tag_colors": { "continues_line": "#7ef542"}
+            "tag_colors": "#7ef542"
           },
           {
             "type": "bbox",
@@ -82,7 +82,7 @@
             "has_char_size": true,
             "color": "#3cb44b",
             "tags": ["continues_line"],
-            "tag_colors": { "continues_line": "#7ef542"}
+            "tag_colors": "#7ef542"
           },
           {
             "type": "bbox",
