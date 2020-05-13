@@ -24,7 +24,8 @@
             "has_text": false,
             "marker_width": "3",
             "has_char_size": true,
-            "color": "#e6194B"
+            "color": "#e6194B",
+            "tags": ["continues_line"]
           },
           {
             "type": "bbox",
@@ -34,7 +35,8 @@
             "has_text": false,
             "marker_width": "3",
             "has_char_size": true,
-            "color": "#e6194B"
+            "color": "#e6194B",
+            "tags": ["continues_line"]
           },
           {
             "type": "bbox",
@@ -64,7 +66,8 @@
             "has_text": false,
             "marker_width": "3",
             "has_char_size": true,
-            "color": "#3cb44b"
+            "color": "#3cb44b",
+            "tags": ["continues_line"]
           },
           {
             "type": "bbox",
@@ -74,7 +77,8 @@
             "has_text": false,
             "marker_width": "3",
             "has_char_size": true,
-            "color": "#3cb44b"
+            "color": "#3cb44b",
+            "tags": ["continues_line"]
           },
           {
             "type": "bbox",
