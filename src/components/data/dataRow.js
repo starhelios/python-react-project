@@ -1,10 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import { MathpixMarkdown, MathpixLoader } from 'mathpix-markdown-it';
-import { forEach } from 'lodash';
+import { forEach, find, get } from 'lodash';
 import moment from 'moment';
 import * as d3 from 'd3';
 
 import consts from '../../libs/consts';
+import UIs from '../../uis';
+const dataset_to_ui = {
+  'mathpix': 'math_anno',
+  'limi': 'sheet_anno',
+  'triage': 'triage_anno',
+  'price': 'price_anno',
+  'lines': 'lines_anno',
+  'ocr': 'ocr_anno'
+};
 
 export default class DataRow extends Component {
 
@@ -23,9 +32,21 @@ export default class DataRow extends Component {
 
   constructor(props) {
     super(props)
+    const UIID = dataset_to_ui[props.dataset];
+    const data = require('../../uis/' + UIID + '.json')
+    const imageField = data && data.schema && find(data.schema.fields, { type: 'image' });
+    const bboxesArr = imageField && Array.isArray(imageField.fields) && imageField.fields.length
+      ? imageField.fields.filter(field => field.type === 'bbox') : null;
+
+    const bboxes = {};
+    forEach(bboxesArr, item => {
+      bboxes[item.id] = item;
+    })
+
     this.state = {
       imageWidth: 0,
-      imageHeight: 0
+      imageHeight: 0,
+      bboxes
     }
 
     this.update = this.update.bind(this);
@@ -49,6 +70,12 @@ export default class DataRow extends Component {
 
     forEach(this.props.annoList, box => {
       const shape = box.shapes && box.shapes[0]
+      const selectedTags = box.selectedTags;
+
+      if (selectedTags && selectedTags.length > 0 && this.state.bboxes[box.boxId].tagged_color) {
+        shape['style']['outline'] = this.state.bboxes[box.boxId].tagged_color;
+      }
+
       if (shape) {
         if (shape.type === 'rect') {
           u.append(shape.type)
