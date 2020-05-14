@@ -736,11 +736,23 @@ class AnnotationUI extends Component {
   // }
 
   render() {
-    const annoList = this.state.annoList.map(item => ({
-      ...item,
-      hasText: this.schema.bboxes[item.boxId].has_text,
-      tags: this.schema.bboxes[item.boxId].tags,
-    }));
+    const annoList = this.state.annoList.map(item => {
+      const shape = (item.shapes && item.shapes[0]) || {};
+      const selectedTags = item.selectedTags;
+
+      if (selectedTags && selectedTags.length > 0 && this.schema.bboxes[item.boxId].tagged_color) {
+        shape['style']['outline'] = this.schema.bboxes[item.boxId].tagged_color;
+      }
+
+      const shapes = shape ? [shape] : [];
+
+      return {
+        ...item,
+        hasText: this.schema.bboxes[item.boxId].has_text,
+        tags: this.schema.bboxes[item.boxId].tags,
+        shapes
+      }
+    });
 
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
