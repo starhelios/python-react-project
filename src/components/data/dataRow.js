@@ -131,14 +131,14 @@ export default class DataRow extends Component {
       <tr>
         { viewType !== 'normalized' ?
           <td className="text-center anno-board">
-            <div style={{position: 'relative', overflowY: 'auto'}}>
+            <div style={{position: 'relative'}}>
               <img id="mainImage" ref="img" src={imageURL}
-                   width={this.props.imageWidth} height={this.props.imageHeight}
+                   width={'100%'}
                    onLoad={this.update}/>
               <div style={{position: 'absolute', top: 0, left: 0, zIndex: 10, right: 0, bottom: 0}}>
                 <svg
-                  width={this.state.imageWidth}
-                  height={this.state.imageHeight}
+                  width={'100%'}
+                  style={{overflow: 'visible'}}
                   ref={el => this.svgEl = el}>
                 </svg>
               </div>
