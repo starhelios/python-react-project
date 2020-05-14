@@ -754,7 +754,6 @@ class AnnotationUI extends Component {
       }
     });
 
-    console.log('annoList', annoList)
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
       return (
