@@ -790,35 +790,16 @@ def get_predicted_properties(image_id, dataset):
     if eqn_position is None:
         if dataset == 'mathpix':
             anno_list_db = [anno for anno in anno_list_db if anno.get('text_anno', None)]
+            # v3/text
             if anno_list_db:
-                anno_list_tables = [anno for anno in anno_list_db if "tabular" in anno['text_anno']]
-                if len(anno_list_tables) > 0:
-                    # hack to just look at first line
-                    anno = anno_list_tables[0]
-                    if 'charSize' in anno:
-                        data['char_size'] = anno['charSize']
-                        anno.pop('charSize')
-                    anno['boxId'] = 'equations'
-                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
-                    data['anno_list'] = [anno]
-                    data['contains_table'] = True
-                    # can't do this because text_anno uses tabular syntax but we annotate w/ arrays...
-                    # data['text'] = anno['text_anno']
-                else:
-                    anno = anno_list_db[0]
-                    if 'charSize' in anno:
-                        data['char_size'] = anno['charSize']
-                        anno.pop('charSize')
-                    anno['boxId'] = 'equations'
-                    anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
-                    data['anno_list'] = [anno]
-                    data['text'] = anno['text_anno']
-                # else:
-                #     base_path = os.path.basename(image_path)
-                #     anno = create_anno(base_path, '', 0, 0, 1, 1)
-                #     anno['boxId'] = 'equations'
-                #     anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
-                #     data['anno_list'] = [anno]
+                if 'charSize' in anno_list_db[0]:
+                    data['char_size'] = anno_list_db[0]['charSize']
+                base_path = os.path.basename(image_path)
+                anno = create_anno(base_path, '', 0, 0, 1, 1)
+                anno['boxId'] = 'equations'
+                anno['shapes'][0]['style'] = {"outline": '#FF0000', "outline_width": 2}
+                data['anno_list'] = [anno]
+            # v3/latex
             else:
                 base_path = os.path.basename(image_path)
                 anno = create_anno(base_path, '', 0, 0, 1, 1)
