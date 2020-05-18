@@ -39,7 +39,9 @@
     "hi": "Hindi Devenagari",
     "zh": "Chinese",
     "ja": "Kana Hiragana or Katakana",
-    "ko": "Hangul Jamo"
+    "ko": "Hangul Jamo",
+    "ru": "Russian",
+    "th": "Thai"
   },
 
   "ANNOTATION_LOG_BASE_URL": "https://s3.amazonaws.com/mpxdata/logs/"
