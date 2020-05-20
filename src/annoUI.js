@@ -993,6 +993,14 @@ class AnnotationUI extends Component {
                   </div>}
                 </div>
                 <div className="anno-item-content">
+                  <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
+                  <div className="anno-item-label">
+                    <span style={{ fontFamily: 'serif', fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
+                      {item.text && item.text.length > 0 && <MathpixLoader>
+                        <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
+                      </MathpixLoader>}
+                    </span>
+                  </div>
                   <div className="image-wrap">
                     <div style={shapeStyle}>
                       <img
@@ -1001,14 +1009,6 @@ class AnnotationUI extends Component {
                       />
                     </div>
                   </div>
-                  <div className="anno-item-label">
-                    <span style={{ fontFamily: 'serif', fontSize: GLOBAL_RENDERED_TEXT_FONT_SIZE + 'px', whiteSpace: "nowrap" }}>
-                      {item.text && item.text.length > 0 && <MathpixLoader>
-                        <MathpixMarkdown mathJax={{mtextInheritFont: true}} text={item.text} isDisableFancy={true} />
-                      </MathpixLoader>}
-                    </span>
-                  </div>
-                  <textarea onChange={this.annoTextChange(item, index)} value={item.text}></textarea>
                 </div>
               </div>)
           })}

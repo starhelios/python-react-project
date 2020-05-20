@@ -70,7 +70,7 @@
             "has_char_size": true,
             "color": "#3cb44b",
             "tags": ["continues_line"],
-            "tag_colors": "#7ef542"
+            "tagged_color": "#7ef542"
           },
           {
             "type": "bbox",
@@ -82,7 +82,7 @@
             "has_char_size": true,
             "color": "#3cb44b",
             "tags": ["continues_line"],
-            "tag_colors": "#7ef542"
+            "tagged_color": "#7ef542"
           },
           {
             "type": "bbox",
