@@ -541,7 +541,7 @@ class UserData extends Component {
           />
         {
           loadUserDataApiStatus === consts.API_LOADED_SUCCESS ?
-            <div className="table-responsive">
+            <div className="table-responsive" style={{width: 'fit-content'}}>
               <table className="table user-data table-hover">
                 <thead>
                 <tr>
