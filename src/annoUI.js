@@ -49,7 +49,8 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
       isChangedSize: false,
       showMarkers: true,
-      boxTypeFilter: null
+      boxTypeFilter: null,
+      lastEditedCharSize: 'none',
     };
     this.uiController = new UIController(this);
     this.onTagsChanged = this.onAnnoChange.bind(this, 'TagsChanged');
@@ -189,6 +190,19 @@ class AnnotationUI extends Component {
     return avg;
   };
 
+  lastCharSize(list) {
+    if (typeof this.state.lastEditedCharSize == 'number') {
+      return this.state.lastEditedCharSize
+    }
+
+    const sizes = list.filter(i => i.charSize).map(i => i.charSize);
+    if (sizes.length == 0) {
+      return null;
+    }
+    const last = list[sizes.length - 1].charSize;
+    return last;
+  };
+
   onAnnoChange(eventType, annotation) {
     // console.log('onAnnoChange', eventType, annotation, this.state.annoList, cloneDeep(anno.getAnnotations()))
     const boxes = {};
@@ -237,9 +251,9 @@ class AnnotationUI extends Component {
     if (boxes[annotation.boxId]) {
       const isCharSizeChanged = boxes[annotation.boxId].findIndex(({charSize}) => charSize !== null);
       if(isCharSizeChanged !== -1)
-        char_size = this.averageCharSize(boxes[annotation.boxId]) || DEFAULT_BOX_CHAR_SIZE;
+        char_size = this.lastCharSize(boxes[annotation.boxId]) || DEFAULT_BOX_CHAR_SIZE;
     } else {
-      char_size = this.averageCharSize(this.state.annoList) || DEFAULT_BOX_CHAR_SIZE;
+      char_size = this.lastCharSize(this.state.annoList) || DEFAULT_BOX_CHAR_SIZE;
     }
 
     if (eventType === 'CharSizePlus') {
@@ -270,6 +284,7 @@ class AnnotationUI extends Component {
     }
 
     this.setState({
+      lastEditedCharSize: char_size,
       annoList,
       unsaved: true
     }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventTypeFinal, annotation); });
@@ -871,6 +886,9 @@ class AnnotationUI extends Component {
         annoAvgCharSize = annoAvg.toFixed(5);
       }
     }
+    
+    const lastEditedCharSize = typeof this.state.lastEditedCharSize == 'number'
+      ? this.state.lastEditedCharSize.toFixed(5) : this.state.lastEditedCharSize;
 
     return (
       <div id="page-annotations" className={'math_anno screen-lock-container'}>
@@ -1067,6 +1085,7 @@ class AnnotationUI extends Component {
               }
               <h4>char_size_global: {globalCharSize}</h4>
               <h4>char_size_anno_avg: {annoAvgCharSize}</h4>
+              <h4>char_size_last: {lastEditedCharSize}</h4>
             </div>
 
             <div className="actions row">
