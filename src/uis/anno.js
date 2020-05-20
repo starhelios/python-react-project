@@ -56,6 +56,7 @@ class UIController extends BaseUIController {
     parsed.text = text;
     parsed.annoList = data.anno_list || [];
     parsed.metadata = data.metadata || [];
+    parsed.notes = data.notes || '';
     return parsed;
   }
 
@@ -132,7 +133,8 @@ class UIController extends BaseUIController {
       'image_width': that.state.image_width,
       'image_height': that.state.image_height,
       'char_size': that.state.char_size,
-      'is_verified': that.state.is_verified
+      'is_verified': that.state.is_verified,
+      'notes': that.state.notes
     };
 
     that.options.image_properties.options.forEach(option => {
