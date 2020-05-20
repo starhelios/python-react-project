@@ -595,7 +595,7 @@ def save():
             'image_height', 'image_width', 'fully_boxed',
             'group_id', 'contains_foreign_alphabet', 'is_full_page', 'verified_by',
             'metadata', 'is_verified', 'queue', 'char_size',
-            'is_printed', 'is_handwritten', 'is_inverted', 'contains_table']
+            'is_printed', 'is_handwritten', 'is_inverted', 'contains_table', 'notes']
     json_data_final = {}
     for (key, val) in iteritems(json_data_copy):
         if key not in keys:

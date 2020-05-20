@@ -384,6 +384,10 @@ class AnnotationUI extends Component {
   onShowMarkers(event) {
     this.setState({showMarkers: !this.state.showMarkers});
   }
+
+  onChangeNotes(event) {
+    this.setState({notes: event.target.value, unsaved: true});
+  }
   onDropdownFieldChange(fieldSchema, event) {
     this.setState({
       [fieldSchema.id]: event.currentTarget.value,
@@ -1127,12 +1131,19 @@ class AnnotationUI extends Component {
             :
             null
         }
+        <br />
+        <div>
+          <div>Notes</div>
+          <textarea style={{width: '100%', height: 100}} onChange={this.onChangeNotes.bind(this)} value={this.state.notes}></textarea>
+        </div>
+        <br />
         {
           this.state.metadata && Object.keys(this.state.metadata).length > 0 ?
             <pre style={{ textAlign: 'left' }}> {JSON.stringify(this.state.metadata, null, 2)} </pre>
             :
             null
         }
+
         <br />
         {
           this.state.alert && this.state.alert.type ?
