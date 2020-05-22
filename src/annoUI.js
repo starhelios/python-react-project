@@ -283,12 +283,61 @@ class AnnotationUI extends Component {
       annoList.push(eqnAnnoList[0]);
     }
 
+
     this.setState({
       lastEditedCharSize: char_size,
-      annoList,
+      annoList: annoList.map(item => ({...item, shapes: this.processShapes(item.shapes)})),
       unsaved: true
     }, () => { this.uiController.onAnnoChange && this.uiController.onAnnoChange(eventTypeFinal, annotation); });
   }
+
+  processShapes = shapes => {
+
+      const shape = (shapes && shapes[0]) || {};
+
+      if (shape['type'] === 'polygon') {
+        const points = shape['geometry']['points'];
+        let normalPoints = [];
+
+        forEach(points, item => {
+          normalPoints.push(this.getValidPoint(item))
+        });
+
+        shape['geometry']['points'] = normalPoints;
+      }
+
+      if (shape['type'] === 'rect') {
+        shape['geometry'] = this.getValidRect(shape['geometry']);
+      }
+
+    return [shape];
+  };
+
+  getValidPoint = item => {
+    const res = {...item};
+
+    res.x = res.x < 0 ? 0 : (res.x > 1 ? 1 : res.x);
+    res.y = res.y < 0 ? 0 : (res.y > 1 ? 1 : res.y);
+
+    return res;
+  };
+
+  getValidRect = item => {
+    const res = {...item};
+
+    res.x = res.x < 0 ? 0 : (res.x > 1 ? 1 : res.x);
+    res.y = res.y < 0 ? 0 : (res.y > 1 ? 1 : res.y);
+
+    if (res.x + res.width > 1) {
+      res.width = 1 - res.x;
+    }
+
+    if (res.y + res.height > 1) {
+      res.height = 1 - res.y;
+    }
+
+    return res;
+  };
 
   setBoxType(boxType) {
     if (this.state.boxType !== boxType) {
