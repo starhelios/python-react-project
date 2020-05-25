@@ -28,6 +28,7 @@ import glob
 import re
 import uuid
 import random
+import es_utils
 
 
 QUEUE_CLEAN_LIST = ['mathpix_clean', 'triage_clean', 'limi_clean']
@@ -100,6 +101,10 @@ DB_API_HEADERS = {
 }
 # auth for API key
 API_KEY = os.environ['API_KEY']
+
+
+
+
 def requires_api_auth(f):
     @wraps(f)
     # the new, post-decoration function. Note *args and **kwargs here.
@@ -497,6 +502,7 @@ def dequeue_json(dataset, queue_id):
     db = get_db()
     cur = db.cursor(cursor_factory=DictCursor)
     # TODO: explore whether we can remove this hack
+
     if session_id_prev is not None and queue_id.endswith("_clean"):
         application.logger.info("Setting %s as verified!" % session_id_prev)
         username = session['profile']['username']
@@ -508,6 +514,17 @@ def dequeue_json(dataset, queue_id):
                     (True, username, session_id_prev))
         db.commit()
 
+        es_utils.log({
+            'event_type': 'annotation_verified',
+            'username': username,
+            'group_id': input_json_data.get('group_id', None),
+            'session_id': session_id_prev,
+            'queue_id': queue_id,
+            'dataset': dataset,
+            'is_done': input_json_data.get('is_good', None),
+            'is_verified': True, #input_json_data.get('is_verified', None),
+        })
+
     # TODO: make this code more general
     application.logger.info(queue_id)
     if queue_id in QUEUE_CLEAN_LIST:
@@ -518,6 +535,17 @@ def dequeue_json(dataset, queue_id):
         row = random.choice(rows)
         application.logger.info(row)
         data_row = dict(row)
+        es_utils.log({
+            'event_type': 'annotation_dequeued',
+            'username': data_row.get('username', None),
+            'group_id_prev': data_row.get('group_id', None),
+            'is_done_prev': data_row.get('is_good', None),
+            'is_verified_prev': data_row.get('is_verified', None),
+            'session_id_prev': session_id_prev,
+            'session_id_next': data_row.get('session_id', None),
+            'queue_id': queue_id,
+            'dataset': dataset,
+        })
         resp_json_data = {}
         for key, val in iteritems(data_row):
             resp_json_data[key] = data_row[key]
@@ -526,6 +554,17 @@ def dequeue_json(dataset, queue_id):
         return json_str
 
     session_id, queue_count = session_id_pop(queue_id)
+    es_utils.log({
+        'event_type': 'annotation_dequeued',
+        'username': input_json_data.get('username', None),
+        'group_id_prev': input_json_data.get('group_id', None),
+        'is_done_prev': input_json_data.get('is_good', None),
+        'is_verified_prev': input_json_data.get('is_verified', None),
+        'session_id_prev': session_id_prev,
+        'session_id_next': session_id,
+        'queue_id': queue_id,
+        'dataset': dataset,
+    })
     if session_id is None:
         redis_db.delete(queue_id)
         redis_db.srem('queues', queue_id)
@@ -589,6 +628,18 @@ def save():
     redis_db.sadd('queues', clean_queue_name)
     redis_db.hset('queues_dataset', clean_queue_name, json_data_copy['dataset'])
     redis_db.lpush(clean_queue_name, session_id)
+
+    es_utils.log({
+        'event_type': 'annotation_saved',
+        'username': username,
+        'group_id': json_data_copy['group_id'],
+        'session_id': session_id,
+        'queue_id': queue_name,
+        'dataset': dataset,
+        'is_done': json_data_copy['is_good'],
+        'is_verified': json_data_copy['is_verified']
+    })
+
     # now filter keys
     keys = ['text', 'username', 'anno_list', 'dataset', 'datetime',
             'image_path', 'session_id', 'saved', 'is_good',
@@ -732,6 +783,16 @@ def cr():
     f = urllib.request.urlopen(url)
     print('=== Slack API called to notify new comment ===\n' + str(f.read()))
     f.close()
+    es_utils.log({
+        'event_type': 'annotation_cr',
+        'session_id': session_id,
+        'slack_text': slack_text,
+        'queue_id': json_data.get('queue', None),
+        'dataset': json_data.get('dataset', None),
+        'is_verified': json_data.get('is_verified', None),
+        'username_annotated': user_id_annotated,
+        'username_verified': user_id_verified,
+    })
     json_str = json.dumps({"success": True}, default=str)
     return json_str
 

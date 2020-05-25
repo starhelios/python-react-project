@@ -12,5 +12,6 @@ requests==2.9.1
 Werkzeug==0.12.2
 boto3==1.7.14
 future==0.17.1
+elasticsearch
 authlib
 six
