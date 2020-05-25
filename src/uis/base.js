@@ -67,7 +67,15 @@ export default class BaseUIController {
   loadData(dataset, callback, queue) {
     const apiUrl = queue ? '/api/dequeue-json/' + dataset + "/" + queue : this.LOAD_DATA_API_URL + dataset + "/" + this.sessionId + '?_=' + Date.now();
     const apiMethod = queue ? 'POST' : this.LOAD_DATA_API_METHOD;
-    const data = { session_id: this.sessionId };
+    const data = { 
+      'session_id': this.sessionId,
+      'queue': this.queue,
+      'username': window.__USERNAME__,
+      'dataset': window.__DATASET__,
+      'group_id': this.component.state.group_id,
+      'is_good': this.component.state.is_good,
+      'is_verified': this.component.state.is_verified,
+    }
     const that = this.component;
     that.setState({ loadDataApiStatus: consts.API_LOADING }, () => {
       callApi(apiUrl, apiMethod, data).then(
@@ -146,6 +154,10 @@ export default class BaseUIController {
       session_id: this.sessionId,
       msg: that.state.crMessage,
       anno_url: window.location.href,
+      queue: this.queue,
+      dataset: window.__DATASET__,
+      is_verified: that.state.is_verified,
+      is_good: that.state.is_good,
     };
     callApi(this.SEND_CR_URL, this.SEND_CR_METHOD, payload).then(
       response => {
