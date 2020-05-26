@@ -640,6 +640,18 @@ def save():
         'is_verified': json_data_copy['is_verified']
     })
 
+    if json_data_copy['is_verified'] and json_data_copy['is_good']:
+        es_utils.log({
+            'event_type': 'annotation_verified',
+            'username': username,
+            'group_id': json_data_copy['group_id'],
+            'session_id': session_id,
+            'queue_id': queue_name,
+            'dataset': dataset,
+            'is_done': True,
+            'is_verified': True,
+        })
+
     # now filter keys
     keys = ['text', 'username', 'anno_list', 'dataset', 'datetime',
             'image_path', 'session_id', 'saved', 'is_good',
