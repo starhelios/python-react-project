@@ -804,7 +804,9 @@ class AnnotationUI extends Component {
   // }
 
   render() {
-    const annoList = this.state.annoList.map(item => {
+    const annoList = this.state.annoList
+      .filter(item => !!(this.schema && this.schema.bboxes && this.schema.bboxes[item.boxId]))
+      .map(item => {
       const shape = (item.shapes && item.shapes[0]) || {};
       const selectedTags = item.selectedTags;
 
@@ -814,10 +816,11 @@ class AnnotationUI extends Component {
 
       const shapes = shape ? [shape] : [];
 
+      const bbox = this.schema && this.schema.bboxes && this.schema.bboxes[item.boxId];
       return {
         ...item,
-        hasText: this.schema.bboxes[item.boxId].has_text,
-        tags: this.schema.bboxes[item.boxId].tags,
+        hasText: bbox && bbox.has_text,
+        tags: bbox && bbox.tags,
         shapes
       }
     });
