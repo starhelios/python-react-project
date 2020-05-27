@@ -820,6 +820,7 @@ class AnnotationUI extends Component {
       return {
         ...item,
         hasText: bbox && bbox.has_text,
+        has_char_size: this.schema.bboxes[item.boxId].has_char_size,
         tags: bbox && bbox.tags,
         shapes
       }
@@ -993,7 +994,7 @@ class AnnotationUI extends Component {
                 onCharSizeMinus={this.onCharSizeMinus}
                 onStartSelection={this.onStartSelection}
                 onSelectionCompleted={this.onSelectionCompleted}
-                hasCharSize={this.schema.bboxes[this.state.boxType].has_char_size && this.state.showMarkers}
+                hasCharSize={this.state.showMarkers}
                 dataset={DATASET}
                 onCheckBoxChanged={this.onCheckBoxChanged}
               />
