@@ -376,6 +376,7 @@ class AnnotationUI extends Component {
 
   onNext() {
     anno.reset();
+    this.setState({ annoList: [] });
     const queue = this.uiController.queue || 'main';
     this.uiController.loadData(DATASET, (err) => {
       err && typeof err === 'string' && console.log('Error: ', err);
@@ -939,7 +940,7 @@ class AnnotationUI extends Component {
         annoAvgCharSize = annoAvg.toFixed(5);
       }
     }
-    
+
     const lastEditedCharSize = typeof this.state.lastEditedCharSize == 'number'
       ? this.state.lastEditedCharSize.toFixed(5) : this.state.lastEditedCharSize;
 
