@@ -158,9 +158,9 @@ export default class DataRow extends Component {
       <tr>
         { viewType !== 'normalized' ?
           <td className="text-center anno-board">
-            <div style={{position: 'relative'}}>
+            <div style={{position: 'relative', width: 'fit-content', maxWidth: '100%'}}>
               <img id="mainImage" ref="img" src={imageURL}
-                   width={'100%'}
+                   style={{width: 'auto', maxWidth: '100%', maxHeight: 520}}
                    onLoad={this.update}/>
               <div style={{position: 'absolute', top: 0, left: 0, zIndex: 10, right: 0, bottom: 0}}>
                 <svg
