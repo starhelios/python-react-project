@@ -218,7 +218,7 @@ class AnnotationUI extends Component {
     annotation.isUpdated = true;
     annotation.text = annotation.text && annotation.text.trim();
 
-    if (!annotation.order) {
+    if (!annotation.hasOwnProperty('order')) {
       const maxOrder = maxBy(this.state.annoList, item => item.order);
       annotation.order = (maxOrder ? maxOrder.order : 0) + 1;
     }
