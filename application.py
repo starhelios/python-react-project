@@ -252,14 +252,18 @@ def get_query_params(data_request_params):
         propFilters = property.split('*')
         for prop in propFilters:
             if prop.startswith('!'):
-                if prop[1:] == 'char_size_null':
+                if prop[1:] == 'anno_list_is_empty':
+                    query_condition += ' AND anno_list IS NOT NULL'
+                elif prop[1:] == 'char_size_null':
                     query_condition += ' AND char_size IS NOT NULL'
                 elif prop[1:] == "contains_header":
                     query_condition += """ AND NOT anno_list @> '[{"boxId":"header"}]'"""
                 elif prop[1:] in DATA_PROPERTIES.keys():
                     query_condition += " AND %s != true" % prop[1:]
             else:
-                if prop == 'char_size_null':
+                if prop == 'anno_list_is_empty':
+                    query_condition += ' AND anno_list IS NULL'
+                elif prop == 'char_size_null':
                     query_condition += ' AND char_size IS NULL'
                 elif prop == "contains_header":
                     query_condition += """ AND anno_list @> '[{"boxId":"header"}]'"""
