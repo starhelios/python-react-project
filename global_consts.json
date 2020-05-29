@@ -15,6 +15,7 @@
     "is_good": "Is done.",
     "is_verified": "Is verified.",
     "is_normalized": "Is normalized.",
+    "anno_list_is_empty": "Anno list is empty",
     "saved": "Previously saved by annotator",
     "contains_table": "Contains table",
     "is_printed": "Printed",
