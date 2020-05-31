@@ -49,6 +49,7 @@ class AnnotationUI extends Component {
       char_size_predicted: null,
       isChangedSize: false,
       showMarkers: true,
+      recentBoxes: false,
       boxTypeFilter: null,
       lastEditedCharSize: 'none',
     };
@@ -98,7 +99,11 @@ class AnnotationUI extends Component {
 
   updateVisibility = () => {
     const { boxTypeFilter } = this.state;
-    const annoList = this.state.annoList.map(item => ({ ...item, visible: boxTypeFilter ? item.boxId === boxTypeFilter : true }));
+    const annoList = this.state.annoList.map(item => ({
+      ...item,
+      visible: boxTypeFilter ? item.boxId === boxTypeFilter : true,
+      visibleOriginal: boxTypeFilter ? item.boxId === boxTypeFilter : true,
+    }));
     this.setState({ annoList });
   };
 
@@ -242,6 +247,7 @@ class AnnotationUI extends Component {
 
       annotation.visible = !this.state.boxTypeFilter
         || (this.state.boxTypeFilter && this.state.boxType === this.state.boxTypeFilter);
+      annotation.visibleOriginal = annotation.visible;
       annotation.hasText = this.schema.bboxes[this.state.boxType].has_text;
       annotation.tags = this.schema.bboxes[this.state.boxType].tags;
     }
@@ -448,6 +454,10 @@ class AnnotationUI extends Component {
 
   onShowMarkers(event) {
     this.setState({showMarkers: !this.state.showMarkers});
+  }
+
+  onRecentBoxes(event) {
+    this.setState({recentBoxes: !this.state.recentBoxes});
   }
 
   onChangeNotes(event) {
@@ -805,7 +815,7 @@ class AnnotationUI extends Component {
   // }
 
   render() {
-    const annoList = this.state.annoList
+    let annoList = this.state.annoList
       .filter(item => !!(this.schema && this.schema.bboxes && this.schema.bboxes[item.boxId]))
       .map(item => {
       const shape = (item.shapes && item.shapes[0]) || {};
@@ -823,9 +833,28 @@ class AnnotationUI extends Component {
         hasText: bbox && bbox.has_text,
         has_char_size: this.schema.bboxes[item.boxId].has_char_size,
         tags: bbox && bbox.tags,
+        visible: item.visibleOriginal,
         shapes
       }
     });
+
+    if (this.state.recentBoxes) {
+      const RECENT_BOX_COUNT = 20;
+      const visibleCount =  size(filter(annoList, item => item.visibleOriginal));
+      const startIndex = visibleCount > RECENT_BOX_COUNT ? visibleCount - RECENT_BOX_COUNT : 0;
+      let currentIndex = 0;
+
+      annoList = map(annoList, item => {
+        const res = {...item};
+
+        if (item.visibleOriginal) {
+          res.visible =  currentIndex >= startIndex;
+          currentIndex++;
+        }
+
+        return res;
+      });
+    }
 
     if (this.state.loadUIApiStatus === consts.API_LOADING) {
       // TODO: fix CSS dependence of UIID
@@ -1108,12 +1137,21 @@ class AnnotationUI extends Component {
               Char Size +10%
             </button>
             <div className="checkbox">
-              <label htmlFor="show-markers" >
+              <label htmlFor="show-markers">
                 <input type="checkbox" id="show-markers" checked={this.state["showMarkers"]}
                        ref={input => this.showBtn = input}
                        title="Show 2x markers"
                        onChange={this.onShowMarkers.bind(this)} />
                 Show 2x markers
+              </label>
+            </div>
+            <div className="checkbox">
+              <label htmlFor="recent-boxes" >
+                <input type="checkbox" id="recent-boxes" checked={this.state["recentBoxes"]}
+                       ref={input => this.showBtn = input}
+                       title="Recent boxes only"
+                       onChange={this.onRecentBoxes.bind(this)} />
+                Recent boxes only
               </label>
             </div>
 
