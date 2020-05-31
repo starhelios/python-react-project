@@ -620,7 +620,7 @@ def save():
         json_data_copy['is_verified'] = True
         json_data_copy['verified_by'] = username
         json_data_copy['verified_at'] = 'NOW()'
-    elif username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin']:
+    elif username in ['Maksym', 'Nico', 'Alika', 'Makesym', 'Kaitlin', 'Darii']:
         json_data_copy['is_verified'] = True
         json_data_copy['verified_by'] = username
         json_data_copy['verified_at'] = 'NOW()'
