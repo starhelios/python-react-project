@@ -149,7 +149,7 @@ export default class UserDataFilters extends Component {
 
         </div>
         <div className="row">
-          <div className="search-latex col-sm-6 col-lg-1">
+          <div className="search-latex col-sm-6 col-lg-2">
             <input type="text" name="filterQueue" className="form-control" value={filterQueue} placeholder="Queue name" onChange={onInputChange} />
           </div>
           <div className="search-latex col-sm-6 col-lg-2">
@@ -164,8 +164,9 @@ export default class UserDataFilters extends Component {
               </select>
             </div>
           </div>
-          <div className="search-latex col-sm-6 col-lg-1">
-            <input type="number" name="filterLimit" className="form-control" value={filterLimit} placeholder="Limit (integer)" onChange={onQueueLimitChange} />
+          <div className="search-latex images col-sm-6 col-lg-2 d-flex">
+            <label className="control-label" htmlFor="filterLimit">#images:</label>
+            <input type="number" id="filterLimit" name="filterLimit" className="form-control" value={filterLimit} placeholder="Limit (integer)" onChange={onQueueLimitChange} />
           </div>
           <div className="col-sm-6 col-lg-1">
             <button className="btn btn-primary" onClick={onCreateQuery}>
