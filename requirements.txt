@@ -9,7 +9,7 @@ Pillow==4.1.1
 psycopg2==2.8.3
 redis==2.10.5
 requests==2.9.1
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 boto3==1.7.14
 future==0.17.1
 elasticsearch
